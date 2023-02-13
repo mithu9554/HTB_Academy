@@ -1,5 +1,5 @@
 # Useful Links
-
+[PHP extension list](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Upload%20Insecure%20Files/Extension%20PHP/extensions.lst)
 
 # Useful Shells
 
