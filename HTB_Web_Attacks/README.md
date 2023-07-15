@@ -27,6 +27,7 @@ done
 ```
 ```sh
 ./documents.sh
+
 ```
 
 ## Bypassing Encoded References
