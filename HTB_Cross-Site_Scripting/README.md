@@ -27,9 +27,13 @@
 ## XSS Discovery
 
 >**Q. Utilize some of the techniques mentioned in this section to identify the vulnerable input parameter found in the above server. What is the name of the vulnerable parameter? **
-
+```bash
+python xsstrike.py -u "http://94.237.62.6:55605/?fullname=a&username=a&password=a&email=a%40a.aa" 
+```
 >**Q. What type of XSS was found on the above server? "name only"**
-
+```bash
+python xsstrike.py -u "http://94.237.62.6:55605/?fullname=a&username=a&password=a&email=a%40a.aa" 
+```
 ## Phishing
 
 >**Q. Try to find a working XSS payload for the Image URL form found at '/phishing' in the above server, and then use what you learned in this section to prepare a malicious URL that injects a malicious login form. Then visit '/phishing/send.php' to send the URL to the victim, and they will log into the malicious login form. If you did everything correctly, you should receive the victim's login credentials, which you can use to login to '/phishing/login.php' and obtain the flag.**
