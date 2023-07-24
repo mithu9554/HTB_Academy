@@ -1,3 +1,5 @@
+# [HTB_Academy] Getting Started
+
 ## Basic Tools
 
 >**Q. Apply what you learned in this section to grab the banner of the above server and submit it as the answer.**
