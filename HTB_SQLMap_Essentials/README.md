@@ -1,4 +1,4 @@
-# [HTB] SQLMap Essentials
+# [HTB_Academy] SQLMap Essentials
 
 
 ## Running SQLMap on an HTTP Request
