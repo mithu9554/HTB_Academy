@@ -39,20 +39,21 @@ SELECT * FROM employees WHERE first_name LIKE 'Bar%' AND hire_date = '1990-01-01
 SELECT * FROM titles;
 
 SELECT * FROM titles WHERE emp_no > 10000 OR title !='engineer';
-
 ```
 
 ## Subverting Query Logic
 
 >**Q. Try to log in as the user 'tom'. What is the flag value shown after you successfully log in?**
 
+```sql
 tom' OR '1'='1
+```
 
 ## Using Comments
 
 >**Q. Login as the user with the id 5 to get the flag.**
 
-```bash
+```sql
 user' OR id=5)--    
 ```
 
