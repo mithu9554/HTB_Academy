@@ -5,7 +5,7 @@
 ##  Injection Operator	Injection Character	URL-Encoded Character	Executed Command
 
 ```Semicolon	      ;	       %3b	      Both```
-##
+
 ```New Line	        \n	     %0a	      Both```
 
 ```Background	      &	      %26	        Both (second output generally shown first)```
