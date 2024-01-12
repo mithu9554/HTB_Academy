@@ -3,21 +3,22 @@
 ## To inject an additional command to the intended one, we may use any of the following operators:
 
 ##  Injection Operator	Injection Character	URL-Encoded Character	Executed Command
-```Semicolon	        ;	          %3b	               Both```
 
-```New Line	          \n	        %0a	               Both```
+```Semicolon	      ;	       %3b	      Both```
 
-```Background	        &	          %26	               Both (second output generally shown first)```
+```New Line	        \n	     %0a	      Both```
 
-```Pipe	              |	          %7c	               Both (only second output is shown)```
+```Background	      &	      %26	        Both (second output generally shown first)```
 
-```AND	              &&	        %26%26	           Both (only if first succeeds)```
+```Pipe	            |	      %7c	        Both (only second output is shown)```
 
-```OR	                ||	        %7c%7c	           Second (only if first fails)```
-  
-```Sub-Shell        	``	        %60%60	           Both (Linux-only)```
+```AND	            &&	    %26%26	    Both (only if first succeeds)```
 
-```Sub-Shell	        $()	        %24%28%29	        Both (Linux-only)```
+OR	||	%7c%7c	Second (only if first fails)
+
+Sub-Shell	``	%60%60	Both (Linux-only)
+
+Sub-Shell	$()	%24%28%29	Both (Linux-only)
 
 ## Other Injection Operators
 
