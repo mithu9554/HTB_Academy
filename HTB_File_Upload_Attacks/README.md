@@ -13,11 +13,16 @@ Finally, let's discuss another method of bypassing a whitelist validation test t
 
 ```%0d0a```
 
-/
-.\
-.
-…
-:
+```/```
+
+```.\```
+
+```.```
+
+```… ```  
+
+```:```
+
 
 # Useful Shells
 
