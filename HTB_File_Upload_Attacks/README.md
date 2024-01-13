@@ -6,9 +6,13 @@ Finally, let's discuss another method of bypassing a whitelist validation test t
 ## The following are some of the characters we may try injecting:
 
 ```%20```
+
 ```%0a```
-%00
-%0d0a
+
+```%00```
+
+```%0d0a```
+
 /
 .\
 .
