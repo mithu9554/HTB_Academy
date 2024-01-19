@@ -29,6 +29,7 @@ $
 ````
 http://<TARGET IP>:3003/ping-server.php/ping/<VPN/TUN Adapter IP>/3
 ```
+
 ```
 [/htb]$ sudo tcpdump -i tun0 icmp
  tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
