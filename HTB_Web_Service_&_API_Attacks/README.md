@@ -26,7 +26,7 @@ b'<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schema
 $
 ````
 ### Command Injection
-````
+```
 http://<TARGET IP>:3003/ping-server.php/ping/<VPN/TUN Adapter IP>/3
 ```
 
