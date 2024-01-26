@@ -55,7 +55,7 @@ msf6 auxiliary(scanner/http/robots_txt) > run
 [*] Scanned 1 of 1 hosts (100% complete)
 [*] Auxiliary module execution completed
 ```
-### Some extensions worth checking out include, but are not limited to:
+### Some extensions worth checking out include, but are not limited to: (BurpSuite, Zap)
 
 ```
 .NET beautifier	              J2EEScan	        Software Vulnerability Scanner
