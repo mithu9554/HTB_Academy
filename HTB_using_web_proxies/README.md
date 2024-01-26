@@ -84,3 +84,6 @@ Random IP Address Header	      Autorize	                CSRF Scanner
 ```
 JS Link Finder		
 ```
+### ZAP Marketplace
+In this tab, we can see the different available add-ons for ZAP. Some add-ons may be in their Release build, meaning that they should be stable to be used, while others are in their ```Beta/Alpha``` builds, which means that they may experience some issues in their use. Let's try installing the ```FuzzDB Files``` and ```FuzzDB Offensive``` add-ons, which adds new wordlists to be used in ZAP's fuzzer:
+
