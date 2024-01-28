@@ -8,23 +8,67 @@
 whois paypal.com
 ```
 ### Automating Passive Subdomain Enumeration Tools:
-``` Baidu	  Baidu search engine. ```
-Bufferoverun	Uses data from Rapid7's Project Sonar - www.rapid7.com/research/project-sonar/
-Crtsh	Comodo Certificate search.
-Hackertarget	Online vulnerability scanners and network intelligence to help organizations.
-Otx	AlienVault Open Threat Exchange - https://otx.alienvault.com
-Rapiddns	DNS query tool, which makes querying subdomains or sites using the same IP easy.
-Sublist3r	Fast subdomains enumeration tool for penetration testers
-Threatcrowd	Open source threat intelligence.
-Threatminer	Data mining for threat intelligence.
-Trello	Search Trello boards (Uses Google search)
-Urlscan	A sandbox for the web that is a URL and website scanner.
-Vhost	Bing virtual hosts search.
-Virustotal	Domain search.
-Zoomeye	A Chinese version of Shodan.
-To automate this, we will create a file called sources.txt with the following contents.
+``` Baidu	    Baidu search engine. ```
+``` Bufferoverun	    Uses data from Rapid7's Project Sonar - www.rapid7.com/research/project-sonar/ ```
+``` cCrtsh	Comodo Certificate search. ```
+``` Hackertarget	  Online vulnerability scanners and network intelligence to help organizations. ```
+``` Otx    	AlienVault Open Threat Exchange - https://otx.alienvault.com ```
+``` Rapiddns	    DNS query tool, which makes querying subdomains or sites using the same IP easy. ```
+``` Sublist3r	    Fast subdomains enumeration tool for penetration testers ```
+``` Threatcrowd	    Open source threat intelligence. ```
+``` Threatminer	    Data mining for threat intelligence. ```
+``` Trello	    Search Trello boards (Uses Google search) ```
+``` Urlscan	    A sandbox for the web that is a URL and website scanner. ```
+``` Vhost	    Bing virtual hosts search. ```
+``` Virustotal	    Domain search. ```
+``` Zoomeye	    A Chinese version of Shodan. ``` 
+### To automate this, we will create a file called sources.txt with the following contents.
+```
+[/htb]$ cat sources.txt
+
+baidu
+bufferoverun
+crtsh
+hackertarget
+otx
+projectdiscovery
+rapiddns
+sublist3r
+threatcrowd
+trello
+urlscan
+vhost
+virustotal
+zoomeye
+```
+```
+[/htb]$ export TARGET="facebook.com"
+[/htb]$ cat sources.txt | while read source; do theHarvester -d "${TARGET}" -b $source -f "${source}_${TARGET}";done
+
+<SNIP>
+*******************************************************************
+*  _   _                                            _             *
+* | |_| |__   ___    /\  /\__ _ _ ____   _____  ___| |_ ___ _ __  *
+* | __|  _ \ / _ \  / /_/ / _` | '__\ \ / / _ \/ __| __/ _ \ '__| *
+* | |_| | | |  __/ / __  / (_| | |   \ V /  __/\__ \ ||  __/ |    *
+*  \__|_| |_|\___| \/ /_/ \__,_|_|    \_/ \___||___/\__\___|_|    *
+*                                                                 *
+* theHarvester 4.0.0                                              *
+* Coded by Christian Martorella                                   *
+* Edge-Security Research                                          *
+* cmartorella@edge-security.com                                   *
+*                                                                 *
+*******************************************************************
 
 
+[*] Target: facebook.com
+
+[*] Searching Urlscan.
+
+```
+```
+[/htb]$ cat *.json | jq -r '.hosts[]' 2>/dev/null | cut -d':' -f 1 | sort -u > "${TARGET}_theHarvester.txt"
+```
 
 
 >**Q. What is the admin email contact for the tesla.com domain (also in-scope for the Tesla bug bounty program)?**
