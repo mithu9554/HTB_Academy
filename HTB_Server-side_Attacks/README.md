@@ -108,6 +108,16 @@ Code: html
 // Valid for Akamai, sends debug information in the response
 <esi:debug/>
 ```
+## SSTI Identification
+```
+Code: html
+{7*7}
+${7*7}
+#{7*7}
+%{7*7}
+{{7*7}}
+${{<%[%'"}}%\
+```
 ### tplmap.py
 ### SSTI Exploitation Example 1
 ```
