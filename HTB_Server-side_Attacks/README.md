@@ -131,6 +131,23 @@ ${{<%[%'"}}%\
 [/htb]$ pip install -r requirements.txt
 [/htb]$ ./tplmap.py -u 'http://<TARGET IP>:<PORT>' -d name=john
 ```
+```
+[/htb]$ git clone https://github.com/vladko312/SSTImap
+[/htb]$ cd SSTImap
+[/htb]$ pip3 install -r requirements.txt
+[/htb]$ python3 sstimap.py 
+
+    ╔══════╦══════╦═══════╗ ▀█▀
+    ║ ╔════╣ ╔════╩══╗ ╔══╝═╗▀╔═
+    ║ ╚════╣ ╚════╗ ║ ║ ║{║ _ __ ___ __ _ _ __
+    ╚════╗ ╠════╗ ║ ║ ║ ║*║ | '_ ` _ \ / _` | '_ \
+    ╔════╝ ╠════╝ ║ ║ ║ ║}║ | | | | | | (_| | |_) |
+    ╚══════╩══════╝ ╚═╝ ╚╦╝ |_| |_| |_|\__,_| .__/
+                             │ | |
+                                                |_|
+[*] Version: 1.2.0
+```
+
 ### Useful Links
 
 git clone https://github.com/epinna/tplmap.git
