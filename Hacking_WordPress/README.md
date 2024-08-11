@@ -1,4 +1,4 @@
-### WordPress Core Version Enumeration
+## WordPress Core Version Enumeration
 ```
 [/htb]$ curl -s -X GET http://blog.inlanefreight.com | grep '<meta name="generator"'
 ```
