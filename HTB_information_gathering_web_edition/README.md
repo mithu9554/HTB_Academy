@@ -1,5 +1,10 @@
 # [HTB] Command Injections
 
+### crt.sh lookup
+```
+curl -s "https://crt.sh/?q=facebook.com&output=json" | jq -r '.[]
+ | select(.name_value | contains("dev")) | .name_value' | sort -u
+```
 ## WHOIS
 
 >**Q. Perform a WHOIS lookup against the paypal.com domain. What is the registrant Internet Assigned Numbers Authority (IANA) ID number?**
@@ -254,4 +259,28 @@ nslookup -query=MX githubapp.com
 ```sh
 whatweb -a3 https://i.imgur.com
 ```
+### nikto scan
+```
+sudo apt update && sudo apt install -y perl
+git clone https://github.com/sullo/nikto
+cd nikto/program
+chmod +x ./nikto.p
+nikto -h inlanefreight.com -Tuning b
+```
 
+### Creepy Crawlies
+```
+[/htb]$ pip3 install scrapy
+[/htb]$ wget -O ReconSpider.zip https://academy.hackthebox.com/storage/modules/144/ReconSpider.v1.2.zip
+[/htb]$ unzip ReconSpider.zip
+[/htb]$ python3 ReconSpider.py http://inlanefreight.com
+```
+### Automating Recon
+```
+[/htb]$ git clone https://github.com/thewhiteh4t/FinalRecon.git
+[/htb]$ cd FinalRecon
+[/htb]$ pip3 install -r requirements.txt
+[/htb]$ chmod +x ./finalrecon.py
+[/htb]$ ./finalrecon.py --help
+[/htb]$ ./finalrecon.py --headers --whois --url http://inlanefreight.com
+```
