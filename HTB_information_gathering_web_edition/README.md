@@ -1,10 +1,5 @@
 # [HTB] Command Injections
 
-### crt.sh lookup
-```
-curl -s "https://crt.sh/?q=facebook.com&output=json" | jq -r '.[]
- | select(.name_value | contains("dev")) | .name_value' | sort -u
-```
 ## WHOIS
 
 >**Q. Perform a WHOIS lookup against the paypal.com domain. What is the registrant Internet Assigned Numbers Authority (IANA) ID number?**
@@ -88,7 +83,11 @@ zoomeye
 ```
 [/htb]$ cat *.json | jq -r '.hosts[]' 2>/dev/null | cut -d':' -f 1 | sort -u > "${TARGET}_theHarvester.txt"
 ```
-
+## crt.sh lookup
+```
+curl -s "https://crt.sh/?q=facebook.com&output=json" | jq -r '.[]
+ | select(.name_value | contains("dev")) | .name_value' | sort -u
+```
 
 >**Q. What is the admin email contact for the tesla.com domain (also in-scope for the Tesla bug bounty program)?**
 
@@ -261,11 +260,11 @@ whatweb -a3 https://i.imgur.com
 ```
 ### nikto scan
 ```
-sudo apt update && sudo apt install -y perl
-git clone https://github.com/sullo/nikto
-cd nikto/program
-chmod +x ./nikto.p
-nikto -h inlanefreight.com -Tuning b
+[/htb]$ sudo apt update && sudo apt install -y perl
+[/htb]$ git clone https://github.com/sullo/nikto
+[/htb]$ cd nikto/program
+[/htb]$ chmod +x ./nikto.p
+[/htb]$ nikto -h inlanefreight.com -Tuning b
 ```
 
 ### Creepy Crawlies
