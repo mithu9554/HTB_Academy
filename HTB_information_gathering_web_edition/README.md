@@ -283,3 +283,8 @@ whatweb -a3 https://i.imgur.com
 [/htb]$ ./finalrecon.py --help
 [/htb]$ ./finalrecon.py --headers --whois --url http://inlanefreight.com
 ```
+### Subdomain Bruteforcing
+```
+[/htb]$ dnsenum --enum inlanefreight.com -f  /usr/share/seclists/Discovery/DNS/subdomains-top1million-20000.txt
+[/htb]$ gobuster vhost -u http://inlanefreight.htb:81 -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt --append-domain
+```
