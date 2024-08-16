@@ -1,5 +1,43 @@
 # [HTB] Command Injections
-
+### Search Operators
+```
+site:example.com
+inurl:login
+filetype:pdf
+intitle:"confidential report"
+intext:"password reset"
+cache:example.com
+link:example.com
+related:example.com
+info:example.com
+define:phishing
+site:example.com numrange:1000-2000
+allintext:admin password reset
+allinurl:admin panel
+allintitle:confidential report 2023
+site:example.com AND (inurl:admin OR inurl:login)
+"linux" OR "ubuntu" OR "debian"
+site:bank.com NOT inurl:login
+site:socialnetwork.com filetype:pdf user* manual
+site:ecommerce.com "price" 100..500
+"information security policy"
+site:news.com -inurl:sports
+```
+```
+Finding Login Pages:
+site:example.com inurl:login
+site:example.com (inurl:login OR inurl:admin)
+Identifying Exposed Files:
+site:example.com filetype:pdf
+site:example.com (filetype:xls OR filetype:docx)
+Uncovering Configuration Files:
+site:example.com inurl:config.php
+site:example.com (ext:conf OR ext:cnf) (searches for extensions commonly used for configuration files)
+Locating Database Backups:
+site:example.com inurl:backup
+site:example.com filetype:sql
+https://www.exploit-db.com/google-hacking-database
+```
 ## WHOIS
 
 >**Q. Perform a WHOIS lookup against the paypal.com domain. What is the registrant Internet Assigned Numbers Authority (IANA) ID number?**
