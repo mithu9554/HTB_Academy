@@ -87,6 +87,16 @@ $(rev<<<'imaohw')
 bash<<<$(base64 -d<<<Y2F0IC9ldGMvcGFzc3dkIHwgZ3JlcCAzMw==)
 ```
 ```
+PS C:\htb> "whoami"[-1..-20] -join ''
+
+imaohw
+```
+```
+PS C:\htb> iex "$('imaohw'[-1..-20] -join '')"
+
+21y4d
+```
+```
 PS C:\htb> [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes('whoami'))
 
 dwBoAG8AYQBtAGkA
