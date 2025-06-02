@@ -298,36 +298,36 @@ whatweb -a3 https://i.imgur.com
 ```
 ### nikto scan
 ```
-[/htb]$ sudo apt update && sudo apt install -y perl
-[/htb]$ git clone https://github.com/sullo/nikto
-[/htb]$ cd nikto/program
-[/htb]$ chmod +x ./nikto.p
-[/htb]$ nikto -h inlanefreight.com -Tuning b
+sudo apt update && sudo apt install -y perl
+git clone https://github.com/sullo/nikto
+cd nikto/program
+chmod +x ./nikto.p
+nikto -h inlanefreight.com -Tuning b
 ```
 
 ### Creepy Crawlies
 ```
-[/htb]$ pip3 install scrapy
-[/htb]$ wget -O ReconSpider.zip https://academy.hackthebox.com/storage/modules/144/ReconSpider.v1.2.zip
-[/htb]$ unzip ReconSpider.zip
-[/htb]$ python3 ReconSpider.py http://inlanefreight.com
+pip3 install scrapy
+wget -O ReconSpider.zip https://academy.hackthebox.com/storage/modules/144/ReconSpider.v1.2.zip
+unzip ReconSpider.zip
+python3 ReconSpider.py http://inlanefreight.com
 ```
 ### Automating Recon
 ```
-[/htb]$ git clone https://github.com/thewhiteh4t/FinalRecon.git
-[/htb]$ cd FinalRecon
-[/htb]$ pip3 install -r requirements.txt
-[/htb]$ chmod +x ./finalrecon.py
-[/htb]$ ./finalrecon.py --help
-[/htb]$ ./finalrecon.py --headers --whois --url http://inlanefreight.com
+git clone https://github.com/thewhiteh4t/FinalRecon.git
+cd FinalRecon
+pip3 install -r requirements.txt
+chmod +x ./finalrecon.py
+./finalrecon.py --help
+./finalrecon.py --headers --whois --url http://inlanefreight.com
 ```
 ### Subdomain Bruteforcing
 ```
-[/htb]$ dnsenum --enum inlanefreight.com -f  /usr/share/seclists/Discovery/DNS/subdomains-top1million-20000.txt
-[/htb]$ gobuster vhost -u http://inlanefreight.htb:81 -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt --append-domain
+dnsenum --enum inlanefreight.com -f  /usr/share/seclists/Discovery/DNS/subdomains-top1million-20000.txt
+gobuster vhost -u http://inlanefreight.htb:81 -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt --append-domain
 ```
 ### Web Application Firewalls
 ```
-[/htb]$ pip3 install git+https://github.com/EnableSecurity/wafw00f
-[/htb]$ wafw00f inlanefreight.com
+pip3 install git+https://github.com/EnableSecurity/wafw00f
+wafw00f inlanefreight.com
 ```
