@@ -331,3 +331,10 @@ gobuster vhost -u http://inlanefreight.htb:81 -w /usr/share/seclists/Discovery/D
 pip3 install git+https://github.com/EnableSecurity/wafw00f
 wafw00f inlanefreight.com
 ```
+### Wwaybackmasin install
+```
+go install github.com/tomnomnom/waybackurls@latest
+cd go/bin
+sudo cp waybackurls /usr/bin
+waybackurls -h
+```
