@@ -151,10 +151,10 @@ Product Version: <xsl:value-of select="system-property('xsl:product-version')" /
 [/htb]$ ./tplmap.py -u 'http://<TARGET IP>:<PORT>' -d name=john
 ```
 ```
-[/htb]$ git clone https://github.com/vladko312/SSTImap
-[/htb]$ cd SSTImap
-[/htb]$ pip3 install -r requirements.txt
-[/htb]$ python3 sstimap.py 
+git clone https://github.com/vladko312/SSTImap
+cd SSTImap
+pip3 install -r requirements.txt
+python3 sstimap.py 
 
     ╔══════╦══════╦═══════╗ ▀█▀
     ║ ╔════╣ ╔════╩══╗ ╔══╝═╗▀╔═
