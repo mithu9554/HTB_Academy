@@ -209,6 +209,9 @@ dig @10.129.128.199 NS txt internal.inlanefreight.htb
 ```sh
 dig @10.129.128.199 NS axfr internal.inlanefreight.htb 
 ```
+```
+dig axfr @nsztm1.digi.ninja zonetransfer.me
+```
 
 >**Q. What FQDN is assigned to the IP address 10.10.1.5? Submit the FQDN as the answer.**
 
