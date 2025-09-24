@@ -1,10 +1,11 @@
 # [HTB] Command Injections
-## Command Injection Methods
-## To inject an additional command to the intended one, we may use any of the following operators:
+## Introduction to Password Cracking
 
-##  Injection Operator	Injection Character	URL-Encoded Character	Executed Command
+``bmdyy@htb:~$ echo -n Soccer06! | md5sum
+40291c1d19ee11a7df8495c4cccefdfa  -
 
-```Semicolon	      ;	         %3b	      Both```
+bmdyy@htb:~$ echo -n Soccer06! | sha256sum
+a025dc6fabb09c2b8bfe23b5944635f9b68433ebd9a1a09453dd4fee00766d93  -```
 
 ```New Line	      \n         %0a	      Both```
 
