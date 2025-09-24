@@ -238,6 +238,8 @@ c	                  Capitalize the first letter and lowercase others
 sXY	                  Replace all instances of X with Y
 $!	                  Add the exclamation character at the end
 ```
+###### Writing Custom Wordlists and Rules
+
 ```
 [/htb]$ cat custom.rule
 
