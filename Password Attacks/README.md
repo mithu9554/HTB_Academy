@@ -223,3 +223,183 @@ Time.Started.....: Sat Apr 19 09:43:02 2025 (4 secs)
 Time.Estimated...: Sat Apr 19 09:43:06 2025 (0 secs)
 Kernel.Feature...: Pure Kernel
 ```
+#### Writing Custom Wordlists and Rules
+```
+[/htb]$ cat password.list
+
+password
+```
+```
+Function	            Description
+:	                  Do nothing
+l	                  Lowercase all letters
+u	                  Uppercase all letters
+c	                  Capitalize the first letter and lowercase others
+sXY	                  Replace all instances of X with Y
+$!	                  Add the exclamation character at the end
+```
+```
+[/htb]$ cat custom.rule
+
+:
+c
+so0
+c so0
+sa@
+c sa@
+c sa@ so0
+$!
+$! c
+$! so0
+$! sa@
+$! c so0
+$! c sa@
+$! so0 sa@
+$! c so0 sa@
+```
+##### Writing Custom Wordlists and Rules
+```
+[/htb]$ hashcat --force password.list -r custom.rule --stdout | sort -u > mut_password.list
+```
+```
+[/htb]$ cat mut_password.list
+
+password
+Password
+passw0rd
+Passw0rd
+p@ssword
+P@ssword
+P@ssw0rd
+password!
+Password!
+passw0rd!
+p@ssword!
+Passw0rd!
+P@ssword!
+p@ssw0rd!
+P@ssw0rd!
+```
+##### Generating wordlists using CeWL
+```
+[/htb]$ cewl https://www.inlanefreight.com -d 4 -m 6 --lowercase -w inlane.wordlist
+[/htb]$ wc -l inlane.wordlist
+326
+```
+
+#### Cracking Protected Files
+##### Hunting for Encrypted Files
+```
+[/htb]$ for ext in $(echo ".xls .xls* .xltx .od* .doc .doc* .pdf .pot .pot* .pp*");do echo -e "\nFile extension: " $ext; find / -name *$ext 2>/dev/null | grep -v "lib\|fonts\|share\|core" ;done
+
+File extension:  .xls
+
+File extension:  .xls*
+
+File extension:  .xltx
+
+File extension:  .od*
+/home/cry0l1t3/Docs/document-temp.odt
+/home/cry0l1t3/Docs/product-improvements.odp
+/home/cry0l1t3/Docs/mgmt-spreadsheet.ods
+...SNIP...
+```
+##### Hunting for SSH keys
+```
+[/htb]$ grep -rnE '^\-{5}BEGIN [A-Z0-9]+ PRIVATE KEY\-{5}$' /* 2>/dev/null
+
+/home/jsmith/.ssh/id_ed25519:1:-----BEGIN OPENSSH PRIVATE KEY-----
+/home/jsmith/.ssh/SSH.private:1:-----BEGIN RSA PRIVATE KEY-----
+/home/jsmith/Documents/id_rsa:1:-----BEGIN OPENSSH PRIVATE KEY-----
+<SNIP>
+```
+```
+[/htb]$ cat /home/jsmith/.ssh/SSH.private
+
+-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: AES-128-CBC,2109D25CC91F8DBFCEB0F7589066B2CC
+
+8Uboy0afrTahejVGmB7kgvxkqJLOczb1I0/hEzPU1leCqhCKBlxYldM2s65jhflD
+4/OH4ENhU7qpJ62KlrnZhFX8UwYBmebNDvG12oE7i21hB/9UqZmmHktjD3+OYTsD
+<SNIP>
+```
+```
+[/htb]$ ssh-keygen -yf ~/.ssh/id_ed25519 
+
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIpNefJd834VkD5iq+22Zh59Gzmmtzo6rAffCx2UtaS6
+```
+```
+[/htb]$ ssh-keygen -yf ~/.ssh/id_rsa
+
+Enter passphrase for "/home/jsmith/.ssh/id_rsa":
+```
+##### Cracking encrypted SSH keys
+```
+[/htb]$ locate *2john*
+
+/usr/bin/bitlocker2john
+/usr/bin/dmg2john
+/usr/bin/gpg2john
+/usr/bin/hccap2john
+/usr/bin/keepass2john
+/usr/bin/putty2john
+/usr/bin/racf2john
+/usr/bin/rar2john
+/usr/bin/uaf2john
+/usr/bin/vncpcap2john
+/usr/bin/wlanhcx2john
+/usr/bin/wpapcap2john
+/usr/bin/zip2john
+/usr/share/john/1password2john.py
+/usr/share/john/7z2john.pl
+/usr/share/john/DPAPImk2john.py
+/usr/share/john/adxcsouf2john.py
+/usr/share/john/aem2john.py
+/usr/share/john/aix2john.pl
+/usr/share/john/aix2john.py
+/usr/share/john/andotp2john.py
+/usr/share/john/androidbackup2john.py
+<SNIP>
+```
+```
+[/htb]$ ssh2john.py SSH.private > ssh.hash
+[/htb]$ john --wordlist=rockyou.txt ssh.hash
+
+Using default input encoding: UTF-8
+Loaded 1 password hash (SSH [RSA/DSA/EC/OPENSSH (SSH private keys) 32/64])
+Cost 1 (KDF/cipher [0=MD5/AES 1=MD5/3DES 2=Bcrypt/AES]) is 0 for all loaded hashes
+Cost 2 (iteration count) is 1 for all loaded hashes
+Will run 2 OpenMP threads
+Note: This format may emit false positives, so it will keep trying even after
+finding a possible candidate.
+Press 'q' or Ctrl-C to abort, almost any other key for status
+1234         (SSH.private)
+1g 0:00:00:00 DONE (2022-02-08 03:03) 16.66g/s 1747Kp/s 1747Kc/s 1747KC/s Knightsing..Babying
+Session completed
+```
+```
+[/htb]$ john ssh.hash --show
+
+SSH.private:1234
+
+1 password hash cracked, 0 left
+```
+```
+[/htb]$ office2john.py Protected.docx > protected-docx.hash
+[/htb]$ john --wordlist=rockyou.txt protected-docx.hash
+[/htb]$ john protected-docx.hash --show
+
+Protected.docx:1234
+
+1 password hash cracked, 0 left
+```
+```
+[/htb]$ pdf2john.py PDF.pdf > pdf.hash
+[/htb]$ john --wordlist=rockyou.txt pdf.hash
+[/htb]$ john pdf.hash --show
+
+PDF.pdf:1234
+
+1 password hash cracked, 0 left
+```
