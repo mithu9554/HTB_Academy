@@ -113,6 +113,9 @@ zip	                     john --format=zip [...] <hash_file>	ZIP (WinZip) passwo
 ```
 ### Cracking files
 ```
+[/htb]$ <tool> <file_to_crack> > file.hash
+```
+```
 Tool	                      Description
 pdf2john	                  Converts PDF documents for John
 ssh2john	                  Converts SSH private keys for John
@@ -128,4 +131,95 @@ zip2john	                  Converts ZIP archives for John
 hccap2john	                Converts WPA/WPA2 handshake captures for John
 office2john	                Converts MS Office documents for John
 wpa2john	                  Converts WPA/WPA2 handshakes for John
+```
+```
+/htb]$ locate *2john*
+```
+####Introduction to Hashcat
+```
+[/htb]$ hashcat -a 0 -m 0 <hashes> [wordlist, rule, mask, ...]
+```
+```
+[/htb]$ hashcat --help
+
+...SNIP...
+
+- [ Hash modes ] -
+
+      # | Name                                                       | Category
+  ======+============================================================+======================================
+    900 | MD4                                                        | Raw Hash
+      0 | MD5                                                        | Raw Hash
+    100 | SHA1                                                       | Raw Hash
+   1300 | SHA2-224                                                   | Raw Hash
+   1400 | SHA2-256                                                   | Raw Hash
+  10800 | SHA2-384                                                   | Raw Hash
+   1700 | SHA2-512
+```
+```
+[/htb]$ hashid -m '$1$FNr44XZC$wQxY6HHLrgrGX0e1195k.1'
+
+Analyzing '$1$FNr44XZC$wQxY6HHLrgrGX0e1195k.1'
+[+] MD5 Crypt [Hashcat Mode: 500]
+[+] Cisco-IOS(MD5) [Hashcat Mode: 500]
+[+] FreeBSD MD5 [Hashcat Mode: 500]
+```
+####Dictionary attack
+```
+[/htb]$ hashcat -a 0 -m 0 e3e3ec5831ad5e7288241960e5d4fdb8 /usr/share/wordlists/rockyou.txt
+
+...SNIP...               
+
+Session..........: hashcat
+Status...........: Cracked
+Hash.Mode........: 0 (MD5)
+Hash.Target......: e3e3ec5831ad5e7288241960e5d4fdb8
+Time.Started.....: Sat Apr 19 08:58:44 2025 (0 secs)
+Time.Estimated...: Sat Apr 19 08:58:44 2025 (0 secs)
+Kernel.Feature...: Pure Kernel
+Guess.Base.......: File (/usr/share/wordlists/rockyou.txt)
+Guess.Queue......: 1/1 (100.00%)
+Speed.#1.........:  1706.6 kH/s (0.14ms) @ Accel:512 Loops:1 Thr:1 Vec:8
+Recovered........: 1/1 (100.00%) Digests (total), 1/1 (100.00%) Digests (new)
+Progress.........: 28672/14344385 (0.20%)
+```
+```
+[/htb]$ ls -l /usr/share/hashcat/rules
+
+total 2852
+-rw-r--r-- 1 root root 309439 Apr 24  2024 Incisive-leetspeak.rule
+-rw-r--r-- 1 root root  35802 Apr 24  2024 InsidePro-HashManager.rule
+-rw-r--r-- 1 root root  20580 Apr 24  2024 InsidePro-PasswordsPro.rule
+-rw-r--r-- 1 root root  64068 Apr 24  2024 T0XlC-insert_00-99_1950-2050_toprules_0_F.rule
+-rw-r--r-- 1 root root   2027 Apr 24  2024 T0XlC-insert_space_and_special_0_F.rule
+-rw-r--r-- 1 root root  34437 Apr 24  2024 T0XlC-insert_top_100_passwords_1_G.rule
+-rw-r--r-- 1 root root  34813 Apr 24  2024 T0XlC.rule
+-rw-r--r-- 1 root root   1289 Apr 24  2024 T0XlC_3_rule.rule
+```
+```
+[/htb]$ hashcat -a 0 -m 0 1b0556a75770563578569ae21392630c /usr/share/wordlists/rockyou.txt -r /usr/share/hashcat/rules/best64.rule
+
+...SNIP...
+
+Session..........: hashcat
+Status...........: Cracked
+Hash.Mode........: 0 (MD5)
+Hash.Target......: 1b0556a75770563578569ae21392630c
+Time.Started.....: Sat Apr 19 09:16:35 2025 (0 secs)
+Time.Estimated...: Sat Apr 19 09:16:35 2025 (0 secs)
+Kernel.Feature...: Pure Kernel
+Guess.Base.......: File (/us
+```
+```
+[/htb]$ hashcat -a 3 -m 0 1e293d6912d074c0fd15844d803400dd '?u?l?l?l?l?d?s'
+
+...SNIP...
+
+Session..........: hashcat
+Status...........: Cracked
+Hash.Mode........: 0 (MD5)
+Hash.Target......: 1e293d6912d074c0fd15844d803400dd
+Time.Started.....: Sat Apr 19 09:43:02 2025 (4 secs)
+Time.Estimated...: Sat Apr 19 09:43:06 2025 (0 secs)
+Kernel.Feature...: Pure Kernel
 ```
