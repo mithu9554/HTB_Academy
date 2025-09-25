@@ -883,6 +883,7 @@ Currently stored credentials:
 C:\Users\sadams>runas /savecred /user:SRV01\mcharles cmd
 Attempting to start cmd as user "SRV01\mcharles" ...
 ```
+[minikatz.exe](https://github.com/ParrotSec/mimikatz/tree/master/x64)
 ```
 C:\Users\Administrator\Desktop> mimikatz.exe
 
