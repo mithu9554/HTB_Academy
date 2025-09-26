@@ -1367,6 +1367,7 @@ Website:   https://www.inlanefreight.com
 Username: 'cry0l1t3'
 Password: 'FzXUxJemKm6g2lGh'
 ```
+[LaZagne](https://github.com/AlessandroZ/LaZagne)
 ```
 [/htb]$ python3 laZagne.py browsers
 
