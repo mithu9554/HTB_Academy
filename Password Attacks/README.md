@@ -264,6 +264,11 @@ $! c so0 sa@
 [/htb]$ hashcat --force password.list -r custom.rule --stdout | sort -u > mut_password.list
 ```
 ```
+[★]$ locate best64.rule
+/usr/share/hashcat/rules/best64.rule
+
+```
+```
 [/htb]$ cat mut_password.list
 
 password
