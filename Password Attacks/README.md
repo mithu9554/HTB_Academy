@@ -507,6 +507,7 @@ b[/htb]$ sudo mkdir -p /media/bitlocker
 ```
 ```
 [/htb]$ sudo losetup -f -P Backup.vhd
+[/htb]$ sudo mkdir -p /media/bitlocker
 [/htb]$ sudo dislocker /dev/loop0p2 -u1234qwer -- /media/bitlocker
 [/htb]$ sudo mount -o loop /media/bitlocker/dislocker-file /media/bitlockermount
 ```
