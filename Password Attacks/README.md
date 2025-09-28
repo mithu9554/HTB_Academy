@@ -1440,6 +1440,8 @@ c:\Users\Public>Snaffler.exe -s
 [INLANEFREIGHT\jbader@DC
 ```
 ```
+PS C:\Users\Public\PowerHuntShares> Set-ExecutionPolicy -Scope Process Bypass
+PS C:\Users\Public\PowerHuntShares> Import-Module .\PowerHuntShares.psm1
 PS C:\Users\Public\PowerHuntShares> Invoke-HuntSMBShares -Threads 100 -OutputDirectory c:\Users\Public
 
  ===============================================================
