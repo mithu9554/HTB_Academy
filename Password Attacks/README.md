@@ -14,7 +14,7 @@ mdmithu@htb[/htb]$ echo -n Th1sIsTh3S@lt_Soccer06! | md5sum
 
 90a10ba83c04e7996bc53373170b5474  -
 ```
-#### Dictionary attack
+#### Dictionary attack.
 ```
 [/htb]$ head --lines=20 /usr/share/wordlists/rockyou.txt 
 
