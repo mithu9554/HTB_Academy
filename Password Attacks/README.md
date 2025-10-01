@@ -1470,9 +1470,10 @@ PS C:\Users\Public\PowerHuntShares> Invoke-HuntSMBShares -Threads 100 -OutputDir
  ---------------------------------------------------------------
  [*][05/01/2025 12:51] Scan St
 ```
-##### MANSPIDER
+##### MANSPIDER [MANSPIDER](https://github.com/blacklanternsecurity/MANSPIDER)
 ```
-[/htb]$ docker run --rm -v ./manspider:/root/.manspider blacklanternsecurity/manspider 10.129.234.121 -c 'passw' -u 'mendres' -p 'Inlanefreight2025!'
+[/htb]$ sudo systemctl restart docker
+[/htb]$ sudo docker run --rm -v ./manspider:/root/.manspider blacklanternsecurity/manspider 10.129.234.121 -c 'passw' -u 'mendres' -p 'Inlanefreight2025!'
 
 [+] MANSPIDER command executed: /usr/local/bin/manspider 10.129.234.121 -c passw -u mendres -p Inlanefreight2025!
 [+] Skipping files larger than 10.00MB
