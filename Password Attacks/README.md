@@ -1485,6 +1485,7 @@ PS C:\Users\Public\PowerHuntShares> Invoke-HuntSMBShares -Threads 100 -OutputDir
 [+] 10.129.234.121: Successful login as "mendres"
 <SNIP>
 ```
+[NetExec](https://www.netexec.wiki/smb-protocol/spidering-shares)
 ```
 [/htb]$ nxc smb 10.129.234.121 -u mendres -p 'Inlanefreight2025!' --spider IT --content --pattern "passw"
 
