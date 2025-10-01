@@ -1412,7 +1412,7 @@ Found SNMPv2 Community string: s3cr...SNIP...
 ```
 
 #### Credential Hunting in Network Shares
-
+[Snaffler](https://github.com/SnaffCon/Snaffler)
 ```
 c:\Users\Public>Snaffler.exe -s
 
@@ -1439,6 +1439,7 @@ c:\Users\Public>Snaffler.exe -s
 [INLANEFREIGHT\jbader@DC01] 2025-05-01 17:41:43Z [Share] {Green}<\\DC01.inlanefreight.local\ADMIN$>(R) Remote Admin
 [INLANEFREIGHT\jbader@DC
 ```
+[PowerHuntShares](https://github.com/NetSPI/PowerHuntShares)
 ```
 PS C:\Users\Public\PowerHuntShares> Set-ExecutionPolicy -Scope Process Bypass
 PS C:\Users\Public\PowerHuntShares> Import-Module .\PowerHuntShares.psm1
