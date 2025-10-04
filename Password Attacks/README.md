@@ -2594,6 +2594,21 @@ INFO:minikerberos:Saved TGT to file`
 ```
 ```
 mdmithu@htb[/htb]$ export KRB5CCNAME=/tmp/jpinkman.ccache
+mdmithu@htb[/htb]$ sudo nano /etc/krb5.conf
+[libdefaults]
+    default_realm = INLANEFREIGHT.LOCAL
+    dns_lookup_kdc = true
+    dns_lookup_realm = false
+
+[realms]
+    INLANEFREIGHT.LOCAL = {
+        kdc = dc01.inlanefreight.local
+        admin_server = dc01.inlanefreight.local
+    }
+
+[domain_realm]
+    .inlanefreight.local = INLANEFREIGHT.LOCAL
+    inlanefreight.local = INLANEFREIGHT.LOCAL
 mdmithu@htb[/htb]$ klist
 
 Ticket cache: FILE:/tmp/jpinkman.ccache
