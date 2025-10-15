@@ -2285,14 +2285,21 @@ socks5 127.0.0.1 108
 ```
 
 ```
-mdmithu@htb[/htb]$ wget https://github.com/jpillora/chisel/releases/download/v1.7.7/chisel_1.7.7_linux_amd64.gz
-mdmithu@htb[/htb]$ gzip -d chisel_1.7.7_linux_amd64.gz
-mdmithu@htb[/htb]$ mv chisel_* chisel && chmod +x ./chisel
-mdmithu@htb[/htb]$ sudo ./chisel server --reverse 
+wget https://github.com/jpillora/chisel/releases/download/v1.7.7/chisel_1.7.7_linux_amd64.gz
+gzip -d chisel_1.7.7_linux_amd64.gz
+mv chisel_* chisel && chmod +x ./chisel
+sudo ./chisel client -v 10.129.202.64:1234 socks
 
 2022/10/10 07:26:15 server: Reverse tunneling enabled
 2022/10/10 07:26:15 server: Fingerprint 58EulHjQXAOsBRpxk232323sdLHd0r3r2nrdVYoYeVM=
 2022/10/10 07:26:15 server: Listening on http://0.0.0.0:8080
+```
+```
+ubuntu@WEB01:~$ scp chisel ubuntu@10.129.202.64:~/
+ubuntu@WEB01:~$ ./chisel server -v -p 1234 --socks5
+
+2022/05/05 18:16:25 server: Fingerprint Viry7WRyvJIOPveDzSI2piuIvtu9QehWw9TzA3zspac=
+2022/05/05 18:16:25 server: Listening on http://0.0.0.0:1234
 ```
 ##### Connect to MS01 with xfreerdp
 
