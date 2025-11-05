@@ -1,4 +1,5 @@
-# [HTB] Command Injections
+# [HTB] External Recon and Enumeration Principles
+[viewdns](https://viewdns.info/)
 ## Command Injection Methods
 ## To inject an additional command to the intended one, we may use any of the following operators:
 
