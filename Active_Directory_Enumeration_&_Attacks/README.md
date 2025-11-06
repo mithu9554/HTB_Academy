@@ -202,6 +202,14 @@ Rejected.........: 0/10967040 (0.00%)
 Restore.Point....: 10960896/14344385 (76.41%)
 Restore.Sub.#1...: Salt:0 Amplifier:0-1 Iteration:0-1
 ```
+
+
+
+
+
+
+
+
 ## Attacking Domain Trusts - Cross-Forest Trust Abuse - from Windows
 ```
 Enumerating Accounts for Associated SPNs Using Get-DomainUser
