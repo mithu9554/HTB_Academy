@@ -1351,8 +1351,8 @@ INFO: Starting computer enumeration with 10 workers
 Viewing the Results
 
 mdmithu@htb[/htb]$ ls
-
 20220307163102_computers.json  20220307163102_domains.json  20220307163102_groups.json  20220307163
+
 mdmithu@htb[/htb]$ zip -r ilfreight_bh.zip *.jso
 ```
 
