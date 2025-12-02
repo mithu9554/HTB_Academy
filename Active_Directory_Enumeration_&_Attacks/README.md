@@ -367,6 +367,16 @@ Code: powershell
 $regkey = "HKLM:SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces"
 Get-ChildItem $regkey |foreach { Set-ItemProperty -Path "$regkey\$($_.pschildname)" -Name NetbiosOptions -Value 2 -Verbose}
 ```
+## Password Spraying Overview
+
+Code: bash
+```
+#!/bin/bash
+
+for x in {{A..Z},{0..9}}{{A..Z},{0..9}}{{A..Z},{0..9}}{{A..Z},{0..9}}
+    do echo $x;
+done
+```
 ## Attacking Domain Trusts - Cross-Forest Trust Abuse - from Windows
 ```
 Enumerating Accounts for Associated SPNs Using Get-DomainUser
