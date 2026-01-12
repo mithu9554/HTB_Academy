@@ -197,16 +197,16 @@ Interacting with Common Services
 mdmithu@htb[/htb]$ dbeaver &
 ```
 ## Tools to Interact with Common Services
-SMB	              FTP	          Email	              Databases
-smbclient	        ftp	          Thunderbird	        mssql-cli
-CrackMapExec	    lftp	        Claws	              mycli
-SMBMap	          ncftp	        Geary	              mssqlclient.py
-Impacket	        filezilla	    MailSpring	        dbeaver
-psexec.py	        crossftp	    mutt	              MySQL Workbench
-smbexec.py		                  mailutils	          SQL Server Management Studio or SSMS
-sendEmail	
-swaks	
-sendmail
+*  SMB	              FTP	          Email	              Databases
+*  smbclient	        ftp	          Thunderbird	        mssql-cli
+*  CrackMapExec	    lftp	        Claws	              mycli
+*  SMBMap	          ncftp	        Geary	              mssqlclient.py
+*  Impacket	        filezilla	    MailSpring	        dbeaver
+*  psexec.py	        crossftp	    mutt	              MySQL Workbench
+*  smbexec.py		                  mailutils	          SQL Server Management Studio or SSMS
+*  sendEmail	
+*  swaks	
+*  sendmail
 
 ```
 1
