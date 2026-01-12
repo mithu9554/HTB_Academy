@@ -35,8 +35,10 @@ C:\htb> dir n: /a-d /s /b | find /c ":\"
 29302
 
 ```
+```
   Interacting with Common Services
 dir n: /a-d /s /b | find /c ":\"
+```
 ```
 Syntax	Description
 *   dir	      Application
@@ -54,6 +56,7 @@ The following command | find /c ":\\" process the output of dir n: /a-d /s /b to
 *  key
 *  Common File Extensions for source code such as: .cs, .c, .go, .java, .php, .asp, .aspx, .html.
 
+```
 ```
   Interacting with Common Services
 C:\htb>dir n:\*cred* /s /b
@@ -162,6 +165,7 @@ Linux - Install Evolution
 mdmithu@htb[/htb]$ sudo apt-get install evolution
 ...SNIP...
 Note: If an error 
+```
 ```
 Linux - SQSH
   Interacting with Common Services
