@@ -45,6 +45,15 @@ Syntax	Description
 *   /s	      Displays files in a specified directory and all subdirectories
 *   /b	      Uses bare format (no heading information or summary)
 
+The following command | find /c ":\\" process the output of dir n: /a-d /s /b to count how many files exist in the directory and subdirectories. You can use dir /? to see the full help. Searching through 29,302 files is time consuming, scripting and command line utilities can help us speed up the search. With dir we can search for specific names in files such as:
+
+*cred
+*password
+*users
+*secrets
+*key
+*Common File Extensions for source code such as: .cs, .c, .go, .java, .php, .asp, .aspx, .html.
+
 ```
 2
 ```
