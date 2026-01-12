@@ -1720,6 +1720,8 @@ mdmithu@htb[/htb]# swaks --from notifications@inlanefreight.com --to employees@i
 <-  221 Bye
 === Connection closed with remote host.
 ```
+## Attacking Common Services - Easy
+
 ```
 2
 ```
@@ -1732,6 +1734,7 @@ mdmithu@htb[/htb]# swaks --from notifications@inlanefreight.com --to employees@i
 ```
 1
 ```
+
 ```
 2
 ```
@@ -1744,6 +1747,7 @@ mdmithu@htb[/htb]# swaks --from notifications@inlanefreight.com --to employees@i
 ```
 1
 ```
+## Attacking Common Services - Medium
 ```
 2
 ```
@@ -1781,6 +1785,8 @@ mdmithu@htb[/htb]# swaks --from notifications@inlanefreight.com --to employees@i
 ```
 1
 ```
+## Attacking Common Services - Hard
+
 ```
 2
 ```
