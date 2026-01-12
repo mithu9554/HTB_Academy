@@ -47,70 +47,163 @@ Syntax	Description
 
 The following command | find /c ":\\" process the output of dir n: /a-d /s /b to count how many files exist in the directory and subdirectories. You can use dir /? to see the full help. Searching through 29,302 files is time consuming, scripting and command line utilities can help us speed up the search. With dir we can search for specific names in files such as:
 
-*cred
-*password
-*users
-*secrets
-*key
-*Common File Extensions for source code such as: .cs, .c, .go, .java, .php, .asp, .aspx, .html.
+*  cred
+*  password
+*  users
+*  secrets
+*  key
+*  Common File Extensions for source code such as: .cs, .c, .go, .java, .php, .asp, .aspx, .html.
 
 ```
-2
+  Interacting with Common Services
+C:\htb>dir n:\*cred* /s /b
+
+n:\Contracts\private\credentials.txt
+
+
+C:\htb>dir n:\*secret* /s /b
+
+n:\Contracts\private\secret.txt
 ```
 ```
-1
+Windows CMD - Findstr
+  Interacting with Common Services
+c:\htb>findstr /s /i cred n:\*.*
+
+n:\Contracts\private\secret.txt:file with all credentials
+n:\Contracts\private\credentials.txt:admin:SecureCredentials!
 ```
 ```
-2
+Windows PowerShell
+  Interacting with Common Services
+PS C:\htb> Get-ChildItem \\192.168.220.129\Finance\
+
+    Directory: \\192.168.220.129\Finance
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----         2/23/2022   3:27 PM                Contracts
 ```
 ```
-1
+Interacting with Common Services
+PS C:\htb> New-PSDrive -Name "N" -Root "\\192.168.220.129\Finance" -PSProvider "FileSystem"
+
+Name           Used (GB)     Free (GB) Provider      Root                                               CurrentLocation
+----           ---------     --------- --------      ----                                               ---------------
+N                                      FileSystem    \\192.168.220.129\Finance
 ```
 ```
-2
+Windows PowerShell - PSCredential Object
+  Interacting with Common Services
+PS C:\htb> $username = 'plaintext'
+PS C:\htb> $password = 'Password123'
+PS C:\htb> $secpassword = ConvertTo-SecureString $password -AsPlainText -Force
+PS C:\htb> $cred = New-Object System.Management.Automation.PSCredential $username, $secpassword
+PS C:\htb> New-PSDrive -Name "N" -Root "\\192.168.220.129\Finance" -PSProvider "FileSystem" -Credential $cred
+
+Name           Used (GB)     Free (GB) Provider      Root                                                              CurrentLocation
+----           ---------     --------- --------      ----                                                              ---------------
+N                                      FileSystem    \\192.168.220.129\Finance
 ```
 ```
-1
+Windows PowerShell - GCI
+  Interacting with Common Services
+PS C:\htb> N:
+PS N:\> (Get-ChildItem -File -Recurse | Measure-Object).Count
+
+29302
 ```
 ```
-2
+Interacting with Common Services
+PS C:\htb> Get-ChildItem -Recurse -Path N:\ -Include *cred* -File
+
+    Directory: N:\Contracts\private
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----         2/23/2022   4:36 PM             25 credentials.txt
 ```
 ```
-1
+Windows PowerShell - Select-String
+  Interacting with Common Services
+PS C:\htb> Get-ChildItem -Recurse -Path N:\ | Select-String "cred" -List
+
+N:\Contracts\private\secret.txt:1:file with all credentials
+N:\Contracts\private\credentials.txt:1:admin:SecureCredentials!
 ```
 ```
-2
+  Interacting with Common Services
+mdmithu@htb[/htb]$ mount -t cifs //192.168.220.129/Finance /mnt/Finance -o credentials=/path/credentialfile
 ```
 ```
-1
+CredentialFile
+Code: txt
+username=plaintext
+password=Password123
+domain=.
 ```
 ```
-2
+Linux - Find
+  Interacting with Common Services
+mdmithu@htb[/htb]$ find /mnt/Finance/ -name *cred*
+
+/mnt/Finance/Contracts/private/credentials.txt
 ```
 ```
-1
+Interacting with Common Services
+mdmithu@htb[/htb]$ grep -rn /mnt/Finance/ -ie cred
+
+/mnt/Finance/Contracts/private/credentials.txt:1:admin:SecureCredentials!
+/mnt/Finance/Contracts/private/secret.txt:1:file with all credentials
 ```
 ```
-2
+Linux - Install Evolution
+  Interacting with Common Services
+mdmithu@htb[/htb]$ sudo apt-get install evolution
+...SNIP...
+Note: If an error 
+```
+Linux - SQSH
+  Interacting with Common Services
+mdmithu@htb[/htb]$ sqsh -S 10.129.20.13 -U username -P Password123
 ```
 ```
-1
+Windows - SQLCMD
+  Interacting with Common Services
+C:\htb> sqlcmd -S 10.129.20.13 -U username -P Password123
 ```
 ```
-2
+Linux - MySQL
+  Interacting with Common Services
+mdmithu@htb[/htb]$ mysql -u username -pPassword123 -h 10.129.20.13
 ```
 ```
-1
+Windows - MySQL
+  Interacting with Common Services
+C:\htb> mysql.exe -u username -pPassword123 -h 10.129.20.13
+
 ```
 ```
-2
+Install dbeaver
+  Interacting with Common Services
+mdmithu@htb[/htb]$ sudo dpkg -i dbeaver-<version>.deb
 ```
 ```
-1
+Interacting with Common Services
+mdmithu@htb[/htb]$ dbeaver &
 ```
-```
-2
-```
+## Tools to Interact with Common Services
+SMB	              FTP	          Email	              Databases
+smbclient	        ftp	          Thunderbird	        mssql-cli
+CrackMapExec	    lftp	        Claws	              mycli
+SMBMap	          ncftp	        Geary	              mssqlclient.py
+Impacket	        filezilla	    MailSpring	        dbeaver
+psexec.py	        crossftp	    mutt	              MySQL Workbench
+smbexec.py		                  mailutils	          SQL Server Management Studio or SSMS
+sendEmail	
+swaks	
+sendmail
+
 ```
 1
 ```
