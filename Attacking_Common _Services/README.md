@@ -1791,7 +1791,8 @@ mdmithu@htb[/htb]# swaks --from notifications@inlanefreight.com --to employees@i
 2
 ```
 ```
-1
+smb: \> recurse ON
+smb: \> mget *
 ```
 ```
 EXEC ('RECONFIGURE') AT [LOCAL.TEST.LINKED.SRV]
