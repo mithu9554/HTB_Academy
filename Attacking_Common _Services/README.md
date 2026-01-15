@@ -1749,10 +1749,23 @@ mdmithu@htb[/htb]# swaks --from notifications@inlanefreight.com --to employees@i
 ```
 ## Attacking Common Services - Medium
 ```
-2
+nmap -p- -sV --min-rate=10000 10.129.80.196 
+Starting Nmap 7.95 ( https://nmap.org ) at 2025-10-23 08:45 EDT
+Warning: 10.129.80.196 giving up on port because retransmission cap hit (10).
+Nmap scan report for 10.129.80.196
+Host is up (0.23s latency).
+Not shown: 61090 closed tcp ports (reset), 4439 filtered tcp ports (no-response)
+PORT      STATE SERVICE  VERSION
+22/tcp    open  ssh      OpenSSH 8.2p1 Ubuntu 4ubuntu0.4 (Ubuntu Linux; protocol 2.0)
+53/tcp    open  domain   ISC BIND 9.16.1 (Ubuntu Linux)
+110/tcp   open  pop3     Dovecot pop3d
+995/tcp   open  ssl/pop3 Dovecot pop3d
+2121/tcp  open  ftp      ProFTPD
+30021/tcp open  ftp      ProFTPD
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 ```
 ```
-1
+hydra -l simon -P mynotes.txt pop3://10.129.140.54
 ```
 ```
 2
