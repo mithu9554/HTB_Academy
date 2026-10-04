@@ -36,7 +36,9 @@ $user = guest $node = ../../user[@role="ADMIN" and username != "admin"]/password
 ```
 $user = admin $node = a | / | 
 ```
-
+```
+$user = admin $node = a | 
+```
 
 
 
