@@ -1021,7 +1021,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 Nmap done: 1 IP address (1 host up) scanned in 39.22 seconds
 ```
 ## Attacking Splunk
-
+[splunk_shell](https://github.com/0xjpuff/reverse_shell_splunk)
 ```
 mdmithu@htb[/htb]$ tree splunk_shell/
 
